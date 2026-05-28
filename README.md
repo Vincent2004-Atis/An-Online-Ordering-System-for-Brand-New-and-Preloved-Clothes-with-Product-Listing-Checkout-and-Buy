@@ -1,4 +1,3 @@
-Brief commentary: I’ll draft a clear, focused “Purpose” section suitable for a capstone project report or proposal for your online ordering system for new and preloved clothes. I’ll keep it concise and professional; tell me if you want a longer version or a version aimed at funding/school review.
 
 Purpose
 
