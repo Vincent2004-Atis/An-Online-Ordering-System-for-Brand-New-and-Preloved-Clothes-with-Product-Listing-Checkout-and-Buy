@@ -11,7 +11,7 @@ $db->query("ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_photo VARCHAR(255
 $db->query("CREATE TABLE IF NOT EXISTS user_payment_accounts (
     account_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    account_type ENUM('gcash','paymaya') NOT NULL,
+    account_type ENUM('gcash',' ') NOT NULL,
     account_name VARCHAR(150) NOT NULL,
     account_number VARCHAR(50) NOT NULL,
     bank_name VARCHAR(100) DEFAULT NULL,
@@ -294,7 +294,7 @@ $isOrderActive    = $currentPage === 'my_orders.php';
 
     <!-- ── LEFT: Logo + Brand ── -->
     <a href="/Marguax_Collection/customer/products.php" class="navbar-brand">
-      <img src="/Marguax_Collection/images/logo.png"
+      <img src="/Marguax_Collection/images/logo2.png"
            alt="Marguax Collection Logo"
            style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.4);flex-shrink:0;">
       <div class="brand-text">
