@@ -448,7 +448,7 @@ html, body {
 .btn-primary {
   display: flex !important; align-items: center !important; justify-content: center !important;
   width: 100% !important;
-  background: #c45064 !important;
+  background:rgba(255,255,255,.04) !important;
   color: #fff !important;
   border: none !important;
   border-radius: 9px !important;
@@ -464,7 +464,7 @@ html, body {
   gap: 6px !important;
 }
 .btn-primary:hover {
-  background: #a83d53 !important;
+  background: #ffffff !important;
   transform: translateY(-2px) !important;
   box-shadow: 0 10px 24px rgba(196,80,100,.35) !important;
 }
@@ -773,30 +773,10 @@ footer a:hover { color: #e8a0a8 !important; padding-left: 4px !important; }
           <?php endforeach; ?>
         </div>
       </div>
-      <div>
-        <h4>Products</h4>
-        <?php foreach([['male-scents','Male Scents'],['female-scents','Female Scents'],['health-products','Health'],['boosters','Wellness Boosters'],['soaps','Soaps & Oils']] as [$s,$l]): ?>
-        <a href="products.php?category=<?= $s ?>" style="display:block;margin-bottom:10px;"><?= $l ?></a>
-        <?php endforeach; ?>
-      </div>
-      <div>
-        <h4>Membership</h4>
-        <?php foreach(['Silver','Gold','Ruby','Emerald','Diamond'] as $t): ?>
-        <a href="products.php?filter=package&tier=<?= strtolower($t) ?>" style="display:block;margin-bottom:10px;"><?= $t ?> Package</a>
-        <?php endforeach; ?>
-      </div>
-      <div>
-        <h4>Company</h4>
-        <a href="../index.php#how-to-join" style="display:block;margin-bottom:10px;">How to Join</a>
-        <a href="../index.php#membership"  style="display:block;margin-bottom:10px;">Benefits</a>
-        <a href="../auth/login.php"        style="display:block;margin-bottom:10px;">Login</a>
-        <a href="../auth/register.php"     style="display:block;margin-bottom:10px;">Register</a>
-        <a href="https://www.awmc.io"      style="display:block;margin-bottom:10px;">www.awmc.io</a>
-      </div>
     </div>
     <div style="border-top:1px solid rgba(196,80,100,.1);padding-top:26px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:.75rem;color:rgba(240,230,218,.2);font-family:'Jost',sans-serif;">
       <span>© 2026 Marguax Collections. All rights reserved.</span>
-      <span>🌐 www.awmc.io · 📘 Marguaxworldmktg</span>
+      <span>🌐 www.MarguaxCollection.com · 📘 MarguaxCollection</span>
     </div>
   </div>
 </footer>
