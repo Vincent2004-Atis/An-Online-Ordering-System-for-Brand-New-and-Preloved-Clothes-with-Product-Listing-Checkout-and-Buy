@@ -756,41 +756,98 @@ footer a:hover { color: #e8a0a8 !important; padding-left: 4px !important; }
 
 <!-- FOOTER -->
 <footer>
-  <div style="max-width:1200px;margin:auto;">
-    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:52px;">
+  <div style="max-width:1280px;margin:auto;">
+    <div style="display:grid;grid-template-columns:2.2fr 1fr 1fr 1fr;gap:48px;margin-bottom:52px;">
+
+      <!-- Brand Column -->
       <div>
-        <img src="../images/logo.png" alt="Marguax" onerror="this.style.display='none'"
-             style="width:54px;height:54px;border-radius:50%;border:1px solid rgba(196,80,100,.3);object-fit:cover;margin-bottom:18px;display:block;">
-        <p style="font-size:.82rem;line-height:1.85;max-width:270px;color:rgba(240,230,218,.35);font-family:'Jost',sans-serif;font-weight:300;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+          <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="24" cy="24" r="23" fill="rgba(196,80,100,0.1)" stroke="rgba(196,80,100,0.3)" stroke-width="1"/>
+            <path d="M10 34V14L18 27L24 16L30 27L38 14V34" stroke="url(#fLogoGradP)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <circle cx="24" cy="10" r="2.5" fill="#c45064"/>
+            <defs>
+              <linearGradient id="fLogoGradP" x1="10" y1="14" x2="38" y2="34" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#e8c87a"/><stop offset="0.5" stop-color="#c45064"/><stop offset="1" stop-color="#c9a0a8"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div>
+            <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:#f0e6da;line-height:1.1;">
+              Marguax <em style="font-style:italic;color:#c45064;">Collections</em>
+            </div>
+            <div style="font-size:.58rem;color:#c8a96a;letter-spacing:.18em;text-transform:uppercase;margin-top:2px;">✦ Fashion Boutique</div>
+          </div>
+        </div>
+        <p style="font-size:.82rem;line-height:1.85;max-width:270px;color:rgba(240,230,218,.4);font-family:'Jost',sans-serif;font-weight:300;">
           Marguax Collections — bringing premium Ardeur de France products and wellness solutions to Filipino families.
         </p>
+        <!-- Social Icons -->
         <div style="display:flex;gap:10px;margin-top:20px;">
-          <?php foreach(['https://facebook.com/Marguaxworldmktg'=>'📘','#'=>'📸','#'=>'🐦'] as $href=>$icon): ?>
-          <a href="<?= $href ?>"
-             style="width:36px;height:36px;border-radius:8px;background:rgba(196,80,100,.07);border:1px solid rgba(196,80,100,.18);display:flex;align-items:center;justify-content:center;font-size:.88rem;text-decoration:none;transition:background .2s,transform .2s;padding:0!important;"
-             onmouseover="this.style.background='rgba(196,80,100,.18)';this.style.transform='translateY(-2px)'"
-             onmouseout="this.style.background='rgba(196,80,100,.07)';this.style.transform=''"><?= $icon ?></a>
-          <?php endforeach; ?>
+          <!-- Facebook -->
+          <a href="https://www.facebook.com/gilian.legaspi.1" target="_blank"
+             style="width:36px;height:36px;border-radius:8px;background:rgba(196,80,100,.07);border:1px solid rgba(196,80,100,.2);display:flex;align-items:center;justify-content:center;text-decoration:none;transition:background .2s,transform .2s;"
+             onmouseover="this.style.background='rgba(196,80,100,.2)';this.style.transform='translateY(-2px)'"
+             onmouseout="this.style.background='rgba(196,80,100,.07)';this.style.transform=''">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M18 2H15C13.6739 2 12.4021 2.52678 11.4645 3.46447C10.5268 4.40215 10 5.67392 10 7V10H7V14H10V22H14V14H17L18 10H14V7C14 6.73478 14.1054 6.48043 14.2929 6.29289C14.4804 6.10536 14.7348 6 15 6H18V2Z" stroke="#c45064" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+          <!-- Instagram -->
+          <a href="https://www.instagram.com/mennggayyy/"
+             style="width:36px;height:36px;border-radius:8px;background:rgba(196,80,100,.07);border:1px solid rgba(196,80,100,.2);display:flex;align-items:center;justify-content:center;text-decoration:none;transition:background .2s,transform .2s;"
+             onmouseover="this.style.background='rgba(196,80,100,.2)';this.style.transform='translateY(-2px)'"
+             onmouseout="this.style.background='rgba(196,80,100,.07)';this.style.transform=''">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="#c45064" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="12" cy="12" r="4" stroke="#c45064" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="17.5" cy="6.5" r="1" fill="#c45064"/>
+            </svg>
+          </a>
+          <!-- TikTok -->
+         
         </div>
       </div>
+
+      <!-- Shop Column -->
+      <div>
+        <h4>Shop</h4>
+        <a href="products.php">All Products</a>
+        <a href="products.php?filter=loose">Loose Items</a>
+        <?php if ($isMember): ?>
+        <a href="products.php?filter=member">Member Exclusives</a>
+        <?php endif; ?>
+      </div>
+
+      <!-- Account Column -->
+      <div>
+        <h4>Account</h4>
+        <a href="https://www.facebook.com/gilian.legaspi.1" target="_blank">Facebook</a>
+        <a href="https://www.instagram.com/mennggayyy/" target="_blank">Instagram</a>
+      </div>
+
+      <!-- Info Column -->
+      <div>
+        <h4>Info</h4>
+        <a href="https://www.MarguaxCollection.com" target="_blank">www.MarguaxCollection.com</a>
+      </div>
+
     </div>
-    <div style="border-top:1px solid rgba(196,80,100,.1);padding-top:26px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:.75rem;color:rgba(240,230,218,.2);font-family:'Jost',sans-serif;">
+
+    <!-- Bottom Bar -->
+    <div style="border-top:1px solid rgba(196,80,100,.1);padding-top:26px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:.75rem;color:rgba(240,230,218,.25);font-family:'Jost',sans-serif;">
       <span>© 2026 Marguax Collections. All rights reserved.</span>
-      <span>🌐 www.MarguaxCollection.com · 📘 MarguaxCollection</span>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18 2H15C13.6739 2 12.4021 2.52678 11.4645 3.46447C10.5268 4.40215 10 5.67392 10 7V10H7V14H10V22H14V14H17L18 10H14V7C14 6.73478 14.1054 6.48043 14.2929 6.29289C14.4804 6.10536 14.7348 6 15 6H18V2Z" stroke="rgba(196,80,100,.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>MarguaxCollection</span>
+        <span style="color:rgba(196,80,100,.3);">·</span>
+        <span>🌐 www.MarguaxCollection.com</span>
+      </div>
     </div>
   </div>
 </footer>
-
-<!-- PAGE TRANSITION -->
-<div class="page-transition" id="pageTransition">
-  <div class="pt-panel"></div>
-  <div class="pt-logo">
-    <div class="pt-logo-text">Marguax Collections</div>
-    <div class="pt-logo-bar"></div>
-  </div>
-</div>
-<div id="toast-container"></div>
-
 <script>
 function changeQty(id, delta) {
   const input = document.getElementById('qty-' + id);
