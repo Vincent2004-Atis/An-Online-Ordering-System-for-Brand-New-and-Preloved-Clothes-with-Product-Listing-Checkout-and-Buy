@@ -1,14 +1,14 @@
 <?php
 /**
  * Middleware — Authentication & Authorization Guard
- * Amazing World Marketing Corporation Ordering System
+ * Marguax Collection Ordering System
  */
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-function requireLogin(string $redirect = '/amazingworldmarketingcorp/auth/login.php'): void {
+function requireLogin(string $redirect = '/Marguax_Collection/auth/login.php'): void {
     if (empty($_SESSION['user_id'])) {
         header('Location: ' . $redirect);
         exit;
@@ -18,7 +18,7 @@ function requireLogin(string $redirect = '/amazingworldmarketingcorp/auth/login.
 function requireAdmin(): void {
     requireLogin();
     if ($_SESSION['role'] !== 'admin') {
-        header('Location: /amazingworldmarketingcorp/auth/login.php');
+        header('Location: /Marguax_Collection/auth/login.php');
         exit;
     }
 }
@@ -26,18 +26,11 @@ function requireAdmin(): void {
 function requireCustomer(): void {
     requireLogin();
     if ($_SESSION['role'] !== 'customer') {
-        header('Location: /amazingworldmarketingcorp/admin/dashboard.php');
+        header('Location: /Marguax_Collection/admin/dashboard.php');
         exit;
     }
 }
 
-function requireMember(): void {
-    requireCustomer();
-    if (empty($_SESSION['member_status']) || $_SESSION['member_status'] !== 'member') {
-        header('Location: /amazingworldmarketingcorp/customer/membership.php');
-        exit;
-    }
-}
 
 function isLoggedIn(): bool {
     return !empty($_SESSION['user_id']);
