@@ -63,7 +63,7 @@ $stmt->close();
 
 $statusBadge = ['pending'=>'badge-amber','processing'=>'badge-blue','completed'=>'badge-green'];
 $payBadge    = ['pending'=>'badge-amber','paid'=>'badge-green'];
-$payLabels   = ['cash_on_pickup'=>'💵 Cash Pickup','cash_on_delivery'=>'🏠 Cash Delivery','gcash'=>'📱 GCash','bank_transfer'=>'🏦 Bank Transfer'];
+$payLabels   = ['cash_on_pickup'=>'💵 Cash Pickup','cash_on_delivery'=>'🏠 Cash Delivery','gcash'=>'📱 GCash','bank_transfer'=>'🏦 Cash On Delivery'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
