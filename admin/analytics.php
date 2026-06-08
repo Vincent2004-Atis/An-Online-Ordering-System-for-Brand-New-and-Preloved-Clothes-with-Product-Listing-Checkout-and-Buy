@@ -56,7 +56,6 @@ $totalOrders     = (int)(safeQueryOne($db, "SELECT COUNT(*) FROM orders")[0] ?? 
 $pendingOrders   = (int)(safeQueryOne($db, "SELECT COUNT(*) FROM orders WHERE order_status='pending'")[0] ?? 0);
 $completedOrders = (int)(safeQueryOne($db, "SELECT COUNT(*) FROM orders WHERE order_status='completed'")[0] ?? 0);
 $totalCustomers  = (int)(safeQueryOne($db, "SELECT COUNT(*) FROM users WHERE role='customer'")[0] ?? 0);
-$totalMembers    = (int)(safeQueryOne($db, "SELECT COUNT(*) FROM users WHERE role='customer' AND member_status='member'")[0] ?? 0);
 $avgOrder        = $totalOrders > 0 ? $totalRevenue / $totalOrders : 0;
 $convRate        = $totalCustomers > 0 ? round(($totalMembers / $totalCustomers) * 100, 1) : 0;
 
@@ -104,7 +103,7 @@ $cohortData = safeQuery($db, "
 
 $churnRisk = safeQuery($db, "
     SELECT u.user_id,
-           CONCAT(u.first_name,' ',u.last_name) AS name,
+           u.name AS name,
            MAX(o.order_date) AS last_order,
            DATEDIFF(NOW(), MAX(o.order_date)) AS days_since,
            COUNT(o.order_id) AS total_orders,
@@ -128,7 +127,7 @@ $forecastRows = safeQuery($db, "
 
 $fraudSignals = safeQuery($db, "
     SELECT o.order_id,
-           CONCAT(u.first_name,' ',u.last_name) AS customer,
+           u.name AS customer,
            o.total_amount, o.payment_method,
            o.order_status, o.payment_status, o.order_date
     FROM orders o
@@ -138,13 +137,15 @@ $fraudSignals = safeQuery($db, "
     ORDER BY o.order_date DESC LIMIT 5
 ");
 
+// ─── FIX: use o.order_date instead of oi.created_at ──────────────────────────
 $slowMoving = safeQuery($db, "
     SELECT p.product_name,
            IFNULL(SUM(oi.quantity),0) AS sold_30d,
            AVG(oi.price) AS avg_price
     FROM products p
     LEFT JOIN order_items oi ON oi.product_id = p.product_id
-      AND oi.created_at >= CURDATE() - INTERVAL 30 DAY
+    LEFT JOIN orders o ON o.order_id = oi.order_id
+      AND o.order_date >= CURDATE() - INTERVAL 30 DAY
     GROUP BY p.product_id
     HAVING sold_30d < 2
     ORDER BY sold_30d ASC LIMIT 4
@@ -1256,7 +1257,7 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
               <h5>💳 Double Down on Top Payment Method</h5>
               <?php
               $topPay = !empty($payDist) ? array_reduce($payDist,fn($a,$b)=>($b['cnt']>($a['cnt']??0))?$b:$a,[]) : ['payment_method'=>'GCash','cnt'=>0];
-              $payMap = ['cash_on_pickup'=>'Cash Pickup','cash_on_delivery'=>'Cash Delivery','gcash'=>'GCash','paymaya'=>'PayMaya','paypal'=>'PayPal'];
+              $payMap = ['cash_on_pickup'=>'Cash Pickup','cash_on_delivery'=>'Cash Delivery','gcash'=>'GCash','paypal'=>'PayPal'];
               $topPayName = $payMap[$topPay['payment_method']] ?? ucfirst($topPay['payment_method']);
               ?>
               <p><strong><?= $topPayName ?></strong> is your most-used payment method. Prioritize it in ad targeting and checkout flow to reduce friction and improve conversion rates.</p>
@@ -1374,7 +1375,7 @@ if (document.getElementById('statusChart') && statusLabels.length) {
 }
 
 // ── DESCRIPTIVE: Payment, Method, Member Doughnuts ────────────────────────
-const payMap = {cash_on_pickup:'Cash Pickup',cash_on_delivery:'Cash Delivery',gcash:'GCash',paymaya:'PayMaya',paypal:'PayPal'};
+const payMap = {cash_on_pickup:'Cash Pickup',cash_on_delivery:'Cash Delivery',gcash:'GCash',paypal:'PayPal'};
 
 const payLabels = <?= json_encode(array_column($payDist,'payment_method')) ?>.map(k => payMap[k]||k);
 const payData   = <?= json_encode(array_column($payDist,'cnt')) ?>;
