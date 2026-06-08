@@ -30,18 +30,6 @@ if (isset($_GET['msg'])) $msg = match($_GET['msg']) {
     default   => ''
 };
 
-/* ── Update membership ── */
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_membership'])) {
-    $uid    = (int)$_POST['user_id'];
-    $status = $_POST['member_status'];
-    if (in_array($status, ['member', 'non-member'])) {
-        $s = $db->prepare("UPDATE users SET member_status=? WHERE user_id=?");
-        $s->bind_param('si', $status, $uid);
-        $s->execute();
-        $s->close();
-        header('Location: manage_users.php?msg=updated'); exit;
-    }
-}
 
 /* ── Filters ── */
 $search    = trim($_GET['search'] ?? '');
@@ -84,7 +72,6 @@ $stmt->close();
 
 /* ── Stats ── */
 $totalUsers   = (int)$db->query("SELECT COUNT(*) FROM users WHERE role='customer'")->fetch_row()[0];
-$totalMembers = (int)$db->query("SELECT COUNT(*) FROM users WHERE role='customer' AND member_status='member'")->fetch_row()[0];
 $totalAdmins  = (int)$db->query("SELECT COUNT(*) FROM users WHERE role='admin'")->fetch_row()[0];
 ?>
 <!DOCTYPE html>
@@ -184,7 +171,6 @@ require_once '../includes/security.php'; endif; ?>
                 <th>Email</th>
                 <th>Contact</th>
                 <th>Role</th>
-                <th>Membership</th>
                 <th>Orders</th>
                 <th>Joined</th>
                 <th>Actions</th>
