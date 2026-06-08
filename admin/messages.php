@@ -252,7 +252,7 @@ $db = getDB();
 </div>
 
 <script>
-const API = '/amazingworldmarketingcorp/api/chat.php';
+const API = '/Marguax_Collection/api/chat.php';
 let activeConvoId = null;
 let pollTimer     = null;
 
@@ -290,7 +290,7 @@ async function loadConversations() {
     list.innerHTML = data.conversations.map(c => {
       const initial = (c.customer_name||'?').charAt(0).toUpperCase();
       const avatarInner = c.profile_photo
-        ? `<img src="/amazingworldmarketingcorp/${esc(c.profile_photo)}" alt="${esc(c.customer_name)}">`
+        ? `<img src="/Marguax_Collection/${esc(c.profile_photo)}" alt="${esc(c.customer_name)}">`
         : initial;
       return `
       <div class="conv-item ${c.conversation_id == activeConvoId ? 'active' : ''} ${parseInt(c.unread_count) > 0 ? 'unread' : ''}"
@@ -336,7 +336,7 @@ async function openConvo(cid) {
     const c    = data.conversation;
     const main = document.getElementById('chatMain');
     const headerAvatarInner = c.profile_photo
-      ? `<img src="/amazingworldmarketingcorp/${esc(c.profile_photo)}" alt="${esc(c.customer_name)}">`
+      ? `<img src="/Marguax_Collection/${esc(c.profile_photo)}" alt="${esc(c.customer_name)}">`
       : (c.customer_name||'?').charAt(0).toUpperCase();
 
     main.innerHTML = `
@@ -401,7 +401,7 @@ function renderMessages(messages, profilePhoto, userId) {
   }
 
   const customerAvatarInner = profilePhoto
-    ? `<img src="/amazingworldmarketingcorp/${esc(profilePhoto)}" alt="Customer">`
+    ? `<img src="/Marguax_Collection/${esc(profilePhoto)}" alt="Customer">`
     : '👤';
 
   container.innerHTML = messages.map(m => {
