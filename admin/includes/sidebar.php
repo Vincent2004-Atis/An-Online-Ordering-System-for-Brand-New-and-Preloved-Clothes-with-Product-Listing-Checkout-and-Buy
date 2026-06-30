@@ -40,9 +40,15 @@ if (isset($db)) {
       <span>📋</span> Orders
       <?php if($pendingCount>0): ?><span class="count"><?= $pendingCount ?></span><?php endif; ?>
     </a>
+
     <a href="manage_products.php" class="sidebar-link <?= $currentPage==='manage_products.php'?'active':'' ?>">
       <span>🛍️</span> Products
     </a>
+
+    <a href="manage_homepage.php" class="sidebar-link <?= $currentPage==='manage_homepage.php'?'active':'' ?>">
+      <span>🖼️</span> Homepage Photos
+    </a>
+    
     <a href="manage_users.php" class="sidebar-link <?= $currentPage==='manage_users.php'?'active':'' ?>">
       <span>👥</span> Users
     </a>
