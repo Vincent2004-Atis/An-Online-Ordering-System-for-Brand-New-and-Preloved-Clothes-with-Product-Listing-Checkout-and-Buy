@@ -4,6 +4,18 @@ if (isset($_SESSION['user_id'])) {
     header('Location: ' . ($_SESSION['role']==='admin' ? 'admin/dashboard.php' : 'customer/products.php'));
     exit;
 }
+require_once 'config/database.php';
+$db = getDB();
+$hpSlots = $db->query("SELECT * FROM homepage_slots")->fetch_all(MYSQLI_ASSOC);
+$hp = [];
+foreach ($hpSlots as $s) $hp[$s['slot_id']] = $s['image_path'];
+$hp += [
+    'featured'    => 'images/products/female-scent.jpg',
+    'dresses'     => 'images/products/female-scent.jpg',
+    'tops'        => 'images/products/boosters.jpg',
+    'preowned'    => 'images/products/immukira.jpg',
+    'accessories' => 'images/products/soap.jpg',
+];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -322,7 +334,7 @@ footer{background:#05030a;color:rgba(255,255,255,.5);padding:68px 56px 36px;bord
     </div>
     <div class="hero-right">
       <div class="hero-cards-top">
-        <img src="images/products/female-scent.jpg" alt="Featured Outfit" onerror="this.style.background='linear-gradient(135deg,#261520,#3d1a28)';this.style.height='290px'">
+        <img src="<?= htmlspecialchars($hp['featured']) ?>" alt="Featured Outfit" onerror="this.style.background='linear-gradient(135deg,#261520,#3d1a28)';this.style.height='290px'">
         <div class="hero-img-overlay">
           <div>
             <div class="hero-img-label">New Arrivals — Summer 2026</div>
@@ -381,42 +393,46 @@ footer{background:#05030a;color:rgba(255,255,255,.5);padding:68px 56px 36px;bord
       <span class="gold-line"></span>
     </div>
     <div class="cats-grid reveal">
+
       <div class="cat-card">
-        <img src="images/products/female-scent.jpg" alt="Dresses" onerror="this.style.background='linear-gradient(135deg,#261520,#3d1a28)';this.style.height='100%'">
+        <img src="<?= htmlspecialchars($hp['dresses']) ?>" alt="Dresses" onerror="this.style.background='linear-gradient(135deg,#261520,#3d1a28)';this.style.height='100%'">
         <div class="cat-overlay">
           <span class="cat-pill">Brand New</span>
           <div class="cat-name">Dresses</div>
           <div class="cat-count">85+ pieces</div>
-        </div>
-        <div class="cat-arrow">→</div>
-      </div>
+       </div>
+       <div class="cat-arrow">→</div>
+     </div>
+
       <div class="cat-card">
-        <img src="images/products/boosters.jpg" alt="Tops & Blouses" onerror="this.style.background='linear-gradient(135deg,#1c1318,#2e1622)';this.style.height='100%'">
+        <img src="<?= htmlspecialchars($hp['tops']) ?>" alt="Tops & Blouses" onerror="this.style.background='linear-gradient(135deg,#1c1318,#2e1622)';this.style.height='100%'">
         <div class="cat-overlay">
           <span class="cat-pill">Brand New</span>
           <div class="cat-name">Tops & Blouses</div>
           <div class="cat-count">120+ pieces</div>
-        </div>
-        <div class="cat-arrow">→</div>
-      </div>
+       </div>
+       <div class="cat-arrow">→</div>
+     </div>
+
       <div class="cat-card">
-        <img src="images/products/immukira.jpg" alt="Pre-Owned" onerror="this.style.background='linear-gradient(135deg,#1a1508,#2e2410)';this.style.height='100%'">
+        <img src="<?= htmlspecialchars($hp['preowned']) ?>" alt="Pre-Owned" onerror="this.style.background='linear-gradient(135deg,#1a1508,#2e2410)';this.style.height='100%'">
         <div class="cat-overlay">
           <span class="cat-pill" style="background:linear-gradient(135deg,var(--gold),#a07830)">Pre-Owned</span>
           <div class="cat-name">Designer Finds</div>
           <div class="cat-count">200+ pieces</div>
-        </div>
-        <div class="cat-arrow">→</div>
-      </div>
+       </div>
+       <div class="cat-arrow">→</div>
+     </div>
+
       <div class="cat-card">
-        <img src="images/products/soap.jpg" alt="Accessories" onerror="this.style.background='linear-gradient(135deg,#1c1318,#261520)';this.style.height='100%'">
+        <img src="<?= htmlspecialchars($hp['accessories']) ?>" alt="Accessories" onerror="this.style.background='linear-gradient(135deg,#1c1318,#261520)';this.style.height='100%'">
         <div class="cat-overlay">
           <span class="cat-pill" style="background:rgba(255,255,255,.15);backdrop-filter:blur(6px)">Accessories</span>
           <div class="cat-name">Bags & More</div>
           <div class="cat-count">60+ items</div>
-        </div>
-        <div class="cat-arrow">→</div>
-      </div>
+       </div>
+       <div class="cat-arrow">→</div>
+     </div>
     </div>
   </div>
 </section>
