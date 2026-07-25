@@ -8,11 +8,73 @@ $userId = (int)$_SESSION['user_id'];
 $stmt = $db->prepare("SELECT * FROM orders WHERE user_id=? ORDER BY order_date DESC");
 $stmt->bind_param('i', $userId);
 $stmt->execute();
-$orders = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+$allOrders = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
-$orderMethodIcons = ['pickup'=>'🏪 Pickup','shipping'=>'🚚 Shipping'];
-$payIcons = ['cash_on_pickup'=>'💵 Cash on Pickup','cash_on_delivery'=>'🏠 Cash on Delivery','gcash'=>'📱 GCash'];
+// Fetch the actual products bought per order, so the customer can see what
+// they ordered without having to open each order separately.
+$itemsByOrder = [];
+if (!empty($allOrders)) {
+    $orderIds = array_column($allOrders, 'order_id');
+    $placeholders = implode(',', array_fill(0, count($orderIds), '?'));
+    $types = str_repeat('i', count($orderIds));
+
+    $itemStmt = $db->prepare("
+        SELECT oi.order_id, oi.quantity, oi.price, p.product_name, p.image
+        FROM order_items oi
+        JOIN products p ON p.product_id = oi.product_id
+        WHERE oi.order_id IN ($placeholders)
+        ORDER BY oi.order_id
+    ");
+    $itemStmt->bind_param($types, ...$orderIds);
+    $itemStmt->execute();
+    $itemRows = $itemStmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $itemStmt->close();
+
+    foreach ($itemRows as $row) {
+        $itemsByOrder[$row['order_id']][] = $row;
+    }
+}
+
+$orderMethodIcons = ['pickup'=>'Pickup','shipping'=>'Shipping'];
+$payIcons = ['cash_on_pickup'=>'Cash on Pickup','cash_on_delivery'=>'Cash on Delivery','gcash'=>'GCash'];
+
+/**
+ * Bucket an order into a tab that matches this system's actual flow:
+ *   payment_status: pending -> pending_verification (gcash) -> paid
+ *   order_status:   pending -> processing -> completed
+ *
+ * An order that isn't paid yet is always "To Pay", regardless of payment
+ * method or order_status — the customer's next action is the same either
+ * way: pay / wait for payment verification.
+ *
+ * Once paid, "Preparing" covers everything still being fulfilled
+ * (pending or processing), and "Completed" is its own bucket.
+ */
+function bucketOf(array $o): string {
+    if ($o['payment_status'] !== 'paid') {
+        return 'to_pay';
+    }
+    return $o['order_status'] === 'completed' ? 'completed' : 'preparing';
+}
+
+$counts = ['to_pay'=>0,'preparing'=>0,'completed'=>0];
+foreach ($allOrders as $o) { $counts[bucketOf($o)]++; }
+
+$activeTab = $_GET['tab'] ?? 'all';
+$validTabs = ['all','to_pay','preparing','completed'];
+if (!in_array($activeTab, $validTabs)) $activeTab = 'all';
+
+$orders = ($activeTab === 'all')
+    ? $allOrders
+    : array_values(array_filter($allOrders, fn($o) => bucketOf($o) === $activeTab));
+
+$tabs = [
+    ['key'=>'all',       'label'=>'All'],
+    ['key'=>'to_pay',    'label'=>'To Pay'],
+    ['key'=>'preparing', 'label'=>'Preparing'],
+    ['key'=>'completed', 'label'=>'Completed'],
+];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -107,6 +169,57 @@ section, .section, main, .main,
   background: transparent !important;
 }
 
+/* ── STATUS TABS (Shopee-style) ── */
+.status-tabs {
+  display: flex !important;
+  background: #2e0c18 !important;
+  border: 1px solid rgba(196,80,100,.22) !important;
+  border-radius: 14px !important;
+  overflow: hidden !important;
+  margin-bottom: 20px !important;
+}
+.status-tab {
+  flex: 1 1 0 !important;
+  display: flex !important; flex-direction: column !important;
+  align-items: center !important; gap: 8px !important;
+  padding: 18px 10px 16px !important;
+  text-decoration: none !important;
+  color: #9a7878 !important;
+  border-right: 1px solid rgba(196,80,100,.14) !important;
+  position: relative !important;
+  transition: background .2s, color .2s !important;
+  -webkit-text-fill-color: #9a7878 !important;
+}
+.status-tab:last-child { border-right: none !important; }
+.status-tab:hover { background: rgba(196,80,100,.07) !important; color: #e8a0a8 !important; -webkit-text-fill-color: #e8a0a8 !important; }
+.status-tab.active {
+  background: rgba(196,80,100,.13) !important;
+  color: #f0e6da !important;
+  -webkit-text-fill-color: #f0e6da !important;
+  box-shadow: inset 0 -3px 0 #c45064 !important;
+}
+.status-tab-icon { font-size: 1.35rem !important; line-height: 1 !important; }
+.status-tab-label {
+  font-size: .8rem !important; font-weight: 600 !important;
+  letter-spacing: .03em !important; text-transform: uppercase !important;
+  white-space: nowrap !important;
+}
+.status-tab-count {
+  position: absolute !important; top: 8px !important; right: 18%;
+  background: #c45064 !important; color: #fff !important;
+  font-size: .62rem !important; font-weight: 700 !important;
+  min-width: 17px !important; height: 17px !important;
+  border-radius: 50% !important;
+  display: flex !important; align-items: center !important; justify-content: center !important;
+  padding: 0 4px !important;
+  -webkit-text-fill-color: #fff !important;
+}
+@media(max-width: 700px) {
+  .status-tab-label { display: none !important; }
+  .status-tab { padding: 14px 6px !important; }
+  .status-tab-count { right: 22%; }
+}
+
 /* ── CARD ── */
 .mg-card {
   background: #2e0c18 !important;
@@ -148,8 +261,8 @@ table {
 thead tr { border-bottom: 1px solid rgba(196,80,100,.18) !important; }
 thead th {
   padding: 12px 18px !important; text-align: left !important;
-  font-size: .62rem !important; font-weight: 600 !important;
-  letter-spacing: .12em !important; text-transform: uppercase !important;
+  font-size: .72rem !important; font-weight: 600 !important;
+  letter-spacing: .1em !important; text-transform: uppercase !important;
   color: #5a4048 !important; background: rgba(14,5,7,.35) !important;
   white-space: nowrap !important;
   -webkit-text-fill-color: #5a4048 !important;
@@ -158,7 +271,7 @@ tbody td {
   padding: 15px 18px !important;
   border-bottom: 1px solid rgba(196,80,100,.07) !important;
   vertical-align: middle !important;
-  font-size: .84rem !important; color: #b09090 !important;
+  font-size: .92rem !important; color: #b09090 !important;
   background: transparent !important;
   -webkit-text-fill-color: #b09090 !important;
 }
@@ -179,7 +292,7 @@ tbody tr:hover td { background: rgba(196,80,100,.05) !important; }
 }
 .col-date {
   white-space: nowrap !important; color: #9a7878 !important;
-  font-size: .8rem !important;
+  font-size: .88rem !important;
   -webkit-text-fill-color: #9a7878 !important;
 }
 .col-total {
@@ -188,12 +301,36 @@ tbody tr:hover td { background: rgba(196,80,100,.05) !important; }
   -webkit-text-fill-color: #f0e6da !important;
 }
 
+/* ── ITEMS LIST ── */
+.items-list {
+  display: flex !important; flex-direction: column !important; gap: 8px !important;
+  min-width: 180px !important;
+}
+.items-row {
+  display: flex !important; align-items: center !important; gap: 8px !important;
+}
+.items-row img {
+  width: 32px !important; height: 32px !important;
+  border-radius: 6px !important; object-fit: cover !important;
+  flex-shrink: 0 !important;
+  border: 1px solid rgba(196,80,100,.2) !important;
+}
+.items-name {
+  font-size: .86rem !important; color: #d8bcc0 !important;
+  -webkit-text-fill-color: #d8bcc0 !important;
+  line-height: 1.3 !important;
+}
+.items-qty {
+  color: #7a6058 !important; font-size: .8rem !important;
+  -webkit-text-fill-color: #7a6058 !important;
+}
+
 /* ── BADGES ── */
 .badge {
   display: inline-flex !important; align-items: center !important;
-  padding: 4px 12px !important; border-radius: 20px !important;
-  font-size: .62rem !important; font-weight: 600 !important;
-  letter-spacing: .08em !important; text-transform: uppercase !important;
+  padding: 5px 13px !important; border-radius: 20px !important;
+  font-size: .7rem !important; font-weight: 600 !important;
+  letter-spacing: .06em !important; text-transform: uppercase !important;
 }
 .badge-pending {
   background: rgba(196,80,100,.12) !important; color: #c45064 !important;
@@ -224,6 +361,11 @@ tbody tr:hover td { background: rgba(196,80,100,.05) !important; }
   background: rgba(196,80,100,.12) !important; color: #c45064 !important;
   border: 1px solid rgba(196,80,100,.28) !important;
   -webkit-text-fill-color: #c45064 !important;
+}
+.badge-verification {
+  background: rgba(80,130,210,.12) !important; color: #7aaedd !important;
+  border: 1px solid rgba(80,130,210,.28) !important;
+  -webkit-text-fill-color: #7aaedd !important;
 }
 
 /* ── EMPTY ── */
@@ -267,7 +409,8 @@ tbody tr:hover td { background: rgba(196,80,100,.05) !important; }
 </div>
 
 <div class="page-wrap">
-  <?php if (empty($orders)): ?>
+
+  <?php if (empty($allOrders)): ?>
     <div class="mg-card">
       <div class="order-empty">
         <div style="font-size:2.4rem;margin-bottom:18px;opacity:.2;">◆</div>
@@ -277,18 +420,38 @@ tbody tr:hover td { background: rgba(196,80,100,.05) !important; }
       </div>
     </div>
   <?php else: ?>
+
+    <!-- Status tabs -->
+    <div class="status-tabs">
+      <?php foreach ($tabs as $t): ?>
+        <a href="?tab=<?= $t['key'] ?>" class="status-tab <?= $activeTab === $t['key'] ? 'active' : '' ?>">
+          <?php if ($t['key'] !== 'all' && $counts[$t['key']] > 0): ?>
+            <span class="status-tab-count"><?= $counts[$t['key']] ?></span>
+          <?php endif; ?>
+          <span class="status-tab-label"><?= $t['label'] ?></span>
+        </a>
+      <?php endforeach; ?>
+    </div>
+
     <div class="mg-card">
       <div class="mg-card-head">
         <span class="mg-card-head-title">Order History</span>
         <span class="mg-pill"><?= count($orders) ?> order<?= count($orders)!=1?'s':'' ?></span>
       </div>
+
+      <?php if (empty($orders)): ?>
+        <div class="order-empty">
+          <div style="font-size:2rem;margin-bottom:14px;opacity:.2;">◆</div>
+          <h3 style="font-size:1.3rem;">No orders here</h3>
+          <p>Nothing in this category yet.</p>
+        </div>
+      <?php else: ?>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>Order #</th>
-              <th>Queue</th>
               <th>Date</th>
+              <th>Items</th>
               <th>Method</th>
               <th>Payment</th>
               <th>Total</th>
@@ -305,22 +468,41 @@ tbody tr:hover td { background: rgba(196,80,100,.05) !important; }
                 'cancelled'  => 'badge-cancelled',
                 default      => 'badge-cancelled'
               };
-              $payClass = $o['payment_status'] === 'paid' ? 'badge-paid' : 'badge-unpaid';
+              $payClass = match($o['payment_status']) {
+                'paid'                 => 'badge-paid',
+                'pending_verification' => 'badge-verification',
+                default                => 'badge-unpaid'
+              };
+              $payLabel = match($o['payment_status']) {
+                'pending_verification' => 'For Verification',
+                default                => ucfirst($o['payment_status'])
+              };
             ?>
             <tr>
-              <td><span class="col-id">#<?= (int)$o['order_id'] ?></span></td>
-              <td><span class="col-queue"><?= str_pad((int)$o['queue_number'],3,'0',STR_PAD_LEFT) ?></span></td>
               <td class="col-date"><?= date('M d, Y g:i A', strtotime($o['order_date'])) ?></td>
+              <td>
+                <div class="items-list">
+                  <?php foreach (($itemsByOrder[$o['order_id']] ?? []) as $it): ?>
+                  <div class="items-row">
+                    <img src="../<?= htmlspecialchars($it['image']) ?>"
+                         alt="<?= htmlspecialchars($it['product_name']) ?>"
+                         onerror="this.src='../images/product-placeholder.jpg'">
+                    <span class="items-name"><?= htmlspecialchars($it['product_name']) ?> <span class="items-qty">×<?= (int)$it['quantity'] ?></span></span>
+                  </div>
+                  <?php endforeach; ?>
+                </div>
+              </td>
               <td><?= $orderMethodIcons[$o['order_method']] ?? htmlspecialchars($o['order_method']) ?></td>
               <td><?= $payIcons[$o['payment_method']] ?? htmlspecialchars($o['payment_method']) ?></td>
               <td><span class="col-total">₱<?= number_format((float)$o['total_amount'],2) ?></span></td>
               <td><span class="badge <?= $statusClass ?>"><?= ucfirst(htmlspecialchars($o['order_status'])) ?></span></td>
-              <td><span class="badge <?= $payClass ?>"><?= ucfirst(htmlspecialchars($o['payment_status'])) ?></span></td>
+              <td><span class="badge <?= $payClass ?>"><?= htmlspecialchars($payLabel) ?></span></td>
             </tr>
             <?php endforeach; ?>
           </tbody>
         </table>
       </div>
+      <?php endif; ?>
     </div>
   <?php endif; ?>
 </div>

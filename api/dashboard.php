@@ -35,7 +35,6 @@ if ($type === 'all' || $type === 'stats') {
         'processing_orders' => (int) $db->query("SELECT COUNT(*) FROM orders WHERE order_status='processing'")->fetch_row()[0],
         'completed_orders'  => (int) $db->query("SELECT COUNT(*) FROM orders WHERE order_status='completed'")->fetch_row()[0],
         'total_customers'=> (int)  $db->query("SELECT COUNT(*) FROM users WHERE role='customer'")->fetch_row()[0],
-        'total_members'  => (int)  $db->query("SELECT COUNT(*) FROM users WHERE member_status='member' AND role='customer'")->fetch_row()[0],
         'total_products' => (int)  $db->query("SELECT COUNT(*) FROM products")->fetch_row()[0],
         'low_stock'      => (int)  $db->query("SELECT COUNT(*) FROM products WHERE stock <= 10 AND stock > 0")->fetch_row()[0],
         'out_of_stock'   => (int)  $db->query("SELECT COUNT(*) FROM products WHERE stock = 0")->fetch_row()[0],
@@ -75,7 +74,7 @@ if ($type === 'all' || $type === 'recent') {
 // ── Top products ───────────────────────────────────────────────────────────
 if ($type === 'all' || $type === 'top_products') {
     $rows = $db->query("
-        SELECT p.product_name, p.product_type,
+        SELECT p.product_name,
                SUM(oi.quantity) AS units_sold,
                SUM(oi.quantity * oi.price) AS revenue
         FROM order_items oi

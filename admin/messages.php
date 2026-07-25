@@ -10,8 +10,7 @@ $db = getDB();
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Customer Messages — OrderSync Admin</title>
-<link rel="stylesheet" href="../css/style.css">
+<title>Customer Messages — Marguax Collections Admin</title>
 <link rel="stylesheet" href="../css/admin.css">
 <style>
 .messages-layout {
@@ -22,7 +21,7 @@ $db = getDB();
   overflow: hidden;
 }
 .conv-sidebar {
-  background: #fff;
+  background: rgba(42,13,20,.6);
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
@@ -36,7 +35,7 @@ $db = getDB();
   justify-content: space-between;
   flex-shrink: 0;
 }
-.conv-sidebar-title { font-weight: 700; font-size: .88rem; color: var(--text); }
+.conv-sidebar-title { font-weight: 700; font-size: .88rem; color: var(--text-main); font-family:'Jost',sans-serif; }
 .conv-list { overflow-y: auto; flex: 1; }
 .conv-item {
   padding: 14px 20px;
@@ -44,21 +43,21 @@ $db = getDB();
   cursor: pointer;
   transition: background .15s;
 }
-.conv-item:hover  { background: #f8fafc; }
-.conv-item.active { background: #eff6ff; border-left: 3px solid var(--blue); padding-left: 17px; }
-.conv-item.unread { background: #fefce8; }
-.conv-item-name    { font-weight: 700; font-size: .85rem; color: var(--text); margin-bottom: 2px; }
-.conv-item-subject { font-size: .76rem; color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.conv-item:hover  { background: rgba(196,80,100,.06); }
+.conv-item.active { background: rgba(196,80,100,.12); border-left: 3px solid var(--rose); padding-left: 17px; }
+.conv-item.unread { background: rgba(200,169,106,.08); }
+.conv-item-name    { font-weight: 700; font-size: .85rem; color: var(--text-main); margin-bottom: 2px; font-family:'Jost',sans-serif; }
+.conv-item-subject { font-size: .76rem; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .conv-item-meta    { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
-.conv-item-time    { font-size: .7rem; color: var(--text-3); }
-.conv-item-badge   { background: var(--blue); color: #fff; font-size: .62rem; font-weight: 800; padding: 1px 7px; border-radius: 999px; }
-.conv-empty        { padding: 40px 20px; text-align: center; color: var(--text-3); font-size: .85rem; }
+.conv-item-time    { font-size: .7rem; color: var(--text-dim); }
+.conv-item-badge   { background: var(--rose); color: #fff; font-size: .62rem; font-weight: 800; padding: 1px 7px; border-radius: 999px; }
+.conv-empty        { padding: 40px 20px; text-align: center; color: var(--text-dim); font-size: .85rem; font-family:'Jost',sans-serif; }
 
 .chat-main {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: #f8fafc;
+  background: rgba(14,5,7,.4);
 }
 .chat-placeholder {
   flex: 1;
@@ -66,12 +65,13 @@ $db = getDB();
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: var(--text-3);
+  color: var(--text-dim);
   gap: 12px;
+  font-family:'Jost',sans-serif;
 }
 .chat-placeholder-icon { font-size: 3rem; opacity: .4; }
 .chat-header {
-  background: #fff;
+  background: rgba(42,13,20,.6);
   border-bottom: 1px solid var(--border);
   padding: 14px 24px;
   display: flex;
@@ -80,23 +80,23 @@ $db = getDB();
   flex-shrink: 0;
 }
 .chat-header-info { flex: 1; }
-.chat-header-name { font-weight: 700; font-size: .92rem; color: var(--text); }
-.chat-header-sub  { font-size: .76rem; color: var(--text-3); margin-top: 2px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.chat-order-tag   { background: #eff6ff; color: var(--blue); font-size: .7rem; font-weight: 700; padding: 2px 8px; border-radius: 6px; }
+.chat-header-name { font-weight: 700; font-size: .92rem; color: var(--text-main); font-family:'Jost',sans-serif; }
+.chat-header-sub  { font-size: .76rem; color: var(--text-dim); margin-top: 2px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.chat-order-tag   { background: rgba(196,80,100,.15); color: var(--rose); font-size: .7rem; font-weight: 700; padding: 2px 8px; border-radius: 6px; }
 .chat-status-tag  { font-size: .7rem; font-weight: 700; padding: 2px 8px; border-radius: 6px; }
-.chat-status-open   { background: #dcfce7; color: #16a34a; }
-.chat-status-closed { background: #f1f5f9; color: var(--text-3); }
+.chat-status-open   { background: rgba(80,160,100,.15); color: #6dbf8a; }
+.chat-status-closed { background: rgba(122,96,88,.2); color: var(--text-dim); }
 
 /* Clickable name link style */
 .customer-name-link {
   color: inherit;
   text-decoration: none;
-  border-bottom: 1.5px dashed rgba(0,0,0,.2);
+  border-bottom: 1.5px dashed rgba(196,80,100,.3);
   transition: border-color .15s, color .15s;
 }
 .customer-name-link:hover {
-  color: var(--blue);
-  border-bottom-color: var(--blue);
+  color: var(--rose);
+  border-bottom-color: var(--rose);
 }
 
 /* Avatar photo */
@@ -110,7 +110,7 @@ $db = getDB();
 }
 .bubble-avatar.clickable:hover {
   transform: scale(1.1);
-  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+  box-shadow: 0 2px 8px rgba(0,0,0,.3);
 }
 
 /* Sidebar avatar */
@@ -118,7 +118,7 @@ $db = getDB();
   width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   font-size: .8rem; font-weight: 800;
-  background: linear-gradient(135deg,#2e6ee6,#7c3aed); color: #fff;
+  background: linear-gradient(135deg,var(--rose),var(--rose-dark)); color: #fff;
   overflow: hidden; cursor: pointer;
   transition: transform .15s;
 }
@@ -141,8 +141,8 @@ $db = getDB();
   font-size: .72rem; font-weight: 800; flex-shrink: 0;
   margin-top: auto;
 }
-.bubble-avatar.customer { background: linear-gradient(135deg,#2e6ee6,#7c3aed); color: #fff; }
-.bubble-avatar.admin    { background: linear-gradient(135deg,#0a1628,#1a2a4a); color: #f0a500; }
+.bubble-avatar.customer { background: linear-gradient(135deg,var(--rose),var(--rose-dark)); color: #fff; }
+.bubble-avatar.admin    { background: linear-gradient(135deg,#3d1020,#2a0d14); color: var(--gold); }
 .bubble-body { max-width: 65%; }
 .bubble {
   padding: 10px 14px;
@@ -150,25 +150,26 @@ $db = getDB();
   font-size: .84rem;
   line-height: 1.55;
   word-break: break-word;
+  font-family:'Jost',sans-serif;
 }
 .bubble.customer {
-  background: #fff;
-  color: var(--text);
+  background: rgba(42,13,20,.8);
+  color: var(--text-main);
   border-bottom-left-radius: 4px;
-  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  border: 1px solid var(--border);
 }
 .bubble.admin {
-  background: linear-gradient(135deg,#1a2a4a,#243660);
+  background: linear-gradient(135deg,var(--rose),var(--rose-dark));
   color: #fff;
   border-bottom-right-radius: 4px;
 }
-.bubble-time { font-size: .68rem; color: var(--text-3); margin-top: 4px; padding: 0 4px; }
+.bubble-time { font-size: .68rem; color: var(--text-dim); margin-top: 4px; padding: 0 4px; }
 .bubble-row.admin .bubble-time { text-align: right; }
-.bubble-sender { font-size: .68rem; font-weight: 700; color: var(--text-3); margin-bottom: 3px; padding: 0 4px; }
+.bubble-sender { font-size: .68rem; font-weight: 700; color: var(--text-dim); margin-bottom: 3px; padding: 0 4px; font-family:'Jost',sans-serif; }
 .bubble-row.admin .bubble-sender { text-align: right; }
 
 .chat-input-wrap {
-  background: #fff;
+  background: rgba(42,13,20,.6);
   border-top: 1px solid var(--border);
   padding: 14px 20px;
   display: flex;
@@ -181,17 +182,19 @@ $db = getDB();
   border: 1.5px solid var(--border);
   border-radius: 10px;
   padding: 10px 14px;
-  font-family: inherit;
+  font-family: 'Jost',sans-serif;
   font-size: .85rem;
   resize: none;
   outline: none;
   transition: border-color .2s;
   max-height: 120px;
   line-height: 1.5;
+  background: rgba(255,255,255,.04);
+  color: var(--text-main);
 }
-.chat-textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.08); }
+.chat-textarea:focus { border-color: var(--rose); box-shadow: 0 0 0 3px rgba(196,80,100,.12); }
 .chat-send {
-  background: linear-gradient(135deg,#1a2a4a,#2e6ee6);
+  background: linear-gradient(135deg,var(--rose),var(--rose-dark));
   color: #fff;
   border: none;
   border-radius: 10px;
@@ -202,6 +205,7 @@ $db = getDB();
   transition: opacity .2s;
   white-space: nowrap;
   min-width: 90px;
+  font-family:'Jost',sans-serif;
 }
 .chat-send:hover    { opacity: .88; }
 .chat-send:disabled { opacity: .5; cursor: not-allowed; }
@@ -243,7 +247,7 @@ $db = getDB();
       <div class="chat-main" id="chatMain">
         <div class="chat-placeholder">
           <div class="chat-placeholder-icon">💬</div>
-          <div style="font-weight:600;color:var(--text-2);">Select a conversation</div>
+          <div style="font-weight:600;color:var(--text-dim);">Select a conversation</div>
           <div style="font-size:.82rem;">Click a customer on the left to reply</div>
         </div>
       </div>
@@ -358,7 +362,7 @@ async function openConvo(cid) {
             <span>${esc(c.subject)}</span>
             ${c.order_id ? `<span class="chat-order-tag">Order #${c.order_id}</span>` : ''}
             <span class="chat-status-tag chat-status-${c.status}">${c.status}</span>
-            <span style="color:var(--text-3);">📧 ${esc(c.customer_email || '')}</span>
+            <span style="color:var(--text-dim);">📧 ${esc(c.customer_email || '')}</span>
           </div>
         </div>
       </div>
@@ -396,7 +400,7 @@ function renderMessages(messages, profilePhoto, userId) {
   const nearBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 80;
 
   if (!messages.length) {
-    container.innerHTML = '<div style="text-align:center;color:var(--text-3);font-size:.82rem;padding:30px;">No messages yet.</div>';
+    container.innerHTML = '<div style="text-align:center;color:var(--text-dim);font-size:.82rem;padding:30px;">No messages yet.</div>';
     return;
   }
 
@@ -490,4 +494,4 @@ loadConversations();
 setInterval(loadConversations, 10000);
 </script>
 </body>
-</html> 
+</html>F

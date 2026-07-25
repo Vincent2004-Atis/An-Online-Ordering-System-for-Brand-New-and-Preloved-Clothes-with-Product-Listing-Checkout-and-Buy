@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['step']) && $_POST['st
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $error = 'Invalid email format.';
         } else {
-            $stmt = $db->prepare("SELECT user_id, name, role, password, member_status FROM users WHERE email=? LIMIT 1");
+            $stmt = $db->prepare("SELECT user_id, name, role, password FROM users WHERE email=? LIMIT 1");
             $stmt->bind_param('s', $email);
             $stmt->execute();
             $user = $stmt->get_result()->fetch_assoc();
@@ -51,7 +51,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['step']) && $_POST['st
                         'user_id'       => $user['user_id'],
                         'name'          => $user['name'],
                         'role'          => $user['role'],
-                        'member_status' => $user['member_status'],
                         'email'         => $email,
                         'issued_at'     => time(),
                     ];
@@ -358,7 +357,7 @@ input:focus {
   <div class="left">
     <div class="brand-logo">
       <div class="logo-img-circle">
-        <img src="/Marguax_Collection/images/logo.png" alt="Logo"
+        <img src="/Marguax_Collection/images/logo.jpg" alt="Logo"
              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
         <span class="logo-fallback" style="display:none">M</span>
       </div>

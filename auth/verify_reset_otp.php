@@ -336,7 +336,7 @@ h1 {
 
   <div class="brand-logo">
     <div class="logo-circle">
-      <img src="/Marguax_Collection/images/logo.png" alt="Logo"
+      <img src="/Marguax_Collection/images/logo.jpg" alt="Logo"
            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
       <span class="logo-fallback" style="display:none">M</span>
     </div>

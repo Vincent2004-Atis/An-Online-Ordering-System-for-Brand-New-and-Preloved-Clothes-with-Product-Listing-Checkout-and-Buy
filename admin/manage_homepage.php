@@ -56,15 +56,41 @@ foreach ($slots as $s) $slotsById[$s['slot_id']] = $s;
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Homepage Photos — Marguax Admin</title>
-<link rel="stylesheet" href="../css/style.css">
 <link rel="stylesheet" href="../css/admin.css">
 <style>
 .slots-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px;margin-top:16px}
-.slot-card{border:1px solid var(--border,rgba(0,0,0,.08));border-radius:12px;overflow:hidden}
+.slot-card{
+  border:1px solid rgba(196,80,100,.25);
+  border-radius:12px;
+  overflow:hidden;
+  background:#2a0d13;
+}
 .slot-card img{width:100%;height:200px;object-fit:cover;display:block}
 .slot-body{padding:14px}
-.slot-label{font-weight:700;margin-bottom:10px}
-.slot-form input[type=file]{font-size:.78rem}
+.slot-label{
+  font-weight:700;
+  margin-bottom:10px;
+  color:#f3e6e9;
+  font-size:1.05rem;
+  letter-spacing:.02em;
+}
+.slot-form input[type=file]{
+  font-size:.78rem;
+  color:#e8c9d0;
+}
+.slot-form input[type=file]::file-selector-button{
+  background:#c45064;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  padding:6px 12px;
+  font-weight:600;
+  cursor:pointer;
+  margin-right:8px;
+}
+.slot-form input[type=file]::file-selector-button:hover{
+  background:#b03e52;
+}
 </style>
 </head>
 <body>
@@ -80,12 +106,12 @@ foreach ($slots as $s) $slotsById[$s['slot_id']] = $s;
         <div class="alert alert-danger"><ul style="margin:0;padding-left:16px;"><?php foreach($errors as $err): ?><li><?= e($err) ?></li><?php endforeach; ?></ul></div>
       <?php endif; ?>
 
-      <div class="card">
-        <div class="card-header" style="padding:16px 20px;font-weight:700;">Featured Outfit &amp; Category Photos</div>
+      <div class="card" style="background:#1f0810;border:1px solid rgba(196,80,100,.2);">
+        <div class="card-header" style="padding:16px 20px;font-weight:700;color:#f3e6e9;font-size:1.15rem;border-bottom:1px solid rgba(196,80,100,.2);">Featured Outfit &amp; Category Photos</div>
         <div style="padding:20px;">
           <div class="slots-grid">
             <?php
-            $order = ['featured'=>'🌟 Featured Outfit','dresses'=>'👗 Dresses','tops'=>'👚 Tops & Blouses','preowned'=>'♻️ Pre-Owned','accessories'=>'👜 Accessories'];
+            $order = ['featured'=>'🌟 Featured Outfit','dresses'=>'👗 Dresses','tops'=>'👚 Tops & Blouses','preowned'=>' Pre-Loved','accessories'=>'👜 Accessories'];
             foreach ($order as $id => $title):
               $slot = $slotsById[$id] ?? null;
               if (!$slot) continue;
@@ -109,6 +135,6 @@ foreach ($slots as $s) $slotsById[$s['slot_id']] = $s;
 
     </div>
   </div>
-</div>
+</div> 
 </body>
 </html>

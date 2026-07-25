@@ -11,7 +11,6 @@ $db = getDB();
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Dashboard — Marguax Collections Admin</title>
-<link rel="stylesheet" href="../css/style.css">
 <link rel="stylesheet" href="../css/admin.css">
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -101,8 +100,8 @@ $db = getDB();
           <h4>🕐 Recent Orders</h4>
           <div class="table-wrap">
             <table id="recentTable">
-              <thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th></tr></thead>
-              <tbody><tr class="loading-row"><td colspan="5">Loading…</td></tr></tbody>
+              <thead><tr><th>Customer</th><th>Total</th><th>Status</th><th>Date</th></tr></thead>
+              <tbody><tr class="loading-row"><td colspan="4">Loading…</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -278,13 +277,11 @@ function renderStats(s) {
 function renderRecentOrders(orders) {
   const tbody = document.querySelector('#recentTable tbody');
   if (!orders || !orders.length) {
-    tbody.innerHTML='<tr class="loading-row"><td colspan="5">No orders yet.</td></tr>'; return;
+    tbody.innerHTML='<tr class="loading-row"><td colspan="4">No orders yet.</td></tr>'; return;
   }
   const badges = { pending:'badge-amber', processing:'badge-rose', completed:'badge-green' };
   tbody.innerHTML = orders.map(o => `
     <tr>
-      <td><strong style="color:var(--text);">#${o.order_id}</strong><br>
-          <span style="color:var(--gold);font-size:.75rem;font-weight:700;">Q${String(o.queue_number).padStart(3,'0')}</span></td>
       <td>${esc(o.customer_name)}</td>
       <td><strong style="color:var(--rose);">₱${fmt(o.total_amount)}</strong></td>
       <td><span class="badge ${badges[o.order_status]||'badge-gray'}">${ucfirst(o.order_status)}</span></td>
@@ -337,4 +334,4 @@ function fmtDate(ds) { return ds ? new Date(ds).toLocaleDateString('en-PH',{mont
 loadAll();
 </script>
 </body>
-</html>s
+</html>

@@ -11,7 +11,7 @@ $db->query("ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_photo VARCHAR(255
 $db->query("CREATE TABLE IF NOT EXISTS user_payment_accounts (
     account_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    account_type ENUM('gcash',' ') NOT NULL,
+    account_type ENUM('gcash') NOT NULL,
     account_name VARCHAR(150) NOT NULL,
     account_number VARCHAR(50) NOT NULL,
     bank_name VARCHAR(100) DEFAULT NULL,
@@ -33,7 +33,6 @@ if (!$user) {
 }
 
 $initials    = strtoupper(substr($user['name'] ?? 'U', 0, 1));
-$isMember    = ($user['member_status'] === 'member');
 $currentPage = basename($_SERVER['PHP_SELF']);
 
 $cartCount = 0;
@@ -43,10 +42,7 @@ if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
     }
 }
 
-$currentFilter    = $_GET['filter'] ?? '';
-$isProductsActive = $currentPage === 'products.php' && $currentFilter === '';
-$isMemberActive   = $currentPage === 'products.php' && $currentFilter === 'member';
-$isPackagesActive = $currentPage === 'products.php' && $currentFilter === 'package';
+$isProductsActive = $currentPage === 'products.php';
 $isOrderActive    = $currentPage === 'my_orders.php';
 ?>
 
@@ -113,12 +109,12 @@ $isOrderActive    = $currentPage === 'my_orders.php';
   transition: all 0.3s ease;
 }
 .nav-link:hover {
-  color: #0b1f3a !important;
+  color: #2a0d14 !important;
   background: rgba(255,255,255,0.2);
 }
 .nav-link:hover::after { left: 14px; right: 14px; }
 .nav-link.active {
-  color: #0b1f3a !important;
+  color: #2a0d14 !important;
   background: rgba(255,255,255,0.25);
 }
 .nav-link.active::after { left: 14px; right: 14px; }
@@ -204,9 +200,6 @@ $isOrderActive    = $currentPage === 'my_orders.php';
 .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .profile-info { display: flex; flex-direction: column; text-align: left; }
 .profile-name { font-size: .8rem; font-weight: 700; color: #fff; line-height: 1.2; }
-.profile-role { font-size: .62rem; font-weight: 700; padding: 1px 7px; border-radius: 10px; margin-top: 2px; display: inline-block; }
-.profile-role.member     { background: rgba(255,255,255,0.3); color: #fff; }
-.profile-role.non-member { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.85); }
 .profile-caret { font-size: .55rem; opacity: 0.6; margin-left: 2px; }
 
 /* Dropdown Menu */
@@ -294,7 +287,7 @@ $isOrderActive    = $currentPage === 'my_orders.php';
 
     <!-- ── LEFT: Logo + Brand ── -->
     <a href="/Marguax_Collection/customer/products.php" class="navbar-brand">
-      <img src="/Marguax_Collection/images/logo2.png"
+      <img src="/Marguax_Collection/images/logo.jpg"
            alt="Marguax Collection Logo"
            style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.4);flex-shrink:0;">
       <div class="brand-text">
@@ -309,20 +302,6 @@ $isOrderActive    = $currentPage === 'my_orders.php';
         <a href="/Marguax_Collection/customer/products.php"
            class="nav-link <?= $isProductsActive ? 'active' : '' ?>">
           PRODUCTS
-        </a>
-      </li>
-      <?php if ($isMember): ?>
-      <li>
-        <a href="/Marguax_Collection/customer/products.php?filter=member"
-           class="nav-link <?= $isMemberActive ? 'active' : '' ?>">
-          EXCLUSIVE MEMBER
-        </a>
-      </li>
-      <?php endif; ?>
-      <li>
-        <a href="/Marguax_Collection/customer/products.php?filter=package"
-           class="nav-link <?= $isPackagesActive ? 'active' : '' ?>">
-          PACKAGES
         </a>
       </li>
       <li>
@@ -382,9 +361,6 @@ $isOrderActive    = $currentPage === 'my_orders.php';
           </div>
           <div class="profile-info">
             <div class="profile-name"><?= htmlspecialchars($user['name']) ?></div>
-            <span class="profile-role <?= $isMember ? 'member' : 'non-member' ?>">
-              <?= $isMember ? '⭐ Member' : 'Non-Member' ?>
-            </span>
           </div>
           <span class="profile-caret">▼</span>
         </button>
@@ -395,11 +371,6 @@ $isOrderActive    = $currentPage === 'my_orders.php';
             <div class="dh-email"><?= htmlspecialchars($user['email']) ?></div>
           </div>
           <a href="/Marguax_Collection/customer/profile.php" class="dropdown-item">👤 My Profile</a>
-          <a href="/Marguax_Collection/customer/profile.php?tab=payment" class="dropdown-item">💳 Payment Accounts</a>
-          <a href="/Marguax_Collection/customer/my_orders.php" class="dropdown-item">📦 Order History</a>
-          <?php if (!$isMember): ?>
-          <div class="dropdown-divider"></div>
-          <?php endif; ?>
           <div class="dropdown-divider"></div>
           <a href="/Marguax_Collection/auth/logout.php" class="dropdown-item danger">🚪 Logout</a>
         </div>
@@ -445,7 +416,7 @@ $isOrderActive    = $currentPage === 'my_orders.php';
           💬 Customer Support
         </div>
         <div style="font-size:.72rem;color:rgba(255,255,255,.75);margin-top:2px;">
-          Marguax Collection Corp
+          Marguax Collection
         </div>
       </div>
       <button onclick="chatToggle()"
@@ -459,53 +430,9 @@ $isOrderActive    = $currentPage === 'my_orders.php';
       <div style="padding:12px 16px;border-bottom:1px solid #fce7f3;
                   display:flex;justify-content:space-between;align-items:center;">
         <span style="font-size:.82rem;font-weight:700;color:#4a0020;">Your Messages</span>
-        <button onclick="chatShowNew()"
-          style="background:linear-gradient(135deg,#f9b8cc,#e75480);color:#fff;
-                 border:none;border-radius:8px;padding:5px 12px;
-                 font-size:.74rem;font-weight:700;cursor:pointer;">+ New Message</button>
       </div>
       <div id="chatConvoList" style="max-height:280px;overflow-y:auto;">
         <div style="padding:20px;text-align:center;color:#f9a8c9;font-size:.82rem;">Loading...</div>
-      </div>
-    </div>
-
-    <!-- View: New conversation form -->
-    <div id="chatViewNew" style="display:none;">
-      <div style="padding:12px 16px;border-bottom:1px solid #fce7f3;display:flex;align-items:center;gap:8px;">
-        <button onclick="chatShowList()"
-          style="background:none;border:none;color:#e75480;font-size:.8rem;cursor:pointer;padding:0;">← Back</button>
-        <span style="font-size:.85rem;font-weight:700;color:#4a0020;">New Message</span>
-      </div>
-      <div style="padding:16px;display:flex;flex-direction:column;gap:10px;">
-        <div>
-          <label style="font-size:.74rem;font-weight:700;color:#9d174d;display:block;margin-bottom:4px;">SUBJECT</label>
-          <input id="newSubject" type="text" placeholder="e.g. Question about my order"
-            style="width:100%;padding:9px 12px;border:1px solid #f9c8d8;border-radius:9px;
-                   font-family:inherit;font-size:.83rem;outline:none;box-sizing:border-box;transition:border-color .2s;"
-            onfocus="this.style.borderColor='#e75480'" onblur="this.style.borderColor='#f9c8d8'">
-        </div>
-        <div>
-          <label style="font-size:.74rem;font-weight:700;color:#9d174d;display:block;margin-bottom:4px;">ORDER # <span style="font-weight:400;opacity:.6;">(optional)</span></label>
-          <input id="newOrderId" type="number" placeholder="e.g. 10"
-            style="width:100%;padding:9px 12px;border:1px solid #f9c8d8;border-radius:9px;
-                   font-family:inherit;font-size:.83rem;outline:none;box-sizing:border-box;transition:border-color .2s;"
-            onfocus="this.style.borderColor='#e75480'" onblur="this.style.borderColor='#f9c8d8'">
-        </div>
-        <div>
-          <label style="font-size:.74rem;font-weight:700;color:#9d174d;display:block;margin-bottom:4px;">MESSAGE</label>
-          <textarea id="newMessage" rows="3" placeholder="Describe your concern..."
-            style="width:100%;padding:9px 12px;border:1px solid #f9c8d8;border-radius:9px;
-                   font-family:inherit;font-size:.83rem;outline:none;resize:none;
-                   box-sizing:border-box;transition:border-color .2s;"
-            onfocus="this.style.borderColor='#e75480'" onblur="this.style.borderColor='#f9c8d8'"></textarea>
-        </div>
-        <button onclick="chatStartConvo()"
-          style="width:100%;background:linear-gradient(135deg,#f9b8cc,#e75480);
-                 color:#fff;border:none;border-radius:10px;padding:10px;
-                 font-weight:700;font-size:.86rem;cursor:pointer;transition:opacity .2s;"
-          onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
-          Send Message ➤
-        </button>
       </div>
     </div>
 
@@ -645,21 +572,13 @@ function escHtml(str) {
   window.chatShowList = function () {
     clearInterval(chatPollTimer); chatActiveCid = null;
     document.getElementById('chatViewList').style.display   = 'block';
-    document.getElementById('chatViewNew').style.display    = 'none';
     document.getElementById('chatViewThread').style.display = 'none';
     chatLoadConvos();
-  };
-
-  window.chatShowNew = function () {
-    document.getElementById('chatViewList').style.display   = 'none';
-    document.getElementById('chatViewNew').style.display    = 'block';
-    document.getElementById('chatViewThread').style.display = 'none';
   };
 
   async function chatOpenThread(cid, subject) {
     chatActiveCid = cid;
     document.getElementById('chatViewList').style.display   = 'none';
-    document.getElementById('chatViewNew').style.display    = 'none';
     document.getElementById('chatViewThread').style.display = 'block';
     document.getElementById('threadTitle').textContent      = subject;
     const inp = document.getElementById('threadInput');
@@ -680,24 +599,27 @@ function escHtml(str) {
       const totalUnread = (data.conversations || []).reduce((s, c) => s + (parseInt(c.unread_count) || 0), 0);
       dot.textContent = totalUnread; dot.style.display = totalUnread > 0 ? 'inline' : 'none';
       if (!data.conversations || !data.conversations.length) {
-        list.innerHTML = `<div style="padding:28px 20px;text-align:center;"><div style="font-size:2rem;margin-bottom:8px;">💬</div><div style="font-weight:600;color:#4a0020;font-size:.85rem;margin-bottom:4px;">No messages yet</div><div style="color:#f9a8c9;font-size:.78rem;">Tap <strong>+ New Message</strong> to contact us!</div></div>`;
+        list.innerHTML = `<div style="padding:28px 20px;text-align:center;"><div style="font-size:2rem;margin-bottom:8px;">💬</div><div style="font-weight:600;color:#4a0020;font-size:.85rem;margin-bottom:4px;">No messages yet</div></div>`;
         return;
       }
-      list.innerHTML = data.conversations.map(c => `
-        <div onclick="chatOpenThread(${c.conversation_id},'${esc(c.subject)}')"
+      list.innerHTML = data.conversations.map(c => {
+        const preview = truncate(c.last_message || '(no messages yet)', 46);
+        const title   = truncate(c.last_message || 'New conversation', 46);
+        return `
+        <div onclick="chatOpenThread(${c.conversation_id},'${esc(title)}')"
           style="padding:12px 16px;border-bottom:1px solid #fdf2f8;cursor:pointer;
                  background:${parseInt(c.unread_count) > 0 ? '#fff0f5' : '#fff'};transition:background .15s;"
           onmouseover="this.style.background='#fce7f3'"
           onmouseout="this.style.background='${parseInt(c.unread_count) > 0 ? '#fff0f5' : '#fff'}'">
-          <div style="font-weight:700;font-size:.83rem;color:#4a0020;margin-bottom:2px;">${esc(c.subject)}</div>
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <span style="font-size:.72rem;color:#f9a8c9;">${c.order_id ? 'Order #' + c.order_id : 'General'}</span>
+          <div style="font-weight:700;font-size:.83rem;color:#4a0020;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${c.order_id ? 'Order #' + c.order_id + ' — ' : ''}${esc(preview)}</div>
+          <div style="display:flex;justify-content:flex-end;align-items:center;">
             ${parseInt(c.unread_count) > 0
               ? `<span style="background:#e75480;color:#fff;font-size:.62rem;font-weight:800;padding:1px 7px;border-radius:999px;">${c.unread_count} new</span>`
               : `<span style="font-size:.7rem;color:#f9a8c9;">${timeAgo(c.last_message_at || c.created_at)}</span>`}
           </div>
         </div>
-      `).join('');
+      `;
+      }).join('');
     } catch (e) { console.error(e); }
   }
 
@@ -745,27 +667,14 @@ function escHtml(str) {
     catch (e) { console.error(e); }
   };
 
-  window.chatStartConvo = async function () {
-    const subject = document.getElementById('newSubject').value.trim() || 'General Inquiry';
-    const orderId = document.getElementById('newOrderId').value.trim();
-    const message = document.getElementById('newMessage').value.trim();
-    if (!message) { alert('Please enter a message.'); return; }
-    try {
-      const params = { action: 'start_conversation', subject, message };
-      if (orderId) params.order_id = orderId;
-      const data = await chatPost(params);
-      if (data.success) {
-        document.getElementById('newSubject').value = '';
-        document.getElementById('newOrderId').value = '';
-        document.getElementById('newMessage').value = '';
-        chatOpenThread(data.conversation_id, subject);
-      } else { alert('Failed to send message: ' + (data.message || 'Unknown error')); }
-    } catch (e) { console.error(e); alert('Error sending message. Please try again.'); }
-  };
-
   function esc(str) {
     if (!str) return '';
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/\n/g,'<br>');
+  }
+
+  function truncate(str, len) {
+    str = String(str || '');
+    return str.length > len ? str.slice(0, len) + '…' : str;
   }
 
   function timeAgo(dateStr) {

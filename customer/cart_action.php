@@ -47,19 +47,6 @@ if ($action === 'add') {
         exit;
     }
 
-    // Member-only check
-    if ($product['product_type'] === 'member') {
-        $s = $db->prepare("SELECT member_status FROM users WHERE user_id=?");
-        $s->bind_param('i', $_SESSION['user_id']);
-        $s->execute();
-        $u = $s->get_result()->fetch_assoc();
-        $s->close();
-        if (($u['member_status'] ?? '') !== 'member') {
-            echo json_encode(['success' => false, 'message' => 'This product is for  .']);
-            exit;
-        }
-    }
-
     if (isset($_SESSION['cart'][$pid])) {
         $_SESSION['cart'][$pid]['qty'] += $qty;
     } else {

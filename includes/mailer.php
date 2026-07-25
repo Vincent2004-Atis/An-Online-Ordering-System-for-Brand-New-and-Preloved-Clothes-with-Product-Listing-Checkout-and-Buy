@@ -1,12 +1,12 @@
 <?php
 /**
- * Mailer Helper — Amazing World Marketing Corp
+ * Mailer Helper — Marguax_Collection
  *
  * Requires PHPMailer. Install via Composer:
  *   composer require phpmailer/phpmailer
  *
  * Or manually download PHPMailer and place in:
- *   /amazingworldmarketingcorp/vendor/phpmailer/phpmailer/src/
+ *   /Marguax_Collection/vendor/phpmailer/phpmailer/src/
  *
  * Then update SMTP settings below with your Gmail (or any SMTP) credentials.
  *
@@ -38,7 +38,7 @@ define('SMTP_PORT',     587);
 define('SMTP_USER',     'atisvincentcarl1@gmail.com');   // ← Change this
 define('SMTP_PASS', 'dixqwzrarygftrbo');// ← Change this (App Password)
 define('SMTP_FROM',     'atisvincentcarl1@gmail.com');   // ← Change this
-define('SMTP_FROM_NAME','Amazing World Marketing Corp');
+define('SMTP_FROM_NAME','Marguax_Collection');
 
 /**
  * Send an email using PHPMailer.
@@ -159,9 +159,8 @@ function otp_email_html(string $otp, string $purpose, int $minutes = 5): string 
       <table width="520" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08);">
         <!-- Header -->
         <tr>
-          <td style="background:linear-gradient(135deg,#0b1f3a,#1a4070);padding:32px 40px;text-align:center;">
-            <div style="font-size:22px;font-weight:800;color:#fff;letter-spacing:.5px;">AMAZING WORLD</div>
-            <div style="font-size:11px;color:#f59e0b;font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-top:4px;">MARKETING CORPORATION</div>
+          <td style="background:linear-gradient(135deg,#2a0d14,#1a4070);padding:32px 40px;text-align:center;">
+            <div style="font-size:22px;font-weight:800;color:#fff;letter-spacing:.5px;">Marguax_Collection</div>
           </td>
         </tr>
         <!-- Body -->
@@ -173,7 +172,7 @@ function otp_email_html(string $otp, string $purpose, int $minutes = 5): string 
             </p>
             <!-- OTP Box -->
             <div style="background:#f8fafc;border:2px dashed #cbd5e1;border-radius:12px;padding:24px;text-align:center;margin-bottom:28px;">
-              <div style="font-size:42px;font-weight:800;letter-spacing:16px;color:#0b1f3a;font-family:'Courier New',monospace;">{$otp}</div>
+              <div style="font-size:42px;font-weight:800;letter-spacing:16px;color:#2a0d14;font-family:'Courier New',monospace;">{$otp}</div>
             </div>
             <p style="margin:0 0 8px;font-size:13px;color:#94a3b8;line-height:1.6;">
               If you didn't request this code, you can safely ignore this email. Someone may have entered your email address by mistake.
@@ -186,7 +185,7 @@ function otp_email_html(string $otp, string $purpose, int $minutes = 5): string 
         <!-- Footer -->
         <tr>
           <td style="background:#f8fafc;padding:20px 40px;border-top:1px solid #e2e8f0;text-align:center;">
-            <p style="margin:0;font-size:12px;color:#94a3b8;">&copy; Amazing World Marketing Corp. All rights reserved.</p>
+            <p style="margin:0;font-size:12px;color:#94a3b8;">&copy; Marguax_Collection. All rights reserved.</p>
           </td>
         </tr>
       </table>

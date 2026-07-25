@@ -31,12 +31,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name  = clean($_POST['product_name'] ?? '', 200);
     $desc  = clean($_POST['description']  ?? '', 1000);
     $price = filter_input(INPUT_POST, 'price', FILTER_VALIDATE_FLOAT);
-    $type  = clean($_POST['product_type'] ?? '', 20);
     $stock = filter_input(INPUT_POST, 'stock', FILTER_VALIDATE_INT, ['options'=>['min_range'=>0]]) ?? 0;
+    $catId = filter_input(INPUT_POST, 'category_id', FILTER_VALIDATE_INT, ['options'=>['min_range'=>1]]) ?: null;
 
     if (empty($name))             $errors[] = 'Product name required.';
     if (!$price || $price <= 0)   $errors[] = 'Price must be greater than 0.';
-    if (!in_array($type,['loose','member','package'])) $errors[] = 'Invalid product type.';
+    if (!$catId)                  $errors[] = 'Category is required.';
 
     // Secure file upload using validate_image() from security.php
     $image = clean($_POST['current_image'] ?? 'images/product-placeholder.jpg', 255);
@@ -58,21 +58,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($errors)) {
         if ($pid > 0) {
-            $s = $db->prepare("UPDATE products SET product_name=?,description=?,price=?,product_type=?,image=?,stock=? WHERE product_id=?");
-            $s->bind_param('ssdssii',$name,$desc,$price,$type,$image,$stock,$pid);
+            $s = $db->prepare("UPDATE products SET product_name=?,description=?,price=?,image=?,stock=?,category_id=? WHERE product_id=?");
+            $s->bind_param('ssdsiii',$name,$desc,$price,$image,$stock,$catId,$pid);
             $s->execute(); $s->close();
             header('Location: manage_products.php?msg=updated'); exit;
         } else {
-            $s = $db->prepare("INSERT INTO products (product_name,description,price,product_type,image,stock) VALUES (?,?,?,?,?,?)");
-            $s->bind_param('ssdssi',$name,$desc,$price,$type,$image,$stock);
+            $s = $db->prepare("INSERT INTO products (product_name,description,price,image,stock,category_id) VALUES (?,?,?,?,?,?)");
+            $s->bind_param('ssdsii',$name,$desc,$price,$image,$stock,$catId);
             $s->execute(); $s->close();
             header('Location: manage_products.php?msg=added'); exit;
         }
     }
 }
 
-$products = $db->query("SELECT * FROM products ORDER BY product_type, product_name")->fetch_all(MYSQLI_ASSOC);
-$typeBadge = ['loose'=>'badge-green','member'=>'badge-amber','package'=>'badge-purple'];
+$categories = $db->query("SELECT * FROM categories ORDER BY name")->fetch_all(MYSQLI_ASSOC);
+$products = $db->query("SELECT p.*, c.name AS category_name FROM products p LEFT JOIN categories c ON p.category_id = c.category_id ORDER BY p.product_name")->fetch_all(MYSQLI_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -80,7 +80,6 @@ $typeBadge = ['loose'=>'badge-green','member'=>'badge-amber','package'=>'badge-p
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Manage Products — OrderSync Admin</title>
-<link rel="stylesheet" href="../css/style.css">
 <link rel="stylesheet" href="../css/admin.css">
 </head>
 <body>
@@ -99,13 +98,13 @@ $typeBadge = ['loose'=>'badge-green','member'=>'badge-amber','package'=>'badge-p
       <div class="card">
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Image</th><th>Name</th><th>Type</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead>
+            <thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead>
             <tbody>
               <?php foreach ($products as $p): ?>
               <tr>
                 <td><img src="../<?= e($p['image']) ?>" style="width:52px;height:52px;object-fit:cover;border-radius:8px;" onerror="this.src='../images/product-placeholder.jpg'"></td>
                 <td><div style="font-weight:600;"><?= e($p['product_name']) ?></div><div style="font-size:.75rem;color:var(--text-3);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><?= e($p['description']) ?></div></td>
-                <td><span class="badge <?= $typeBadge[$p['product_type']]??'badge-gray' ?>"><?= ucfirst(e($p['product_type'])) ?></span></td>
+                <td><?= e($p['category_name'] ?? '—') ?></td>
                 <td><strong>₱<?= number_format((float)$p['price'],2) ?></strong></td>
                 <td><?= ($p['stock'] <= 10) ? '<span style="color:var(--red);font-weight:700;">'.(int)$p['stock'].'</span>' : (int)$p['stock'] ?></td>
                 <td>
@@ -147,11 +146,12 @@ $typeBadge = ['loose'=>'badge-green','member'=>'badge-amber','package'=>'badge-p
           <div class="form-group"><label class="form-label">Stock *</label><input type="number" name="stock" id="fStock" class="form-control" min="0" max="99999" required></div>
         </div>
         <div class="form-group">
-          <label class="form-label">Product Type *</label>
-          <select name="product_type" id="fType" class="form-control">
-            <option value="loose">LOOSE</option>
-            <option value="member">MEMBER EXCLUSIVE</option>
-            <option value="package">Package</option>
+          <label class="form-label">Category *</label>
+          <select name="category_id" id="fCategory" class="form-control" required>
+            <option value="">— Select Category —</option>
+            <?php foreach ($categories as $cat): ?>
+            <option value="<?= (int)$cat['category_id'] ?>"><?= e($cat['name']) ?></option>
+            <?php endforeach; ?>
           </select>
         </div>
         <div class="form-group">
@@ -174,7 +174,7 @@ function openAdd() {
   document.getElementById('submitBtn').textContent='➕ Add Product';
   ['fPid','fName','fDesc','fPrice','fCurrentImage'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('fStock').value='100';
-  document.getElementById('fType').value='loose';
+  document.getElementById('fCategory').value='';
   document.getElementById('fImagePreview').style.display='none';
   document.getElementById('productModal').classList.add('open');
 }
@@ -186,7 +186,7 @@ function openEdit(p) {
   document.getElementById('fDesc').value=p.description;
   document.getElementById('fPrice').value=p.price;
   document.getElementById('fStock').value=p.stock;
-  document.getElementById('fType').value=p.product_type;
+  document.getElementById('fCategory').value=p.category_id || '';
   document.getElementById('fCurrentImage').value=p.image;
   const prev=document.getElementById('fImagePreview');
   prev.src='../'+p.image; prev.style.display='block';

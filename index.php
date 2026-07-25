@@ -184,7 +184,7 @@ img{max-width:100%;display:block}
 .prod-btn{padding:8px 18px;background:linear-gradient(135deg,var(--rose),var(--rose2));color:#fff;border-radius:50px;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;transition:all .3s}
 .prod-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(212,100,122,.45)}
 
-/* PRE-OWNED */
+/* Pre-Loved */
 .preowned-bg{background:linear-gradient(150deg,var(--noir) 0%,var(--noir2) 50%,var(--noir3) 100%);position:relative;overflow:hidden;border-top:1px solid var(--border-d)}
 .preowned-bg::before{content:'PREOWNED';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Bodoni Moda',serif;font-size:12rem;font-weight:900;color:rgba(255,255,255,.02);white-space:nowrap;pointer-events:none;letter-spacing:.1em}
 .preowned-inner{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center}
@@ -298,8 +298,6 @@ footer{background:#05030a;color:rgba(255,255,255,.5);padding:68px 56px 36px;bord
     </a>
     <div class="nav-links" id="navLinks">
       <a href="#shop" class="nav-link">Shop</a>
-      <a href="#brandnew" class="nav-link">Brand New</a>
-      <a href="#preowned" class="nav-link">Pre-Owned</a>
       <a href="#how-to-order" class="nav-link">How to Order</a>
       <a href="auth/login.php" class="nav-link">Login</a>
       <a href="auth/register.php" class="nav-link nav-cta">Shop Now ✦</a>
@@ -326,7 +324,7 @@ footer{background:#05030a;color:rgba(255,255,255,.5);padding:68px 56px 36px;bord
       <p class="hero-desc">Curated brand-new outfits and pre-loved designer pieces. Every dress tells a story — find yours. Affordable fashion with a luxury feel.</p>
       <div class="hero-btns">
         <a href="#shop" class="btn-rose">✦ Shop Now</a>
-        <a href="#preowned" class="btn-ghost">Pre-Owned →</a>
+        <a href="#preowned" class="btn-ghost">Pre-Loved →</a>
       </div>
       <div class="hero-stats">
         
@@ -348,7 +346,7 @@ footer{background:#05030a;color:rgba(255,255,255,.5);padding:68px 56px 36px;bord
         $categories = [
           ['label'=>'Dresses','sub'=>'Brand New','icon'=>'👗','slug'=>'dresses'],
           ['label'=>'Tops & Blouses','sub'=>'Brand New','icon'=>'👚','slug'=>'tops'],
-          ['label'=>'Pre-Owned','sub'=>'Gently Used','icon'=>'♻️','slug'=>'pre-owned'],
+          ['label'=>'Pre-Loved','sub'=>'Gently Used','icon'=>'♻️','slug'=>'Pre-Loved'],
           ['label'=>'Accessories','sub'=>'Complete Look','icon'=>'👜','slug'=>'accessories'],
         ];
         foreach($categories as $cat):
@@ -371,12 +369,12 @@ footer{background:#05030a;color:rgba(255,255,255,.5);padding:68px 56px 36px;bord
 <div class="ribbon">
   <div class="ribbon-track">
     <span class="ribbon-item">Brand New Outfits <span class="ribbon-sep">✦</span></span>
-    <span class="ribbon-item">Pre-Owned Designer Pieces <span class="ribbon-sep">✦</span></span>
+    <span class="ribbon-item">Pre-Loved Designer Pieces <span class="ribbon-sep">✦</span></span>
     <span class="ribbon-item">Affordable Fashion <span class="ribbon-sep">✦</span></span>
     <span class="ribbon-item">Free Styling Tips <span class="ribbon-sep">✦</span></span>
     <span class="ribbon-item">Marguax Collections Boutique <span class="ribbon-sep">✦</span></span>
     <span class="ribbon-item">Brand New Outfits <span class="ribbon-sep">✦</span></span>
-    <span class="ribbon-item">Pre-Owned Designer Pieces <span class="ribbon-sep">✦</span></span>
+    <span class="ribbon-item">Pre-Loved Designer Pieces <span class="ribbon-sep">✦</span></span>
     <span class="ribbon-item">Affordable Fashion <span class="ribbon-sep">✦</span></span>
     <span class="ribbon-item">Free Styling Tips <span class="ribbon-sep">✦</span></span>
     <span class="ribbon-item">Marguax Collections Boutique <span class="ribbon-sep">✦</span></span>
@@ -415,9 +413,9 @@ footer{background:#05030a;color:rgba(255,255,255,.5);padding:68px 56px 36px;bord
      </div>
 
       <div class="cat-card">
-        <img src="<?= htmlspecialchars($hp['preowned']) ?>" alt="Pre-Owned" onerror="this.style.background='linear-gradient(135deg,#1a1508,#2e2410)';this.style.height='100%'">
+        <img src="<?= htmlspecialchars($hp['preowned']) ?>" alt="Pre-Loved" onerror="this.style.background='linear-gradient(135deg,#1a1508,#2e2410)';this.style.height='100%'">
         <div class="cat-overlay">
-          <span class="cat-pill" style="background:linear-gradient(135deg,var(--gold),#a07830)">Pre-Owned</span>
+          <span class="cat-pill" style="background:linear-gradient(135deg,var(--gold),#a07830)">Pre-Loved</span>
           <div class="cat-name">Designer Finds</div>
           <div class="cat-count">200+ pieces</div>
        </div>
@@ -454,7 +452,7 @@ footer{background:#05030a;color:rgba(255,255,255,.5);padding:68px 56px 36px;bord
         <div class="step-box">
           <span class="step-icon">👗</span>
           <div class="step-title">Browse & Pick</div>
-          <div class="step-desc">Browse our brand-new and pre-owned collections. Filter by size, style, or price to find your perfect match.</div>
+          <div class="step-desc">Browse our brand-new and Pre-Loved collections. Filter by size, style, or price to find your perfect match.</div>
         </div>
       </div>
       <div class="step-card reveal">
@@ -470,7 +468,7 @@ footer{background:#05030a;color:rgba(255,255,255,.5);padding:68px 56px 36px;bord
         <div class="step-box">
           <span class="step-icon">💳</span>
           <div class="step-title">Pay Securely</div>
-          <div class="step-desc">Choose from GCash, Maya, PayPal, Cash on Pickup, or Cash on Delivery.</div>
+          <div class="step-desc">Choose from GCash, Meet-up or Cash on Delivery.</div>
         </div>
       </div>
       <div class="step-card reveal">
@@ -485,15 +483,6 @@ footer{background:#05030a;color:rgba(255,255,255,.5);padding:68px 56px 36px;bord
   </div>
 </section>
 
-<!-- CTA -->
-<section class="cta-section">
-  <h2>Your Dream Wardrobe<br><em>Awaits You</em></h2>
-  <p>Shop brand-new outfits and pre-loved designer pieces. Affordable. Curated. Beautiful.</p>
-  <div class="cta-btns">
-    <a href="auth/register.php" class="btn-cta-w">✦ Start Shopping</a>
-    <a href="#packages" class="btn-cta-ghost">View Reseller Packages →</a>
-  </div>
-</section>
 
 <!-- FOOTER -->
 <footer>
@@ -516,7 +505,7 @@ footer{background:#05030a;color:rgba(255,255,255,.5);padding:68px 56px 36px;bord
             <div class="footer-tagline">✦ Fashion Boutique</div>
           </div>
         </div>
-        <p>Your one-stop boutique for brand-new outfits and pre-owned designer pieces. Affordable fashion, luxury feel.</p>
+        <p>Your one-stop boutique for brand-new outfits and Pre-Loved designer pieces. Affordable fashion, luxury feel.</p>
         <div class="social-links">
   <a href="https://www.facebook.com/gilian.legaspi.1" class="social-link" target="_blank">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -541,7 +530,7 @@ footer{background:#05030a;color:rgba(255,255,255,.5);padding:68px 56px 36px;bord
         <a href="auth/register.php">Accessories</a>
       </div>
       <div class="footer-col">
-        <h4>Pre-Owned</h4>
+        <h4>Pre-Loved</h4>
         <a href="auth/register.php">Designer Finds</a>
         <a href="auth/register.php">Branded Pieces</a>
         <a href="auth/register.php">Sell Your Clothes</a>

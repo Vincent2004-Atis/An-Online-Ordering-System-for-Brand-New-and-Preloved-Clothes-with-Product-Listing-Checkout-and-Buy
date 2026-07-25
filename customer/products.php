@@ -5,31 +5,39 @@ require_once '../config/database.php';
 $db     = getDB();
 $userId = (int)$_SESSION['user_id'];
 
-$stmt = $db->prepare("SELECT name, member_status FROM users WHERE user_id=?");
+$stmt = $db->prepare("SELECT name FROM users WHERE user_id=?");
 $stmt->bind_param('i', $userId);
 $stmt->execute();
 $user = $stmt->get_result()->fetch_assoc();
 $stmt->close();
 if (!$user) { session_destroy(); header('Location: /Marguax_Collection/auth/login.php'); exit; }
-$isMember = ($user['member_status'] === 'member');
 
-$categories = $db->query("SELECT * FROM categories ORDER BY name")->fetch_all(MYSQLI_ASSOC);
+$categories = $db->query("
+    SELECT * FROM categories
+    ORDER BY CASE name
+        WHEN 'Accessories' THEN 1
+        WHEN 'Bikini'      THEN 2
+        WHEN 'Bottom'      THEN 3
+        WHEN 'Top'         THEN 4
+        WHEN 'Dress'       THEN 5
+        WHEN 'Pair'        THEN 6
+        ELSE 99
+    END, name
+")->fetch_all(MYSQLI_ASSOC);
 
-$typeFilter     = $_GET['filter'] ?? 'all';
 $categoryFilter = isset($_GET['category']) ? (int)$_GET['category'] : 0;
 $search         = trim($_GET['search'] ?? '');
-
-if (!$isMember && $typeFilter === 'member') {
-    header('Location: products.php?filter=loose'); exit;
-}
 
 $where  = ['1=1'];
 $params = [];
 $types  = '';
 
-if ($typeFilter === 'member' && $isMember) { $where[] = "p.product_type = 'member'"; }
-elseif ($typeFilter === 'package') { $where[] = "p.product_type = 'package'"; }
-elseif ($typeFilter === 'loose')   { $where[] = "p.product_type = 'loose'"; }
+// Hide products that have been sold out (stock=0) for more than 24 hours.
+// sold_out_at is auto-managed by a DB trigger whenever stock changes, so
+// this stays accurate no matter where the stock update happens (checkout,
+// admin restock, etc.). Restocking clears sold_out_at automatically, which
+// brings the product right back into this list.
+$where[] = "(p.stock > 0 OR p.sold_out_at IS NULL OR p.sold_out_at > NOW() - INTERVAL 24 HOUR)";
 
 if ($categoryFilter > 0) {
     $where[]  = "p.category_id = ?";
@@ -201,21 +209,6 @@ html, body {
   box-shadow: 0 6px 18px rgba(196,80,100,.35) !important;
   transform: translateY(-1px) !important;
 }
-.filter-tab.locked-tab {
-  opacity: .35 !important;
-  cursor: not-allowed !important;
-  color: #5a4a42 !important;
-  background: transparent !important;
-  border-color: rgba(196,80,100,.08) !important;
-}
-.filter-tab.locked-tab:hover {
-  transform: none !important;
-  box-shadow: none !important;
-}
-.filter-bar.type-bar .filter-tab {
-  padding: 10px 26px !important;
-  font-size: .72rem !important;
-}
 
 /* 5. Product grid */
 .product-grid {
@@ -243,7 +236,6 @@ html, body {
   border-color: rgba(196,80,100,.4) !important;
   box-shadow: 0 28px 56px rgba(0,0,0,.55), 0 0 0 1px rgba(196,80,100,.15) !important;
 }
-.product-card.locked { opacity: .62 !important; }
 
 /* stagger */
 .product-card:nth-child(1)  { animation-delay:.05s !important }
@@ -276,11 +268,8 @@ html, body {
   transform: scale(1.07) !important;
   filter: brightness(1.04) saturate(1.04) !important;
 }
-.product-card.locked .product-img img {
-  filter: blur(5px) brightness(.55) !important;
-}
 
-/* 8. Badges */
+/* 8. Badges (stock status only) */
 .product-type-badge {
   position: absolute !important;
   top: 12px !important; left: 12px !important;
@@ -295,55 +284,8 @@ html, body {
   box-shadow: none !important;
   animation: none !important;
 }
-.badge-loose, .product-type-badge:not(.badge-member):not(.badge-package) {
-  background: rgba(14,5,7,.75) !important;
-  color: #7a6058 !important;
-  border: 1px solid rgba(196,80,100,.18) !important;
-}
-.badge-member {
-  background: rgba(196,80,100,.18) !important;
-  color: #e8a0a8 !important;
-  border: 1px solid rgba(196,80,100,.45) !important;
-}
-.badge-package {
-  background: rgba(196,80,100,.12) !important;
-  color: #c8788a !important;
-  border: 1px solid rgba(196,80,100,.3) !important;
-}
 
-/* 9. Lock overlay */
-.lock-overlay {
-  position: absolute !important; inset: 0 !important;
-  background: rgba(14,5,7,.82) !important;
-  display: flex !important; flex-direction: column !important;
-  align-items: center !important; justify-content: center !important;
-  gap: 10px !important;
-  backdrop-filter: blur(6px) !important;
-  z-index: 4 !important;
-}
-.lock-icon {
-  font-size: 1.8rem !important;
-  width: 52px !important; height: 52px !important;
-  border: 1px solid rgba(196,80,100,.4) !important;
-  border-radius: 50% !important;
-  display: flex !important; align-items: center !important; justify-content: center !important;
-  background: rgba(196,80,100,.08) !important;
-  filter: none !important;
-  animation: lockGlow 3s ease-in-out infinite !important;
-}
-.lock-label {
-  font-size: .62rem !important;
-  letter-spacing: .18em !important;
-  text-transform: uppercase !important;
-  color: rgba(196,80,100,.7) !important;
-  font-weight: 500 !important;
-  font-family: 'Jost', sans-serif !important;
-  background: transparent !important;
-  padding: 0 !important;
-  border-radius: 0 !important;
-}
-
-/* 10. Product info */
+/* 9. Product info */
 .product-info {
   padding: 20px 20px 14px !important;
   flex: 1 !important;
@@ -390,12 +332,8 @@ html, body {
   filter: none !important;
   letter-spacing: .02em !important;
 }
-.product-card.locked .product-price {
-  filter: blur(5px) !important;
-  user-select: none !important;
-}
 
-/* 11. Actions */
+/* 10. Actions */
 .product-actions {
   padding: 0 20px 18px !important;
   display: flex !important;
@@ -444,7 +382,7 @@ html, body {
   box-shadow: 0 0 0 3px rgba(196,80,100,.12) !important;
 }
 
-/* 12. Buttons — full override */
+/* 11. Buttons — full override */
 .btn-primary {
   display: flex !important; align-items: center !important; justify-content: center !important;
   width: 100% !important;
@@ -486,33 +424,7 @@ html, body {
   cursor: not-allowed !important;
 }
 
-.btn-locked, .btn-locked:hover {
-  display: flex !important; align-items: center !important; justify-content: center !important;
-  width: 100% !important;
-  background: transparent !important;
-  color: rgba(196,80,100,.7) !important;
-  border: 1px solid rgba(196,80,100,.25) !important;
-  border-radius: 9px !important;
-  padding: 13px 18px !important;
-  font-family: 'Jost', sans-serif !important;
-  font-size: .72rem !important;
-  font-weight: 500 !important;
-  letter-spacing: .12em !important;
-  text-transform: uppercase !important;
-  cursor: pointer !important;
-  text-decoration: none !important;
-  transition: all .25s !important;
-  gap: 6px !important;
-  box-shadow: none !important;
-}
-.btn-locked:hover {
-  background: rgba(196,80,100,.1) !important;
-  color: #e8a0a8 !important;
-  border-color: rgba(196,80,100,.45) !important;
-  transform: translateY(-1px) !important;
-}
-
-/* 13. Empty state */
+/* 12. Empty state */
 .card {
   background: rgba(42,13,20,.6) !important;
   border: 1px solid rgba(196,80,100,.18) !important;
@@ -523,7 +435,7 @@ html, body {
 .card h3 { color: #f0e6da !important; }
 .card p  { color: #7a6058 !important; }
 
-/* 14. Footer */
+/* 13. Footer */
 footer {
   background: #09040a !important;
   color: rgba(240,230,218,.5) !important;
@@ -556,7 +468,7 @@ footer a {
 }
 footer a:hover { color: #e8a0a8 !important; padding-left: 4px !important; }
 
-/* 15. Toast */
+/* 14. Toast */
 #toast-container {
   position: fixed !important;
   bottom: 28px !important; right: 28px !important;
@@ -577,7 +489,7 @@ footer a:hover { color: #e8a0a8 !important; padding-left: 4px !important; }
 }
 .toast.error { border-color: rgba(196,80,100,.6) !important; }
 
-/* 16. Ripple */
+/* 15. Ripple */
 .ripple-effect {
   position: fixed !important;
   border-radius: 50% !important;
@@ -588,56 +500,14 @@ footer a:hover { color: #e8a0a8 !important; padding-left: 4px !important; }
   z-index: 99999 !important;
 }
 
-/* 17. Page transition */
-.page-transition {
-  position: fixed !important; inset: 0 !important;
-  z-index: 99998 !important;
-  pointer-events: none !important;
-  display: flex !important;
-  align-items: center !important; justify-content: center !important;
-}
-.pt-panel {
-  position: absolute !important; inset: 0 !important;
-  background: linear-gradient(135deg, #0e0507, #2a0d14) !important;
-  transform: scaleY(0) !important;
-  transform-origin: bottom !important;
-  transition: transform .5s cubic-bezier(.77,0,.18,1) !important;
-}
-.pt-logo {
-  position: relative !important; z-index: 2 !important;
-  opacity: 0 !important; transform: scale(.5) !important;
-  transition: all .4s ease .2s !important;
-  text-align: center !important;
-}
-.pt-logo-text {
-  font-family: 'Playfair Display', serif !important;
-  font-size: 1.6rem !important;
-  color: #e8a0a8 !important;
-  letter-spacing: .15em !important;
-  font-weight: 400 !important;
-}
-.pt-logo-bar {
-  width: 0 !important; height: 1px !important;
-  background: linear-gradient(90deg, transparent, #c45064, transparent) !important;
-  margin: 12px auto 0 !important;
-  transition: width .5s ease .3s !important;
-}
-.page-transition.active .pt-panel  { transform: scaleY(1) !important; }
-.page-transition.active .pt-logo   { opacity: 1 !important; transform: scale(1) !important; }
-.page-transition.active .pt-logo-bar { width: 120px !important; }
-
-/* 18. Keyframes */
+/* 16. Keyframes */
 @keyframes heroIn  { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
 @keyframes fadeUp  { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
 @keyframes cardIn  { from { opacity:0; transform:translateY(32px) scale(.96); } to { opacity:1; transform:translateY(0) scale(1); } }
 @keyframes toastIn { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:translateX(0); } }
 @keyframes rippleOut { to { transform:scale(8); opacity:0; } }
-@keyframes lockGlow {
-  0%,100% { box-shadow:0 0 0 0 rgba(196,80,100,.3); }
-  50%      { box-shadow:0 0 0 8px rgba(196,80,100,0); }
-}
 
-/* 19. Mobile */
+/* 17. Mobile */
 @media(max-width:768px){
   .product-grid { grid-template-columns:1fr 1fr !important; gap:12px !important; }
   .page-hero { padding:48px 20px 40px !important; }
@@ -652,31 +522,24 @@ footer a:hover { color: #e8a0a8 !important; padding-left: 4px !important; }
 <body>
 <?php include '../includes/navbar.php'; ?>
 
-<?php
-  $heroTitle  = 'Our';
-  $heroItalic = 'Collection';
-  $heroSub    = 'Discover every product in the Marguax Collections range';
-  if ($typeFilter==='member')  { $heroTitle='Member';  $heroItalic='Exclusives'; $heroSub='Curated products available only to our valued members'; }
-  if ($typeFilter==='package') { $heroTitle='Curated'; $heroItalic='Packages';   $heroSub='Choose the package that fits your lifestyle'; }
-  if ($typeFilter==='loose')   { $heroTitle='Loose';   $heroItalic='Products';   $heroSub='Individual pieces available for every shopper'; }
-?>
-
 <div class="page-hero">
   <div class="hero-eyebrow">Marguax Collections</div>
-  <h1><?= $heroTitle ?> <em><?= $heroItalic ?></em></h1>
- 
+  <h1>Our <em>Collection</em></h1>
+  <p>Discover every product in the Macarguax Collections range</p>
   <div class="hero-divider"></div>
 </div>
 
 <div class="container">
 
-
-    <div class="filter-divider"></div>
+  <div class="filter-section">
 
     <div class="filter-bar">
+      <a href="products.php" class="filter-tab <?= $categoryFilter===0 ? 'active' : '' ?>">
+        All
+      </a>
       <?php foreach ($categories as $cat): ?>
-      <a href="products.php?filter=<?= urlencode($typeFilter) ?>&category=<?= $cat['category_id'] ?>"
-         class="filter-tab <?= $categoryFilter===$cat['category_id'] ? 'active' : '' ?>">
+      <a href="products.php?category=<?= $cat['category_id'] ?>"
+         class="filter-tab <?= $categoryFilter===(int)$cat['category_id'] ? 'active' : '' ?>">
         <?= htmlspecialchars($cat['name']) ?>
       </a>
       <?php endforeach; ?>
@@ -692,27 +555,16 @@ footer a:hover { color: #e8a0a8 !important; padding-left: 4px !important; }
   </div>
   <?php else: ?>
   <div class="product-grid">
-    <?php foreach ($products as $p):
-      $typeLabel = match($p['product_type']) { 'member'=>'Member Exclusive','package'=>'Package',default=>'Loose' };
-      $typeClass = match($p['product_type']) { 'member'=>'badge-member','package'=>'badge-package',default=>'badge-loose' };
-      $isLocked  = !$isMember && $p['product_type'] !== 'loose';
-    ?>
-    <div class="product-card <?= $isLocked ? 'locked' : '' ?>">
+    <?php foreach ($products as $p): ?>
+    <div class="product-card">
       <div class="product-img">
         <img src="../<?= htmlspecialchars($p['image']) ?>"
              alt="<?= htmlspecialchars($p['product_name']) ?>"
              onerror="this.src='../images/product-placeholder.jpg'">
-        <span class="product-type-badge <?= $typeClass ?>"><?= $typeLabel ?></span>
-        <?php if (!$isLocked && $p['stock'] <= 10 && $p['stock'] > 0): ?>
-          <span class="product-type-badge" style="top:12px;right:12px;left:auto;background:rgba(196,80,100,.18)!important;color:#e8a0a8!important;border:1px solid rgba(196,80,100,.45)!important;animation:none!important;">Low Stock</span>
-        <?php elseif (!$isLocked && $p['stock'] == 0): ?>
-          <span class="product-type-badge" style="top:12px;right:12px;left:auto;background:rgba(42,13,20,.7)!important;color:#5a4a42!important;border:1px solid rgba(196,80,100,.1)!important;animation:none!important;">Sold Out</span>
-        <?php endif; ?>
-        <?php if ($isLocked): ?>
-        <div class="lock-overlay">
-          <div class="lock-icon">🔒</div>
-          <div class="lock-label">Members Only</div>
-        </div>
+        <?php if ($p['stock'] <= 10 && $p['stock'] > 0): ?>
+          <span class="product-type-badge" style="background:rgba(196,80,100,.18)!important;color:#e8a0a8!important;border:1px solid rgba(196,80,100,.45)!important;">Low Stock</span>
+        <?php elseif ($p['stock'] == 0): ?>
+          <span class="product-type-badge" style="background:rgba(42,13,20,.7)!important;color:#5a4a42!important;border:1px solid rgba(196,80,100,.1)!important;">Sold Out</span>
         <?php endif; ?>
       </div>
 
@@ -722,14 +574,10 @@ footer a:hover { color: #e8a0a8 !important; padding-left: 4px !important; }
         <div class="category-tag"><?= htmlspecialchars($p['category_name']) ?></div>
         <?php endif; ?>
         <div class="product-desc"><?= htmlspecialchars($p['description']) ?></div>
-        <div class="product-price"><?= $isLocked ? '₱ · · · · ·' : '₱ '.number_format($p['price'],2) ?></div>
+        <div class="product-price">₱ <?= number_format($p['price'],2) ?></div>
       </div>
 
-      <?php if ($isLocked): ?>
-      <div class="product-actions">
-        <a href="#how-to-join" class="btn-locked">✦ Unlock — Become a Member</a>
-      </div>
-      <?php elseif ($p['stock'] > 0): ?>
+      <?php if ($p['stock'] > 0): ?>
       <div class="product-actions">
         <div class="qty-control">
           <button class="qty-btn" onclick="changeQty(<?= $p['product_id'] ?>, -1)">−</button>
@@ -804,8 +652,6 @@ footer a:hover { color: #e8a0a8 !important; padding-left: 4px !important; }
               <circle cx="17.5" cy="6.5" r="1" fill="#c45064"/>
             </svg>
           </a>
-          <!-- TikTok -->
-         
         </div>
       </div>
 
@@ -813,10 +659,6 @@ footer a:hover { color: #e8a0a8 !important; padding-left: 4px !important; }
       <div>
         <h4>Shop</h4>
         <a href="products.php">All Products</a>
-        <a href="products.php?filter=loose">Loose Items</a>
-        <?php if ($isMember): ?>
-        <a href="products.php?filter=member">Member Exclusives</a>
-        <?php endif; ?>
       </div>
 
       <!-- Account Column -->
@@ -848,6 +690,8 @@ footer a:hover { color: #e8a0a8 !important; padding-left: 4px !important; }
     </div>
   </div>
 </footer>
+
+<div id="toast-container"></div>
 <script>
 function changeQty(id, delta) {
   const input = document.getElementById('qty-' + id);
@@ -884,17 +728,6 @@ function showToast(msg, type = '') {
     setTimeout(() => t.remove(), 320);
   }, 3200);
 }
-const transition = document.getElementById('pageTransition');
-document.querySelectorAll('a.filter-tab.locked-tab').forEach(link => {
-  link.addEventListener('click', e => {
-    e.preventDefault();
-    transition.classList.add('active');
-    setTimeout(() => {
-      transition.classList.remove('active');
-      document.getElementById('how-to-join')?.scrollIntoView({ behavior: 'instant', block: 'start' });
-    }, 1100);
-  });
-});
 document.addEventListener('click', e => {
   const r = document.createElement('div');
   const s = 60;
@@ -903,7 +736,6 @@ document.addEventListener('click', e => {
   document.body.appendChild(r);
   setTimeout(() => r.remove(), 620);
 });
-window.addEventListener('pageshow', () => transition.classList.remove('active'));
 </script>
 </body>
 </html>

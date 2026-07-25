@@ -1,6 +1,6 @@
 <?php
 /**
- * Security Helper — Amazing World Marketing Corporation Ordering System
+ * Security Helper — Marguax_Collectionoration Ordering System
  * Include this file on EVERY page: require_once '../includes/security.php';
  *
  * Provides:
@@ -35,7 +35,7 @@ if (isset($_SESSION['user_id'])) {
         // Session expired — destroy and redirect
         session_unset();
         session_destroy();
-        header('Location: /amazingworldmarketingcorp/auth/login.php?reason=timeout');
+        header('Location: /Marguax_Collection/auth/login.php?reason=timeout');
         exit;
     }
     $_SESSION['last_activity'] = time();

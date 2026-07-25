@@ -88,12 +88,11 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
         $type   = clean($_POST['account_type']??'',20);
         $aname  = clean($_POST['account_name']??'',150);
         $anum   = clean($_POST['account_number']??'',50);
-        $bank   = clean($_POST['bank_name']??'',100);
         $def    = isset($_POST['is_default'])?1:0;
-        if (in_array($type,['gcash','bank_transfer']) && !empty($aname) && !empty($anum)) {
+        if ($type === 'gcash' && !empty($aname) && !empty($anum)) {
             if ($def) $db->query("UPDATE user_payment_accounts SET is_default=0 WHERE user_id=$userId");
-            $s=$db->prepare("INSERT INTO user_payment_accounts (user_id,account_type,account_name,account_number,bank_name,is_default) VALUES (?,?,?,?,?,?)");
-            $s->bind_param('issssi',$userId,$type,$aname,$anum,$bank,$def);
+            $s=$db->prepare("INSERT INTO user_payment_accounts (user_id,account_type,account_name,account_number,is_default) VALUES (?,?,?,?,?)");
+            $s->bind_param('isssi',$userId,$type,$aname,$anum,$def);
             $s->execute(); $s->close();
             $msg='✅ Payment account added!';
         }
@@ -281,24 +280,6 @@ section, .section, main, .main,
   background: transparent !important;
 }
 
-/* ── BADGES ── */
-.badge-member {
-  background: rgba(196,80,100,.15) !important; color: #e8a0a8 !important;
-  border: 1px solid rgba(196,80,100,.4) !important;
-  padding: 4px 14px !important; border-radius: 20px !important;
-  font-size: .65rem !important; font-weight: 600 !important;
-  letter-spacing: .1em !important; text-transform: uppercase !important;
-  -webkit-text-fill-color: #e8a0a8 !important;
-}
-.badge-non {
-  background: rgba(90,74,66,.25) !important; color: #7a6058 !important;
-  border: 1px solid rgba(90,74,66,.35) !important;
-  padding: 4px 14px !important; border-radius: 20px !important;
-  font-size: .65rem !important; font-weight: 600 !important;
-  letter-spacing: .1em !important; text-transform: uppercase !important;
-  -webkit-text-fill-color: #7a6058 !important;
-}
-
 /* ── ALERTS ── */
 .alert {
   padding: 13px 16px !important; border-radius: 10px !important;
@@ -341,6 +322,7 @@ section, .section, main, .main,
   border-color: #c45064 !important;
   box-shadow: 0 0 0 3px rgba(196,80,100,.12) !important;
 }
+.form-control:disabled { opacity: .7 !important; cursor: not-allowed !important; }
 select.form-control option { background: #1a0609 !important; color: #f0e6da !important; }
 .form-row { display: flex !important; gap: 14px !important; flex-wrap: wrap !important; }
 .form-row .form-group { flex: 1 !important; min-width: 200px !important; }
@@ -494,9 +476,6 @@ select.form-control option { background: #1a0609 !important; color: #f0e6da !imp
   <div class="mg-card">
     <div class="mg-card-head">
       <span class="mg-card-head-title">Personal Information</span>
-      <span class="<?= $user['member_status']==='member'?'badge-member':'badge-non' ?>">
-        <?= $user['member_status']==='member'?'✦ Member':'Non-Member' ?>
-      </span>
     </div>
     <div class="mg-card-body">
       <form method="POST">
@@ -569,13 +548,10 @@ select.form-control option { background: #1a0609 !important; color: #f0e6da !imp
       <?php else: ?>
         <?php foreach ($accounts as $acc): ?>
         <div class="acc-item">
-          <span class="acc-icon"><?= $acc['account_type']==='gcash' ? '📱' : '🏦' ?></span>
+          <span class="acc-icon">📱</span>
           <div style="flex:1">
             <div class="acc-name"><?= e($acc['account_name']) ?></div>
-            <div class="acc-detail">
-              <?= $acc['account_type']==='bank_transfer' && $acc['bank_name'] ? e($acc['bank_name']).' — ' : '' ?>
-              <?= e($acc['account_number']) ?>
-            </div>
+            <div class="acc-detail"><?= e($acc['account_number']) ?></div>
           </div>
           <?php if($acc['is_default']): ?><span class="badge-default">Default</span><?php endif; ?>
           <form method="POST" style="margin:0">
@@ -596,10 +572,8 @@ select.form-control option { background: #1a0609 !important; color: #f0e6da !imp
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">Type</label>
-            <select name="account_type" class="form-control">
-              <option value="gcash">📱 GCash</option>
-              <option value="bank_transfer">🏦 Bank Transfer</option>
-            </select>
+            <input type="hidden" name="account_type" value="gcash">
+            <input type="text" class="form-control" value="📱 GCash" disabled>
           </div>
           <div class="form-group">
             <label class="form-label">Account Name</label>

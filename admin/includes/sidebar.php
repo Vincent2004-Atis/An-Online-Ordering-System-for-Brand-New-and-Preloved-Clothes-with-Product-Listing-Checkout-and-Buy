@@ -3,7 +3,6 @@ $currentPage  = basename($_SERVER['PHP_SELF']);
 $unreadCount  = 0;
 $pendingCount = 0;
 if (isset($db)) {
-    // Use conversations table — count unread messages from customers
     $r = $db->query("
         SELECT COUNT(*) FROM messages m
         JOIN conversations c ON c.conversation_id = m.conversation_id
@@ -48,7 +47,7 @@ if (isset($db)) {
     <a href="manage_homepage.php" class="sidebar-link <?= $currentPage==='manage_homepage.php'?'active':'' ?>">
       <span>🖼️</span> Homepage Photos
     </a>
-    
+
     <a href="manage_users.php" class="sidebar-link <?= $currentPage==='manage_users.php'?'active':'' ?>">
       <span>👥</span> Users
     </a>

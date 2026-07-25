@@ -69,16 +69,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Reset Password — Marguax CollectionCorp</title>
+<title>Reset Password — Marguax Collection</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Plus Jakarta Sans','Sora',sans-serif;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px;background:linear-gradient(135deg,#0b1f3a 0%,#112d52 50%,#1a4070 100%);color:#fff}
-a{text-decoration:none;color:#2563eb;font-weight:600}
+body{font-family:'Plus Jakarta Sans','Sora',sans-serif;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px;background:linear-gradient(135deg,#2a0d14 0%,#112d52 50%,#1a4070 100%);color:#fff}
+a{text-decoration:none;color:#c45064;font-weight:600}
 .card{background:rgba(255,255,255,.10);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.2);border-radius:20px;box-shadow:0 24px 80px rgba(0,0,0,.4);padding:56px 52px;width:100%;max-width:480px;color:#fff}
 .logo{display:flex;align-items:center;gap:12px;margin-bottom:36px;justify-content:center}
 .logo-img{width:48px;height:48px;border-radius:50%;border:2px solid rgba(255,255,255,.3);object-fit:cover}
 .logo-name{font-weight:800;font-size:1rem;color:#fff;line-height:1.1}
-.logo-sub{font-size:.65rem;color:#f59e0b;font-weight:600;text-transform:uppercase;letter-spacing:.08em}
+.logo-sub{font-size:.65rem;color:#c8a96a;font-weight:600;text-transform:uppercase;letter-spacing:.08em}
 .icon{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:28px}
 .icon-lock{background:rgba(37,99,235,.2);border:2px solid rgba(37,99,235,.4)}
 .icon-ok{background:rgba(74,222,128,.15);border:2px solid rgba(74,222,128,.4)}
@@ -93,7 +93,7 @@ label{display:block;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-tr
 
 .input-wrap{position:relative}
 .input-wrap input{width:100%;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);border-radius:12px;padding:13px 48px 13px 16px;color:#fff;font-size:.95rem;outline:none;font-family:inherit;transition:border-color .2s,box-shadow .2s}
-.input-wrap input:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.2)}
+.input-wrap input:focus{border-color:#c45064;box-shadow:0 0 0 3px rgba(37,99,235,.2)}
 .input-wrap input::placeholder{color:rgba(255,255,255,.3)}
 .toggle-pw{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;transition:color .2s}
 .toggle-pw:hover{color:#fff}
@@ -103,7 +103,7 @@ label{display:block;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-tr
 .seg{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.12);transition:background .3s}
 .strength-label{font-size:.72rem;color:rgba(255,255,255,.4);margin-top:5px;min-height:14px}
 
-.btn{display:block;width:100%;padding:14px;background:#2563eb;color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:8px;transition:background .2s,transform .1s;font-family:inherit}
+.btn{display:block;width:100%;padding:14px;background:#c45064;color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:8px;transition:background .2s,transform .1s;font-family:inherit}
 .btn:hover{background:#1d4ed8}
 .btn:active{transform:scale(.98)}
 
@@ -115,7 +115,7 @@ label{display:block;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-tr
 <body>
 <div class="card">
   <div class="logo">
-    <img class="logo-img" src="/Marguax_Collection/images/logo.png" alt="Logo">
+    <img class="logo-img" src="/Marguax_Collection/images/logo.jpg" alt="Logo">
     <div><div class="logo-name">Marguax Collection</div><div class="logo-sub"></div></div>
   </div>
 

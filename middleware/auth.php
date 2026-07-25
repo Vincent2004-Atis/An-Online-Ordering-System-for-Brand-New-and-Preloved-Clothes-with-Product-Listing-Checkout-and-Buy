@@ -40,10 +40,6 @@ function isAdmin(): bool {
     return isLoggedIn() && $_SESSION['role'] === 'admin';
 }
 
-function isMember(): bool {
-    return isLoggedIn() && ($_SESSION['member_status'] ?? '') === 'member';
-}
-
 function apiUnauthorized(string $message = 'Unauthorized'): void {
     http_response_code(401);
     header('Content-Type: application/json');

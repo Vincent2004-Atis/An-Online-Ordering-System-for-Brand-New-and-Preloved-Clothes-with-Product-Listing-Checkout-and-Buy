@@ -48,8 +48,22 @@ $topProducts = safeQuery($db, "
 
 $payDist    = safeQuery($db, "SELECT payment_method, COUNT(*) AS cnt FROM orders GROUP BY payment_method");
 $methodDist = safeQuery($db, "SELECT order_method, COUNT(*) AS cnt FROM orders GROUP BY order_method");
-$memberDist = safeQuery($db, "SELECT member_status, COUNT(*) AS cnt FROM users WHERE role='customer' GROUP BY member_status");
 $statusDist = safeQuery($db, "SELECT order_status, COUNT(*) AS cnt FROM orders GROUP BY order_status");
+
+// ─── TOP LOCATIONS BY ORDERS ──────────────────────────────────────────────────
+// Groups by the last comma-separated segment of the address (typically the
+// city/province, e.g. "Brgy. Bagaygay Sara, Iloilo" -> "Iloilo"). This keeps
+// the grouping clean even though addresses are free text.
+$topLocations = safeQuery($db, "
+    SELECT TRIM(SUBSTRING_INDEX(address, ',', -1)) AS area,
+           COUNT(*) AS order_count,
+           SUM(total_amount) AS revenue
+    FROM orders
+    WHERE address IS NOT NULL AND address != ''
+    GROUP BY area
+    ORDER BY order_count DESC, revenue DESC
+    LIMIT 10
+");
 
 $totalRevenue    = (float)(safeQueryOne($db, "SELECT IFNULL(SUM(total_amount),0) FROM orders WHERE payment_status='paid'")[0] ?? 0);
 $totalOrders     = (int)(safeQueryOne($db, "SELECT COUNT(*) FROM orders")[0] ?? 0);
@@ -57,7 +71,6 @@ $pendingOrders   = (int)(safeQueryOne($db, "SELECT COUNT(*) FROM orders WHERE or
 $completedOrders = (int)(safeQueryOne($db, "SELECT COUNT(*) FROM orders WHERE order_status='completed'")[0] ?? 0);
 $totalCustomers  = (int)(safeQueryOne($db, "SELECT COUNT(*) FROM users WHERE role='customer'")[0] ?? 0);
 $avgOrder        = $totalOrders > 0 ? $totalRevenue / $totalOrders : 0;
-$convRate        = $totalCustomers > 0 ? round(($totalMembers / $totalCustomers) * 100, 1) : 0;
 
 $monthlyRev = safeQuery($db, "
     SELECT DATE_FORMAT(order_date,'%b %Y') AS mo,
@@ -190,7 +203,6 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Analytics & Sales Report — OrderSync Admin</title>
-<link rel="stylesheet" href="../css/style.css">
 <link rel="stylesheet" href="../css/admin.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -200,28 +212,28 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
    DESIGN TOKENS
 ═══════════════════════════════════════════════════ */
 :root{
-  --navy:       #0b1f3a;
-  --navy-mid:   #1a2a4a;
-  --navy-light: #243558;
-  --blue:       #2563eb;
-  --blue-light: #3b82f6;
-  --amber:      #f59e0b;
-  --amber-light:#fbbf24;
+  --navy:       #f0e6da;
+  --navy-mid:   #3d1020;
+  --navy-light: #4a1626;
+  --blue:       #c45064;
+  --blue-light: #d97a8c;
+  --amber:      #c8a96a;
+  --amber-light:#d9bd8a;
   --green:      #10b981;
   --red:        #ef4444;
   --purple:     #8b5cf6;
-  --surface:    #ffffff;
-  --surface-2:  #f8fafc;
-  --border:     #e2e8f0;
-  --text-main:  #0b1f3a;
-  --text-muted: #64748b;
-  --text-dim:   #94a3b8;
+  --surface:    rgba(42,13,20,.6);
+  --surface-2:  rgba(14,5,7,.4);
+  --border:     rgba(196,80,100,.18);
+  --text-main:  #f0e6da;
+  --text-muted: #b89a92;
+  --text-dim:   #7a6058;
   --radius-sm:  8px;
   --radius-md:  14px;
   --radius-lg:  20px;
-  --shadow-sm:  0 2px 8px rgba(0,0,0,.06);
-  --shadow-md:  0 6px 24px rgba(0,0,0,.09);
-  --shadow-lg:  0 12px 40px rgba(0,0,0,.13);
+  --shadow-sm:  0 2px 8px rgba(0,0,0,.2);
+  --shadow-md:  0 6px 24px rgba(0,0,0,.3);
+  --shadow-lg:  0 12px 40px rgba(0,0,0,.4);
 }
 
 /* ═══════════════════════════════════════════════════
@@ -282,8 +294,8 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
   border-radius:20px;display:inline-block;margin-top:4px;
   background:var(--badge-bg);color:var(--badge-color);
 }
-.tier-tab[data-tab="descriptive"]  {--color:#2563eb;--badge-bg:#dbeafe;--badge-color:#1d4ed8;}
-.tier-tab[data-tab="diagnostic"]   {--color:#f59e0b;--badge-bg:#fef3c7;--badge-color:#b45309;}
+.tier-tab[data-tab="descriptive"]  {--color:#c45064;--badge-bg:#dbeafe;--badge-color:#1d4ed8;}
+.tier-tab[data-tab="diagnostic"]   {--color:#c8a96a;--badge-bg:#fef3c7;--badge-color:#b45309;}
 .tier-tab[data-tab="predictive"]   {--color:#8b5cf6;--badge-bg:#ede9fe;--badge-color:#7c3aed;}
 .tier-tab[data-tab="prescriptive"] {--color:#10b981;--badge-bg:#dcfce7;--badge-color:#15803d;}
 
@@ -399,7 +411,7 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
    BADGES / PILLS
 ═══════════════════════════════════════════════════ */
 .pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:.7rem;font-weight:700;}
-.pill-blue  {background:rgba(37,99,235,.1);color:#2563eb;}
+.pill-blue  {background:rgba(37,99,235,.1);color:#c45064;}
 .pill-green {background:#dcfce7;color:#15803d;}
 .pill-amber {background:#fef3c7;color:#b45309;}
 .pill-red   {background:#fee2e2;color:#dc2626;}
@@ -450,7 +462,7 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
 }
 .action-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);}
 .action-card.high{--left-color:#ef4444;}
-.action-card.med {--left-color:#f59e0b;}
+.action-card.med {--left-color:#c8a96a;}
 .action-card.low {--left-color:#10b981;}
 .action-card h5{
   font-family:'Sora',sans-serif;font-size:.875rem;
@@ -584,7 +596,7 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
 
         <!-- KPI Row 1 -->
         <div class="kpi-grid kpi-grid-4" style="margin-bottom:14px;">
-          <div class="kpi-card" style="--accent:#2563eb;">
+          <div class="kpi-card" style="--accent:#c45064;">
             <div class="kpi-card-head">
               <div class="kpi-label">Total Revenue (Paid)</div>
               <div class="kpi-icon-wrap" style="background:#dbeafe;">💰</div>
@@ -595,7 +607,7 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
             <span class="kpi-delta <?= $revDelta>=0?'up':'down' ?>"><?= $revDelta>=0?'↑':'↓' ?> <?= abs($revDelta) ?>% vs prev period</span>
             <?php else: ?><span class="kpi-delta neutral">— no prev data</span><?php endif; ?>
           </div>
-          <div class="kpi-card" style="--accent:#f59e0b;">
+          <div class="kpi-card" style="--accent:#c8a96a;">
             <div class="kpi-card-head">
               <div class="kpi-label">Total Orders</div>
               <div class="kpi-icon-wrap" style="background:#fef3c7;">📋</div>
@@ -614,19 +626,11 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
             <div class="kpi-val">₱<?= number_format($avgOrder,0) ?></div>
             <div class="kpi-sub">Per transaction average</div>
           </div>
-          <div class="kpi-card" style="--accent:#8b5cf6;">
-            <div class="kpi-card-head">
-              <div class="kpi-label">Member Conversion</div>
-              <div class="kpi-icon-wrap" style="background:#ede9fe;">⭐</div>
-            </div>
-            <div class="kpi-val"><?= $convRate ?>%</div>
-            <div class="kpi-sub"><?= $totalMembers ?> / <?= $totalCustomers ?> customers</div>
-          </div>
         </div>
 
         <!-- KPI Row 2 -->
         <div class="kpi-grid kpi-grid-4" style="margin-bottom:24px;">
-          <div class="kpi-card" style="--accent:#f59e0b;">
+          <div class="kpi-card" style="--accent:#c8a96a;">
             <div class="kpi-card-head">
               <div class="kpi-label">ROAS (Estimated)</div>
               <div class="kpi-icon-wrap" style="background:#fef3c7;">📢</div>
@@ -635,7 +639,7 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
             <div class="kpi-sub">Return on ad spend</div>
             <span class="kpi-delta up">↑ Performing well</span>
           </div>
-          <div class="kpi-card" style="--accent:#3b82f6;">
+          <div class="kpi-card" style="--accent:#d97a8c;">
             <div class="kpi-card-head">
               <div class="kpi-label">Click-Through Rate</div>
               <div class="kpi-icon-wrap" style="background:#dbeafe;">🎯</div>
@@ -677,7 +681,7 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
             <div class="chart-wrap" style="height:200px;"><canvas id="statusChart"></canvas></div>
             <div style="margin-top:14px;">
               <?php foreach($statusDist as $s):
-                $colors=['pending'=>'#fbbf24','processing'=>'#3b82f6','completed'=>'#10b981','cancelled'=>'#94a3b8'];
+                $colors=['pending'=>'#d9bd8a','processing'=>'#d97a8c','completed'=>'#10b981','cancelled'=>'#94a3b8'];
                 $c=$colors[$s['order_status']]??'#e2e8f0';
                 $pct=$totalOrders>0?round($s['cnt']/$totalOrders*100):0;
               ?>
@@ -693,8 +697,8 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
           </div>
         </div>
 
-        <!-- Payment, Method, Members -->
-        <div class="chart-grid-3">
+        <!-- Payment, Method -->
+        <div class="chart-grid-2">
           <div class="chart-box" style="margin-bottom:0;">
             <div class="chart-box-head"><h4>💳 Payment Methods</h4></div>
             <div class="chart-wrap" style="height:200px;"><canvas id="payChart"></canvas></div>
@@ -703,11 +707,6 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
             <div class="chart-box-head"><h4>🚚 Order Methods</h4></div>
             <div class="chart-wrap" style="height:200px;"><canvas id="methodChart"></canvas></div>
           </div>
-          <div class="chart-box" style="margin-bottom:0;">
-            <div class="chart-box-head"><h4>👥 Member vs Non-Member</h4></div>
-            <div class="chart-wrap" style="height:200px;"><canvas id="memberChart"></canvas></div>
-          </div>
-        </div>
 
         <!-- Monthly Sales Table -->
         <div class="chart-box" style="margin-top:20px;">
@@ -743,7 +742,7 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
                 <td style="min-width:130px;">
                   <div style="display:flex;align-items:center;gap:8px;">
                     <div class="progress-bar" style="flex:1;">
-                      <div class="progress-fill" style="width:<?= $share ?>%;background:linear-gradient(90deg,#2563eb,#7c3aed);"></div>
+                      <div class="progress-fill" style="width:<?= $share ?>%;background:linear-gradient(90deg,#c45064,#7c3aed);"></div>
                     </div>
                     <span style="font-size:.74rem;font-weight:700;color:var(--text-muted);width:38px;"><?= number_format($share,1) ?>%</span>
                   </div>
@@ -754,7 +753,7 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
           </table>
           <div style="padding:14px 14px 0;border-top:2px solid var(--border);display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
             <strong style="font-size:.875rem;color:var(--navy);">Total (Last 6 Months)</strong>
-            <strong style="color:#2563eb;font-size:1rem;">₱<?= number_format($grandTotal,2) ?></strong>
+            <strong style="color:#c45064;font-size:1rem;">₱<?= number_format($grandTotal,2) ?></strong>
           </div>
           <?php else: ?>
           <div class="empty-state"><div class="empty-icon">📭</div><p>No sales data available yet.</p></div>
@@ -776,7 +775,7 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
               $maxRev = !empty($topProducts) ? max(array_column($topProducts,'revenue')) : 1;
               foreach($topProducts as $i=>$p):
                 $share = $maxRev>0 ? ($p['revenue']/$maxRev)*100 : 0;
-                $rankColors = ['linear-gradient(135deg,#fbbf24,#f59e0b)','linear-gradient(135deg,#9ca3af,#6b7280)','linear-gradient(135deg,#cd7f32,#92400e)'];
+                $rankColors = ['linear-gradient(135deg,#d9bd8a,#c8a96a)','linear-gradient(135deg,#9ca3af,#6b7280)','linear-gradient(135deg,#cd7f32,#92400e)'];
                 $rankBg = $rankColors[$i] ?? '#e2e8f0';
                 $rankTextColor = $i<3?'#fff':'#64748b';
               ?>
@@ -795,6 +794,43 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
           </table>
           <?php else: ?>
           <div class="empty-state"><div class="empty-icon">📦</div><p>No product sales data yet.</p></div>
+          <?php endif; ?>
+        </div>
+
+        <!-- Top Locations -->
+        <div class="chart-box" style="margin-top:20px;">
+          <div class="chart-box-head">
+            <h4>📍 Top Locations by Orders</h4>
+          </div>
+          <?php if(!empty($topLocations)): ?>
+          <table class="data-table">
+            <thead>
+              <tr><th>Rank</th><th>Location</th><th>Orders</th><th>Revenue</th><th>Order Share</th></tr>
+            </thead>
+            <tbody>
+              <?php
+              $maxLocCount = max(array_column($topLocations,'order_count'));
+              foreach($topLocations as $i=>$loc):
+                $share = $maxLocCount>0 ? ($loc['order_count']/$maxLocCount)*100 : 0;
+                $rankColors = ['linear-gradient(135deg,#d9bd8a,#c8a96a)','linear-gradient(135deg,#9ca3af,#6b7280)','linear-gradient(135deg,#cd7f32,#92400e)'];
+                $rankBg = $rankColors[$i] ?? '#e2e8f0';
+                $rankTextColor = $i<3?'#fff':'#64748b';
+              ?>
+              <tr>
+                <td><span class="rank-badge" style="background:<?= $rankBg ?>;color:<?= $rankTextColor ?>"><?= $i+1 ?></span></td>
+                <td><strong style="color:var(--navy);">📍 <?= htmlspecialchars($loc['area']) ?></strong></td>
+                <td><?= (int)$loc['order_count'] ?> orders</td>
+                <td><strong style="color:#16a34a;">₱<?= number_format((float)$loc['revenue'],2) ?></strong></td>
+                <td style="min-width:130px;">
+                  <div class="progress-bar"><div class="progress-fill" style="width:<?= $share ?>%;background:linear-gradient(90deg,#c45064,#8b5cf6);"></div></div>
+                </td>
+              </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+          <p class="chart-caption">Based on the city/province portion of each customer's delivery address.</p>
+          <?php else: ?>
+          <div class="empty-state"><div class="empty-icon">📍</div><p>No location data available yet.</p></div>
           <?php endif; ?>
         </div>
 
@@ -833,7 +869,7 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
             <div class="kpi-val"><?= $retentionRate ?>%</div>
             <div class="kpi-sub"><?= $repeatBuyers ?> customers ordered 2×+</div>
           </div>
-          <div class="kpi-card" style="--accent:#3b82f6;">
+          <div class="kpi-card" style="--accent:#d97a8c;">
             <div class="kpi-card-head">
               <div class="kpi-label">Total Customers</div>
               <div class="kpi-icon-wrap" style="background:#dbeafe;">👥</div>
@@ -841,7 +877,7 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
             <div class="kpi-val"><?= $totalCustomers ?></div>
             <div class="kpi-sub"><?= $totalMembers ?> members enrolled</div>
           </div>
-          <div class="kpi-card" style="--accent:#f59e0b;">
+          <div class="kpi-card" style="--accent:#c8a96a;">
             <div class="kpi-card-head">
               <div class="kpi-label">Churn Risk Users</div>
               <div class="kpi-icon-wrap" style="background:#fef3c7;">⚠️</div>
@@ -865,9 +901,9 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
             <div style="padding-top:4px;">
               <?php $reasons=[
                 ['label'=>'High shipping cost','pct'=>34,'color'=>'#ef4444'],
-                ['label'=>'Payment method unavailable','pct'=>22,'color'=>'#f59e0b'],
+                ['label'=>'Payment method unavailable','pct'=>22,'color'=>'#c8a96a'],
                 ['label'=>'Price too high','pct'=>18,'color'=>'#8b5cf6'],
-                ['label'=>'Just browsing','pct'=>15,'color'=>'#3b82f6'],
+                ['label'=>'Just browsing','pct'=>15,'color'=>'#d97a8c'],
                 ['label'=>'Complicated checkout','pct'=>11,'color'=>'#10b981'],
               ];
               foreach($reasons as $r): ?>
@@ -1010,7 +1046,7 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
             <div class="kpi-val sm"><?= count($churnHighRisk) ?> users</div>
             <div class="kpi-sub">No order in 30+ days</div>
           </div>
-          <div class="kpi-card" style="--accent:#f59e0b;">
+          <div class="kpi-card" style="--accent:#c8a96a;">
             <div class="kpi-card-head">
               <div class="kpi-label">Fraud Signals</div>
               <div class="kpi-icon-wrap" style="background:#fef3c7;">🛡️</div>
@@ -1060,38 +1096,29 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
                 <td>Promote <strong>Bundle Pack</strong> on landing page</td>
                 <td><span class="trend-up">↑ +18% AOV</span></td>
                 <td><span class="pill pill-green">High</span></td>
-                <td style="font-size:.78rem;color:#2563eb;">Feature on homepage</td>
+                <td style="font-size:.78rem;color:#c45064;">Feature on homepage</td>
               </tr>
               <tr>
                 <td><span class="pill pill-green">Returning Buyers</span></td>
                 <td>Offer <strong>Member upgrade</strong> at checkout</td>
                 <td><span class="trend-up">↑ +12% retention</span></td>
                 <td><span class="pill pill-green">High</span></td>
-                <td style="font-size:.78rem;color:#2563eb;">Add checkout upsell</td>
+                <td style="font-size:.78rem;color:#c45064;">Add checkout upsell</td>
               </tr>
               <tr>
                 <td><span class="pill pill-amber">Cart Abandoners</span></td>
                 <td>Send <strong>10% coupon</strong> within 2 hours</td>
                 <td><span class="trend-up">↑ +22% recovery</span></td>
                 <td><span class="pill pill-amber">Medium</span></td>
-                <td style="font-size:.78rem;color:#2563eb;">Trigger email / SMS</td>
+                <td style="font-size:.78rem;color:#c45064;">Trigger email / SMS</td>
               </tr>
               <tr>
                 <td><span class="pill pill-gray">Dormant (30d+)</span></td>
                 <td>Send <strong>reactivation campaign</strong></td>
                 <td><span class="trend-up">↑ +9% return rate</span></td>
                 <td><span class="pill pill-amber">Medium</span></td>
-                <td style="font-size:.78rem;color:#2563eb;">Schedule email blast</td>
+                <td style="font-size:.78rem;color:#c45064;">Schedule email blast</td>
               </tr>
-              <?php if($totalMembers>0): ?>
-              <tr>
-                <td><span class="pill" style="background:#fce7f3;color:#9d174d;">Members (<?= $totalMembers ?>)</span></td>
-                <td>Offer <strong>exclusive early access</strong> to new products</td>
-                <td><span class="trend-up">↑ +30% engagement</span></td>
-                <td><span class="pill pill-green">High</span></td>
-                <td style="font-size:.78rem;color:#2563eb;">Send member newsletter</td>
-              </tr>
-              <?php endif; ?>
             </tbody>
           </table>
         </div>
@@ -1154,7 +1181,7 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
             <div class="kpi-val sm">₱<?= number_format($revenueOpportunity,0) ?></div>
             <div class="kpi-sub">From churn recovery alone</div>
           </div>
-          <div class="kpi-card" style="--accent:#f59e0b;">
+          <div class="kpi-card" style="--accent:#c8a96a;">
             <div class="kpi-card-head">
               <div class="kpi-label">Slow-Moving SKUs</div>
               <div class="kpi-icon-wrap" style="background:#fef3c7;">📦</div>
@@ -1170,7 +1197,7 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
             <div class="kpi-val sm">4</div>
             <div class="kpi-sub">Immediate impact potential</div>
           </div>
-          <div class="kpi-card" style="--accent:#2563eb;">
+          <div class="kpi-card" style="--accent:#c45064;">
             <div class="kpi-card-head">
               <div class="kpi-label">AOV Uplift Target</div>
               <div class="kpi-icon-wrap" style="background:#dbeafe;">🎯</div>
@@ -1247,11 +1274,6 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
               <h5>🛒 Recover Cart Abandoners</h5>
               <p><?= $abandonedOrders ?> orders abandoned. Push + email within 2 hours of abandonment with a limited-time offer. Predicted 22% recovery = <strong>₱<?= number_format($abandonedOrders*$avgOrder*0.22,0) ?></strong> additional revenue.</p>
               <span class="impact-tag" style="background:#fee2e2;color:#dc2626;">High urgency</span>
-            </div>
-            <div class="action-card high">
-              <h5>⭐ Activate Member Referral Loop</h5>
-              <p>You have <?= $totalMembers ?> active member(s). Each member averages 1.8 referrals when incentivized. Launching a referral reward program could add <strong><?= round($totalMembers*1.8) ?> new orders</strong> this month.</p>
-              <span class="impact-tag" style="background:#fef3c7;color:#b45309;">+<?= round($totalMembers*1.8) ?> projected orders</span>
             </div>
             <div class="action-card med">
               <h5>💳 Double Down on Top Payment Method</h5>
@@ -1338,13 +1360,13 @@ if (document.getElementById('revChart') && revLabels.length) {
       datasets: [
         {
           type: 'bar', label: 'Revenue (₱)', data: revData,
-          backgroundColor: 'rgba(37,99,235,.15)', borderColor: '#2563eb',
+          backgroundColor: 'rgba(37,99,235,.15)', borderColor: '#c45064',
           borderWidth: 2, borderRadius: 6, yAxisID: 'y'
         },
         {
           type: 'line', label: 'Orders', data: ordData,
-          borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,.08)',
-          tension: .4, fill: true, pointBackgroundColor: '#f59e0b',
+          borderColor: '#c8a96a', backgroundColor: 'rgba(245,158,11,.08)',
+          tension: .4, fill: true, pointBackgroundColor: '#c8a96a',
           pointRadius: 4, yAxisID: 'y1'
         }
       ]
@@ -1368,7 +1390,7 @@ if (document.getElementById('statusChart') && statusLabels.length) {
     type: 'doughnut',
     data: {
       labels: statusLabels,
-      datasets: [{ data: statusData, backgroundColor: ['#fbbf24','#3b82f6','#10b981','#94a3b8'], borderWidth: 0, hoverOffset: 8 }]
+      datasets: [{ data: statusData, backgroundColor: ['#d9bd8a','#d97a8c','#10b981','#94a3b8'], borderWidth: 0, hoverOffset: 8 }]
     },
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, cutout: '65%' }
   });
@@ -1382,7 +1404,7 @@ const payData   = <?= json_encode(array_column($payDist,'cnt')) ?>;
 if (document.getElementById('payChart') && payLabels.length) {
   new Chart(document.getElementById('payChart'), {
     type: 'doughnut',
-    data: { labels: payLabels, datasets: [{ data: payData, backgroundColor: ['#0ea5e9','#f59e0b','#8b5cf6','#10b981','#3b82f6'], borderWidth: 0, hoverOffset: 8 }] },
+    data: { labels: payLabels, datasets: [{ data: payData, backgroundColor: ['#0ea5e9','#c8a96a','#8b5cf6','#10b981','#d97a8c'], borderWidth: 0, hoverOffset: 8 }] },
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } } }, cutout: '60%' }
   });
 }
@@ -1392,17 +1414,7 @@ const methodData   = <?= json_encode(array_column($methodDist,'cnt')) ?>;
 if (document.getElementById('methodChart') && methodLabels.length) {
   new Chart(document.getElementById('methodChart'), {
     type: 'doughnut',
-    data: { labels: methodLabels, datasets: [{ data: methodData, backgroundColor: ['#2563eb','#10b981'], borderWidth: 0, hoverOffset: 8 }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, cutout: '60%' }
-  });
-}
-
-const memberLabels = <?= json_encode(array_column($memberDist,'member_status')) ?>.map(k => k==='member'?'Member':'Non-Member');
-const memberData   = <?= json_encode(array_column($memberDist,'cnt')) ?>;
-if (document.getElementById('memberChart') && memberLabels.length) {
-  new Chart(document.getElementById('memberChart'), {
-    type: 'doughnut',
-    data: { labels: memberLabels, datasets: [{ data: memberData, backgroundColor: ['#f59e0b','#e2e8f0'], borderWidth: 0, hoverOffset: 8 }] },
+    data: { labels: methodLabels, datasets: [{ data: methodData, backgroundColor: ['#c45064','#10b981'], borderWidth: 0, hoverOffset: 8 }] },
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, cutout: '60%' }
   });
 }
@@ -1414,7 +1426,7 @@ if (document.getElementById('funnelChart')) {
     type: 'bar',
     data: {
       labels: ['Visited site','Viewed product','Added to cart','Reached checkout','Completed order'],
-      datasets: [{ data: [100, 72, 48, 33, completedPct], backgroundColor: ['#bfdbfe','#93c5fd','#60a5fa','#3b82f6','#2563eb'], borderRadius: 6 }]
+      datasets: [{ data: [100, 72, 48, 33, completedPct], backgroundColor: ['#bfdbfe','#93c5fd','#60a5fa','#d97a8c','#c45064'], borderRadius: 6 }]
     },
     options: {
       indexAxis: 'y', responsive: true, maintainAspectRatio: false,
@@ -1452,7 +1464,7 @@ if (document.getElementById('statusFlowChart') && statusLabels.length) {
     type: 'bar',
     data: {
       labels: statusLabels,
-      datasets: [{ label: 'Orders', data: statusData, backgroundColor: ['#fbbf24','#3b82f6','#10b981','#94a3b8'], borderRadius: 6 }]
+      datasets: [{ label: 'Orders', data: statusData, backgroundColor: ['#d9bd8a','#d97a8c','#10b981','#94a3b8'], borderRadius: 6 }]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
@@ -1491,7 +1503,7 @@ if (document.getElementById('statusFlowChart') && statusLabels.length) {
       datasets: [
         {
           type: 'bar', label: 'Actual', data: [...actuals,...Array(7).fill(null)],
-          backgroundColor: 'rgba(37,99,235,.2)', borderColor: '#2563eb', borderWidth: 1.5, borderRadius: 4
+          backgroundColor: 'rgba(37,99,235,.2)', borderColor: '#c45064', borderWidth: 1.5, borderRadius: 4
         },
         {
           type: 'line', label: 'Forecast', data: projected,
@@ -1525,7 +1537,7 @@ if (document.getElementById('statusFlowChart') && statusLabels.length) {
       labels: raw.map(d => d.name),
       datasets: [{
         label: 'Churn Risk %', data: raw.map(d => d.days),
-        backgroundColor: raw.map(d => d.days>=70?'#ef4444':d.days>=45?'#f59e0b':'#10b981'),
+        backgroundColor: raw.map(d => d.days>=70?'#ef4444':d.days>=45?'#c8a96a':'#10b981'),
         borderRadius: 6
       }]
     },

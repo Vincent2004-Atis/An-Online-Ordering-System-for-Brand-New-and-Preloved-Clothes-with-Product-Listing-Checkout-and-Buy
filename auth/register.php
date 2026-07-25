@@ -276,7 +276,7 @@ input:focus{border-color:#c45064;background:rgba(196,80,100,0.06);box-shadow:0 0
   <div class="left">
     <div class="brand-logo">
       <div class="logo-img-circle">
-        <img src="/Marguax_Collection/images/logo.png" alt="Logo"
+        <img src="/Marguax_Collection/images/logo.jpg" alt="Logo"
              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
         <span class="logo-fallback" style="display:none">M</span>
       </div>

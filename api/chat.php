@@ -16,7 +16,7 @@ $isAdmin = isAdmin();
 $rawBody = '';
 $input   = [];
 if (!empty($_POST)) {
-    $input = $_POST;
+    $input = $_POST; 
 } else {
     $rawBody = file_get_contents('php://input');
     if (!empty($rawBody)) {
@@ -54,13 +54,19 @@ $db->query("CREATE TABLE IF NOT EXISTS messages (
 $db->query("ALTER TABLE conversations ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
 
 // ── GET conversations ─────────────────────────────────────────────
+// NOTE: last_message is the text of the most recent message in the
+// thread. The frontend now shows this instead of `subject`, so the
+// list no longer displays a leftover "General Inquiry" / category label.
 if ($action === 'get_conversations') {
     if ($isAdmin) {
         $stmt = $db->prepare("
             SELECT c.*, u.name AS customer_name, u.email AS customer_email,
                    u.user_id, u.profile_photo,
                    SUM(CASE WHEN m.is_read=0 AND m.sender_type='customer' THEN 1 ELSE 0 END) AS unread_count,
-                   MAX(m.created_at) AS last_message_at
+                   MAX(m.created_at) AS last_message_at,
+                   (SELECT lm.message FROM messages lm
+                    WHERE lm.conversation_id = c.conversation_id
+                    ORDER BY lm.created_at DESC LIMIT 1) AS last_message
             FROM conversations c
             JOIN users u ON u.user_id = c.user_id
             LEFT JOIN messages m ON m.conversation_id = c.conversation_id
@@ -72,7 +78,10 @@ if ($action === 'get_conversations') {
         $stmt = $db->prepare("
             SELECT c.*,
                    SUM(CASE WHEN m.is_read=0 AND m.sender_type='admin' THEN 1 ELSE 0 END) AS unread_count,
-                   MAX(m.created_at) AS last_message_at
+                   MAX(m.created_at) AS last_message_at,
+                   (SELECT lm.message FROM messages lm
+                    WHERE lm.conversation_id = c.conversation_id
+                    ORDER BY lm.created_at DESC LIMIT 1) AS last_message
             FROM conversations c
             LEFT JOIN messages m ON m.conversation_id = c.conversation_id
             WHERE c.user_id = ?

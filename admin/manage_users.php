@@ -34,7 +34,6 @@ if (isset($_GET['msg'])) $msg = match($_GET['msg']) {
 /* ── Filters ── */
 $search    = trim($_GET['search'] ?? '');
 $roleFilter = $_GET['role'] ?? '';
-$memberFilter = $_GET['member'] ?? '';
 
 $where  = ['1=1'];
 $params = [];
@@ -51,11 +50,6 @@ if ($roleFilter) {
     $where[] = 'u.role = ?';
     $types  .= 's';
     $params[] = $roleFilter;
-}
-if ($memberFilter) {
-    $where[] = 'u.member_status = ?';
-    $types  .= 's';
-    $params[] = $memberFilter;
 }
 
 $sql = "SELECT u.*,
@@ -80,7 +74,6 @@ $totalAdmins  = (int)$db->query("SELECT COUNT(*) FROM users WHERE role='admin'")
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Manage Users — OrderSync Admin</title>
-<link rel="stylesheet" href="../css/style.css">
 <link rel="stylesheet" href="../css/admin.css">
 </head>
 <body>
@@ -105,19 +98,12 @@ require_once '../includes/security.php'; if ($msg): ?>
 require_once '../includes/security.php'; endif; ?>
 
       <!-- Stats -->
-      <div class="stats-grid mb-24" style="grid-template-columns:repeat(3,1fr);">
+      <div class="stats-grid mb-24" style="grid-template-columns:repeat(2,1fr);">
         <div class="stat-card">
           <div class="stat-icon stat-icon-blue">👥</div>
           <div>
             <div class="stat-val"><?= $totalUsers ?></div>
             <div class="stat-lbl">Total Customers</div>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon stat-icon-amber">⭐</div>
-          <div>
-            <div class="stat-val"><?= $totalMembers ?></div>
-            <div class="stat-lbl">Members</div>
           </div>
         </div>
         <div class="stat-card">
@@ -143,14 +129,6 @@ require_once '../includes/security.php'; endif; ?>
               <option value="">All Roles</option>
               <option value="customer" <?= $roleFilter==='customer'?'selected':'' ?>>Customer</option>
               <option value="admin"    <?= $roleFilter==='admin'   ?'selected':'' ?>>Admin</option>
-            </select>
-          </div>
-          <div class="form-group" style="margin:0;">
-            <label class="form-label">Membership</label>
-            <select name="member" class="form-control">
-              <option value="">All</option>
-              <option value="member"     <?= $memberFilter==='member'    ?'selected':'' ?>>Member</option>
-              <option value="non-member" <?= $memberFilter==='non-member'?'selected':'' ?>>Non-Member</option>
             </select>
           </div>
           <div style="display:flex;gap:8px;">
@@ -179,7 +157,7 @@ require_once '../includes/security.php'; endif; ?>
             <tbody>
               <?php
 require_once '../includes/security.php'; if (empty($users)): ?>
-              <tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-3);">No users found.</td></tr>
+              <tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-3);">No users found.</td></tr>
               <?php
 require_once '../includes/security.php'; endif; ?>
               <?php
@@ -201,11 +179,6 @@ require_once '../includes/security.php'; foreach ($users as $u): ?>
                 <td>
                   <span class="badge <?= $u['role']==='admin'?'badge-blue':'badge-gray' ?>">
                     <?= $u['role']==='admin'?'⚙️ Admin':'👤 Customer' ?>
-                  </span>
-                </td>
-                <td>
-                  <span class="badge <?= $u['member_status']==='member'?'badge-amber':'badge-gray' ?>">
-                    <?= $u['member_status']==='member'?' Member':'Non-Member' ?>
                   </span>
                 </td>
                 <td style="text-align:center;font-weight:600;"><?= $u['order_count'] ?></td>
@@ -243,44 +216,29 @@ require_once '../includes/security.php'; endforeach; ?>
 <div class="modal-overlay" id="editModal">
   <div class="modal" style="max-width:480px;">
     <div class="modal-header">
-      <h3>✏️ Edit User</h3>
+      <h3>👁️ View User</h3>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
-    <form method="POST">
-      <div class="modal-body">
-        <input type="hidden" name="update_membership" value="1">
-        <input type="hidden" name="user_id" id="editUserId">
-
-        <div class="form-group">
-          <label class="form-label">Name</label>
-          <input type="text" id="editName" class="form-control" disabled>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Email</label>
-          <input type="text" id="editEmail" class="form-control" disabled>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Membership Status</label>
-          <select name="member_status" id="editMembership" class="form-control">
-            <option value="non-member">Non-Member</option>
-            <option value="member"> Member</option>
-          </select>
-        </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Name</label>
+        <input type="text" id="editName" class="form-control" disabled>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
-        <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="text" id="editEmail" class="form-control" disabled>
       </div>
-    </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" onclick="closeModal()">Close</button>
+    </div>
   </div>
 </div>
 
 <script>
 function openEdit(user) {
-  document.getElementById('editUserId').value    = user.user_id;
-  document.getElementById('editName').value      = user.name;
-  document.getElementById('editEmail').value     = user.email;
-  document.getElementById('editMembership').value = user.member_status;
+  document.getElementById('editName').value  = user.name;
+  document.getElementById('editEmail').value = user.email;
   document.getElementById('editModal').classList.add('open');
 }
 function closeModal() {

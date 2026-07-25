@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'resen
         $sent = send_mail(
             $email,
             $pending['name'],
-            'Verify your email — Marguax CollectionCorp',
+            'Verify your email — Marguax Collection',
             otp_email_html($otp, 'register', 10)
         );
 
@@ -117,28 +117,38 @@ $masked     = substr($emailParts[0], 0, 1) . str_repeat('*', max(1, strlen($emai
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Verify Email — Marguax CollectionCorp</title>
+<title>Verify Email — Marguax Collection</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Plus Jakarta Sans','Sora',sans-serif;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px;background:linear-gradient(135deg,#0b1f3a 0%,#112d52 50%,#1a4070 100%);color:#fff}
-a{text-decoration:none;color:#2563eb;font-weight:600}
+:root{
+  --noir-1:#1a0509;
+  --noir-2:#3d1020;
+  --noir-3:#4a1626;
+  --rose:#c45064;
+  --rose-dark:#a83d50;
+  --rose-light:#d97a8c;
+  --gold:#c8a96a;
+  --gold-light:#d9bd8a;
+}
+body{font-family:'Plus Jakarta Sans','Sora',sans-serif;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px;background:linear-gradient(135deg,var(--noir-1) 0%,var(--noir-2) 55%,var(--noir-3) 100%);color:#fff}
+a{text-decoration:none;color:var(--rose);font-weight:600}
 .card{background:rgba(255,255,255,.10);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.2);border-radius:20px;box-shadow:0 24px 80px rgba(0,0,0,.4);padding:56px 52px;width:100%;max-width:480px;color:#fff;text-align:center}
 .logo{display:flex;align-items:center;gap:12px;margin-bottom:36px;justify-content:center}
 .logo-img{width:48px;height:48px;border-radius:50%;border:2px solid rgba(255,255,255,.3);object-fit:cover;flex-shrink:0}
 .logo-name{font-weight:800;font-size:1rem;color:#fff;line-height:1.1;text-align:left}
-.logo-sub{font-size:.65rem;color:#f59e0b;font-weight:600;text-transform:uppercase;letter-spacing:.08em}
-.step-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(37,99,235,.2);border:1px solid rgba(37,99,235,.4);border-radius:20px;padding:6px 14px;font-size:.78rem;font-weight:600;color:rgba(255,255,255,.8);margin-bottom:24px}
-.step-dot{width:8px;height:8px;border-radius:50%;background:#2563eb}
-.icon{width:64px;height:64px;background:rgba(37,99,235,.2);border:2px solid rgba(37,99,235,.4);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:28px}
+.logo-sub{font-size:.65rem;color:var(--gold);font-weight:600;text-transform:uppercase;letter-spacing:.08em}
+.step-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(196,80,100,.18);border:1px solid rgba(196,80,100,.4);border-radius:20px;padding:6px 14px;font-size:.78rem;font-weight:600;color:rgba(255,255,255,.8);margin-bottom:24px}
+.step-dot{width:8px;height:8px;border-radius:50%;background:var(--rose)}
+.icon{width:64px;height:64px;background:rgba(196,80,100,.18);border:2px solid rgba(196,80,100,.4);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:28px}
 h1{font-size:1.8rem;font-weight:800;margin-bottom:8px}
 .subtitle{color:rgba(255,255,255,.65);font-size:.9rem;line-height:1.6;margin-bottom:32px}
 .subtitle strong{color:#fff}
 .otp-group{display:flex;gap:10px;justify-content:center;margin-bottom:24px}
 .otp-group input{width:52px;height:60px;text-align:center;font-size:1.5rem;font-weight:800;border:1.5px solid rgba(255,255,255,.3);border-radius:12px;background:rgba(255,255,255,.12);color:#fff;outline:none;transition:border-color .2s,box-shadow .2s;font-family:monospace}
-.otp-group input:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.2)}
-.otp-group input.filled{border-color:rgba(37,99,235,.6);background:rgba(37,99,235,.15)}
-.btn{display:block;width:100%;padding:14px;background:#2563eb;color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;transition:background .2s,transform .1s;font-family:inherit;margin-bottom:12px}
-.btn:hover{background:#1d4ed8}
+.otp-group input:focus{border-color:var(--rose);box-shadow:0 0 0 3px rgba(196,80,100,.25)}
+.otp-group input.filled{border-color:rgba(200,169,106,.7);background:rgba(200,169,106,.15)}
+.btn{display:block;width:100%;padding:14px;background:var(--rose);color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;transition:background .2s,transform .1s;font-family:inherit;margin-bottom:12px}
+.btn:hover{background:var(--rose-dark)}
 .btn:active{transform:scale(.98)}
 .btn-ghost{display:block;width:100%;padding:12px;background:transparent;color:rgba(255,255,255,.7);border:1.5px solid rgba(255,255,255,.2);border-radius:12px;font-size:.9rem;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s,border-color .2s}
 .btn-ghost:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.35)}
@@ -148,13 +158,13 @@ h1{font-size:1.8rem;font-weight:800;margin-bottom:8px}
 .divider{height:1px;background:rgba(255,255,255,.15);margin:20px 0}
 .back{font-size:.85rem;color:rgba(255,255,255,.55)}
 .timer{font-size:.8rem;color:rgba(255,255,255,.5);margin-top:10px}
-.timer span{color:#f59e0b;font-weight:700}
+.timer span{color:var(--gold);font-weight:700}
 </style>
 </head>
 <body>
 <div class="card">
   <div class="logo">
-    <img class="logo-img" src="/Marguax_Collection/images/logo.png" alt="Logo">
+    <img class="logo-img" src="/Marguax_Collection/images/logo.jpg" alt="Logo">
     <div><div class="logo-name">Marguax Collection</div><div class="logo-sub"></div></div>
   </div>
 

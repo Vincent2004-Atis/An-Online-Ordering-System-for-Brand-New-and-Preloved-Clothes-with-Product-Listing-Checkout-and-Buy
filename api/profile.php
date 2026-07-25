@@ -26,7 +26,7 @@ $userId = (int)$_SESSION['user_id'];
 
 // ── GET: fetch profile ─────────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $stmt = $db->prepare("SELECT user_id, name, email, contact_number, address, member_status, role, created_at FROM users WHERE user_id=?");
+    $stmt = $db->prepare("SELECT user_id, name, email, contact_number, address, role, created_at FROM users WHERE user_id=?");
     $stmt->bind_param('i', $userId);
     $stmt->execute();
     $user = $stmt->get_result()->fetch_assoc();

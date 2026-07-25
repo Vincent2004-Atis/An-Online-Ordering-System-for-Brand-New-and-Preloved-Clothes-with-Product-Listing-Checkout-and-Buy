@@ -79,7 +79,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['otp'])) {
             $_SESSION['user_id']       = $pending['user_id'];
             $_SESSION['name']          = $pending['name'];
             $_SESSION['role']          = $pending['role'];
-            $_SESSION['member_status'] = $pending['member_status'];
             $_SESSION['last_activity'] = time();
             unset($_SESSION['otp_pending']);
 
@@ -331,7 +330,7 @@ h1 {
 
   <div class="brand-logo">
     <div class="logo-circle">
-      <img src="/Marguax_Collection/images/logo.png" alt="Logo"
+      <img src="/Marguax_Collection/images/logo.jpg" alt="Logo"
            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
       <span class="logo-fallback" style="display:none">M</span>
     </div>
@@ -341,7 +340,6 @@ h1 {
     </div>
   </div>
 
-  <div class="icon-badge">📧</div>
   <h1>Check your email</h1>
   <p class="subtitle">
     We sent a 6-digit code to<br>
