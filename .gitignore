@@ -1,0 +1,18 @@
+# Dependencies
+/vendor/
+
+# User-uploaded content (profile pictures, etc.)
+/uploads/*
+!/uploads/.gitkeep
+
+# Environment / local config (uncomment if you create one)
+# .env
+
+# Log files
+mail_error.txt
+*.log
+
+# OS/editor junk
+.DS_Store
+Thumbs.db
+.vscode/
