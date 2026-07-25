@@ -10,11 +10,11 @@ $hpSlots = $db->query("SELECT * FROM homepage_slots")->fetch_all(MYSQLI_ASSOC);
 $hp = [];
 foreach ($hpSlots as $s) $hp[$s['slot_id']] = $s['image_path'];
 $hp += [
-    'featured'    => 'images/products/female-scent.jpg',
-    'dresses'     => 'images/products/female-scent.jpg',
-    'tops'        => 'images/products/boosters.jpg',
-    'preowned'    => 'images/products/immukira.jpg',
-    'accessories' => 'images/products/soap.jpg',
+    'featured'    => '',
+    'dresses'     => '',
+    'tops'        => '',
+    'preowned'    => '',
+    'accessories' => '',
 ];
 ?>
 <!DOCTYPE html>
@@ -542,7 +542,6 @@ footer{background:#05030a;color:rgba(255,255,255,.5);padding:68px 56px 36px;bord
         <a href="#packages">Reseller Packages</a>
         <a href="auth/login.php">Login</a>
         <a href="auth/register.php">Register</a>
-        <a href="https://www.awmc.io">www.awmc.io</a>
       </div>
     </div>
     <div class="footer-bottom">

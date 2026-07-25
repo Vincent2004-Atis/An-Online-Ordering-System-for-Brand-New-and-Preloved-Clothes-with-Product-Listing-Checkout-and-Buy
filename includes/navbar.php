@@ -383,7 +383,7 @@ $isOrderActive    = $currentPage === 'my_orders.php';
 <!-- ================================================================
   CUSTOMER SUPPORT CHAT BUBBLE — BABY PINK
 ================================================================ -->
-<div id="awmcChat" style="position:fixed;bottom:24px;right:24px;z-index:9000;font-family:inherit;">
+<div id="supportChatWidget" style="position:fixed;bottom:24px;right:24px;z-index:9000;font-family:inherit;">
 
   <!-- Toggle button -->
   <button id="chatBubbleBtn" onclick="chatToggle()" title="Customer Support"
@@ -461,7 +461,7 @@ $isOrderActive    = $currentPage === 'my_orders.php';
     </div>
 
   </div><!-- /chatWindow -->
-</div><!-- /awmcChat -->
+</div><!-- /supportChatWidget -->
 
 <style>
 @keyframes chatPulse {
@@ -698,7 +698,7 @@ function escHtml(str) {
   }, 30000);
 
   document.addEventListener('click', function (e) {
-    const widget = document.getElementById('awmcChat');
+    const widget = document.getElementById('supportChatWidget');
     const navbar = document.querySelector('.navbar');
     if (widget && !widget.contains(e.target) && chatIsOpen) {
       if (navbar && navbar.contains(e.target)) return;
