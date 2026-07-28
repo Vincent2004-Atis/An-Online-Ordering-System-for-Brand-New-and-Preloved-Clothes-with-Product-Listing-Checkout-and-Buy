@@ -707,6 +707,7 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
             <div class="chart-box-head"><h4>🚚 Order Methods</h4></div>
             <div class="chart-wrap" style="height:200px;"><canvas id="methodChart"></canvas></div>
           </div>
+        </div>
 
         <!-- Monthly Sales Table -->
         <div class="chart-box" style="margin-top:20px;">
@@ -875,7 +876,7 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
               <div class="kpi-icon-wrap" style="background:#dbeafe;">👥</div>
             </div>
             <div class="kpi-val"><?= $totalCustomers ?></div>
-            <div class="kpi-sub"><?= $totalMembers ?> members enrolled</div>
+            <div class="kpi-sub"><?= $totalCustomers ?> registered accounts</div>
           </div>
           <div class="kpi-card" style="--accent:#c8a96a;">
             <div class="kpi-card-head">

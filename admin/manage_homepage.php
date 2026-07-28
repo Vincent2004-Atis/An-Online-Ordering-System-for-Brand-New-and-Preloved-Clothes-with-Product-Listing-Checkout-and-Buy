@@ -8,41 +8,61 @@ $db = getDB();
 $msg    = '';
 $errors = [];
 
-// Save / replace one slot's image
+// Save / replace one slot's image and/or price label
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_verify();
-    $slotId = clean($_POST['slot_id'] ?? '', 30);
+    $slotId    = clean($_POST['slot_id'] ?? '', 30);
+    $priceLabel = clean($_POST['price_label'] ?? '', 50);
     $validSlots = ['featured','dresses','tops','preowned','accessories'];
 
     if (!in_array($slotId, $validSlots, true)) {
         $errors[] = 'Invalid slot.';
-    } elseif (empty($_FILES['image']['name'])) {
-        $errors[] = 'Please choose a photo to upload.';
     } else {
-        $check = validate_image($_FILES['image'], 3);
-        if (!$check['ok']) {
-            $errors[] = $check['error'];
-        } else {
-            $uploadDir = '../images/homepage/';
-            if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
-            $filename = safe_filename($check['ext']);
-            if (move_uploaded_file($_FILES['image']['tmp_name'], $uploadDir . $filename)) {
-                $imagePath = 'images/homepage/' . $filename;
+        $hasImage = !empty($_FILES['image']['name']);
+        $imagePath = null;
+
+        if ($hasImage) {
+            $check = validate_image($_FILES['image'], 3);
+            if (!$check['ok']) {
+                $errors[] = $check['error'];
+            } else {
+                $uploadDir = '../images/homepage/';
+                if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
+                $filename = safe_filename($check['ext']);
+                if (move_uploaded_file($_FILES['image']['tmp_name'], $uploadDir . $filename)) {
+                    $imagePath = 'images/homepage/' . $filename;
+                } else {
+                    $errors[] = 'Image upload failed.';
+                }
+            }
+        }
+
+        if (empty($errors)) {
+            if ($imagePath !== null && $priceLabel !== '') {
+                $s = $db->prepare("UPDATE homepage_slots SET image_path=?, price_label=? WHERE slot_id=?");
+                $s->bind_param('sss', $imagePath, $priceLabel, $slotId);
+            } elseif ($imagePath !== null) {
                 $s = $db->prepare("UPDATE homepage_slots SET image_path=? WHERE slot_id=?");
                 $s->bind_param('ss', $imagePath, $slotId);
+            } elseif ($priceLabel !== '') {
+                $s = $db->prepare("UPDATE homepage_slots SET price_label=? WHERE slot_id=?");
+                $s->bind_param('ss', $priceLabel, $slotId);
+            } else {
+                $errors[] = 'Please choose a photo and/or enter a price.';
+            }
+
+            if (empty($errors) && isset($s)) {
                 $s->execute();
                 $s->close();
                 header('Location: manage_homepage.php?msg=updated');
                 exit;
-            } else {
-                $errors[] = 'Image upload failed.';
             }
         }
     }
 }
 
 if (isset($_GET['msg'])) $msg = match($_GET['msg']) {
-    'updated' => '✅ Photo updated on homepage.',
+    'updated' => '✅ Homepage slot updated.',
     default   => ''
 };
 
@@ -91,6 +111,21 @@ foreach ($slots as $s) $slotsById[$s['slot_id']] = $s;
 .slot-form input[type=file]::file-selector-button:hover{
   background:#b03e52;
 }
+.slot-form input[type=text]{
+  width:100%;
+  padding:8px 10px;
+  margin-bottom:8px;
+  border-radius:6px;
+  border:1px solid rgba(196,80,100,.3);
+  background:#1f0810;
+  color:#f3e6e9;
+  font-size:.85rem;
+}
+.slot-current-price{
+  font-size:.78rem;
+  color:#c9a0a8;
+  margin-bottom:8px;
+}
 </style>
 </head>
 <body>
@@ -112,6 +147,7 @@ foreach ($slots as $s) $slotsById[$s['slot_id']] = $s;
           <div class="slots-grid">
             <?php
             $order = ['featured'=>'🌟 Featured Outfit','dresses'=>'👗 Dresses','tops'=>'👚 Tops & Blouses','preowned'=>' Pre-Loved','accessories'=>'👜 Accessories'];
+            $hasPriceField = ['dresses','tops','preowned','accessories']; // featured slot has no price tag on homepage
             foreach ($order as $id => $title):
               $slot = $slotsById[$id] ?? null;
               if (!$slot) continue;
@@ -123,8 +159,12 @@ foreach ($slots as $s) $slotsById[$s['slot_id']] = $s;
                 <form method="POST" enctype="multipart/form-data" class="slot-form">
                   <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                   <input type="hidden" name="slot_id" value="<?= e($slot['slot_id']) ?>">
-                  <input type="file" name="image" accept="image/jpeg,image/png,image/gif,image/webp" class="form-control" required style="margin-bottom:8px;">
-                  <button type="submit" class="btn btn-primary btn-sm" style="width:100%;">⬆️ Change Photo</button>
+                  <input type="file" name="image" accept="image/jpeg,image/png,image/gif,image/webp" class="form-control" style="margin-bottom:8px;">
+                  <?php if (in_array($id, $hasPriceField, true)): ?>
+                    <div class="slot-current-price">Current: <?= e($slot['price_label'] ?: 'Not set') ?></div>
+                    <input type="text" name="price_label" placeholder="e.g. Starting at ₱299" value="<?= e($slot['price_label'] ?? '') ?>">
+                  <?php endif; ?>
+                  <button type="submit" class="btn btn-primary btn-sm" style="width:100%;">💾 Save Changes</button>
                 </form>
               </div>
             </div>

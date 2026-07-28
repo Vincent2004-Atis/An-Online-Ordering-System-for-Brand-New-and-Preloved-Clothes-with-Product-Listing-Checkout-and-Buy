@@ -8,9 +8,19 @@ require_once 'config/database.php';
 $db = getDB();
 $hpSlots = $db->query("SELECT * FROM homepage_slots")->fetch_all(MYSQLI_ASSOC);
 $hp = [];
-foreach ($hpSlots as $s) $hp[$s['slot_id']] = $s['image_path'];
+$hpPrice = [];
+foreach ($hpSlots as $s) {
+    $hp[$s['slot_id']] = $s['image_path'];
+    $hpPrice[$s['slot_id']] = $s['price_label'] ?? '';
+}
 $hp += [
     'featured'    => '',
+    'dresses'     => '',
+    'tops'        => '',
+    'preowned'    => '',
+    'accessories' => '',
+];
+$hpPrice += [
     'dresses'     => '',
     'tops'        => '',
     'preowned'    => '',
@@ -397,7 +407,7 @@ footer{background:#05030a;color:rgba(255,255,255,.5);padding:68px 56px 36px;bord
         <div class="cat-overlay">
           <span class="cat-pill">Brand New</span>
           <div class="cat-name">Dresses</div>
-          <div class="cat-count">85+ pieces</div>
+          <div class="cat-count"><?= htmlspecialchars($hpPrice['dresses'] ?: 'Starting at ₱299') ?></div>
        </div>
        <div class="cat-arrow">→</div>
      </div>
@@ -407,7 +417,7 @@ footer{background:#05030a;color:rgba(255,255,255,.5);padding:68px 56px 36px;bord
         <div class="cat-overlay">
           <span class="cat-pill">Brand New</span>
           <div class="cat-name">Tops & Blouses</div>
-          <div class="cat-count">120+ pieces</div>
+          <div class="cat-count"><?= htmlspecialchars($hpPrice['tops'] ?: 'Starting at ₱199') ?></div>
        </div>
        <div class="cat-arrow">→</div>
      </div>
@@ -417,7 +427,7 @@ footer{background:#05030a;color:rgba(255,255,255,.5);padding:68px 56px 36px;bord
         <div class="cat-overlay">
           <span class="cat-pill" style="background:linear-gradient(135deg,var(--gold),#a07830)">Pre-Loved</span>
           <div class="cat-name">Designer Finds</div>
-          <div class="cat-count">200+ pieces</div>
+          <div class="cat-count"><?= htmlspecialchars($hpPrice['preowned'] ?: 'Starting at ₱499') ?></div>
        </div>
        <div class="cat-arrow">→</div>
      </div>
@@ -427,7 +437,7 @@ footer{background:#05030a;color:rgba(255,255,255,.5);padding:68px 56px 36px;bord
         <div class="cat-overlay">
           <span class="cat-pill" style="background:rgba(255,255,255,.15);backdrop-filter:blur(6px)">Accessories</span>
           <div class="cat-name">Bags & More</div>
-          <div class="cat-count">60+ items</div>
+          <div class="cat-count"><?= htmlspecialchars($hpPrice['accessories'] ?: 'Starting at ₱99') ?></div>
        </div>
        <div class="cat-arrow">→</div>
      </div>
