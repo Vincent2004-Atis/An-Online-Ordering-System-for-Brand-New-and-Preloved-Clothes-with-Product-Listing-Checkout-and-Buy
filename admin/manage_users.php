@@ -144,7 +144,6 @@ require_once '../includes/security.php'; endif; ?>
           <table>
             <thead>
               <tr>
-                <th>#</th>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Contact</th>
@@ -157,13 +156,12 @@ require_once '../includes/security.php'; endif; ?>
             <tbody>
               <?php
 require_once '../includes/security.php'; if (empty($users)): ?>
-              <tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-3);">No users found.</td></tr>
+              <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-3);">No users found.</td></tr>
               <?php
 require_once '../includes/security.php'; endif; ?>
               <?php
 require_once '../includes/security.php'; foreach ($users as $u): ?>
               <tr>
-                <td><strong>#<?= $u['user_id'] ?></strong></td>
                 <td>
                   <div style="font-weight:600;"><?= htmlspecialchars($u['name']) ?></div>
                 </td>

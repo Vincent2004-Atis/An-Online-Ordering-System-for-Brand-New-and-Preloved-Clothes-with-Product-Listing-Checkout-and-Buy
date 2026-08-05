@@ -562,7 +562,7 @@ footer a:hover { color: #e8a0a8 !important; padding-left: 4px !important; }
              alt="<?= htmlspecialchars($p['product_name']) ?>"
              onerror="this.src='../images/product-placeholder.jpg'">
         <?php if ($p['stock'] <= 10 && $p['stock'] > 0): ?>
-          <span class="product-type-badge" style="background:rgba(196,80,100,.18)!important;color:#e8a0a8!important;border:1px solid rgba(196,80,100,.45)!important;">Low Stock</span>
+
         <?php elseif ($p['stock'] == 0): ?>
           <span class="product-type-badge" style="background:rgba(42,13,20,.7)!important;color:#5a4a42!important;border:1px solid rgba(196,80,100,.1)!important;">Sold Out</span>
         <?php endif; ?>

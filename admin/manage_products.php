@@ -56,10 +56,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    if (empty($errors)) {
+if (empty($errors)) {
         if ($pid > 0) {
-            $s = $db->prepare("UPDATE products SET product_name=?,description=?,price=?,image=?,stock=?,category_id=? WHERE product_id=?");
-            $s->bind_param('ssdsiii',$name,$desc,$price,$image,$stock,$catId,$pid);
+            // Get old stock first (replicates the old sold-out trigger logic in PHP)
+            $oldStockStmt = $db->prepare("SELECT stock FROM products WHERE product_id=?");
+            $oldStockStmt->bind_param('i', $pid);
+            $oldStockStmt->execute();
+            $oldStock = (int)($oldStockStmt->get_result()->fetch_assoc()['stock'] ?? 0);
+            $oldStockStmt->close();
+
+            if ($stock == 0 && $oldStock != 0) {
+                // Went out of stock — mark sold_out_at
+                $s = $db->prepare("UPDATE products SET product_name=?,description=?,price=?,image=?,stock=?,category_id=?,sold_out_at=NOW() WHERE product_id=?");
+                $s->bind_param('ssdsiii',$name,$desc,$price,$image,$stock,$catId,$pid);
+            } elseif ($stock > 0) {
+                // Back in stock — clear sold_out_at
+                $s = $db->prepare("UPDATE products SET product_name=?,description=?,price=?,image=?,stock=?,category_id=?,sold_out_at=NULL WHERE product_id=?");
+                $s->bind_param('ssdsiii',$name,$desc,$price,$image,$stock,$catId,$pid);
+            } else {
+                // stock stayed at 0 — leave sold_out_at as is
+                $s = $db->prepare("UPDATE products SET product_name=?,description=?,price=?,image=?,stock=?,category_id=? WHERE product_id=?");
+                $s->bind_param('ssdsiii',$name,$desc,$price,$image,$stock,$catId,$pid);
+            }
             $s->execute(); $s->close();
             header('Location: manage_products.php?msg=updated'); exit;
         } else {

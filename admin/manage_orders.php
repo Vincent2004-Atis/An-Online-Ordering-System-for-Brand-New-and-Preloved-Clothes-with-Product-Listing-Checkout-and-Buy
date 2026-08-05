@@ -76,6 +76,57 @@ $statusBadge = ['pending'=>'badge-amber','processing'=>'badge-blue','completed'=
 $payBadge    = ['pending'=>'badge-amber','pending_verification'=>'badge-blue','paid'=>'badge-green'];
 $payLabels   = ['cash_on_pickup'=>'💵 Cash Pickup','cash_on_delivery'=>'🏠 Cash Delivery','gcash'=>'📱 GCash','bank_transfer'=>'🏦 Cash On Delivery'];
 $payStatusLabels = ['pending'=>'Pending','pending_verification'=>'For Verification','paid'=>'Paid'];
+
+/**
+ * Renders the <table>...</table> markup for the orders list.
+ * Shared between the normal full-page load and the AJAX auto-filter
+ * response, so the two never fall out of sync.
+ */
+function renderOrdersTable(array $orders, array $statusBadge, array $payBadge, array $payLabels, array $payStatusLabels): void {
+?>
+<table>
+  <thead><tr><th>Customer</th><th>Method</th><th>Payment</th><th>Total</th><th>Order Status</th><th>Pay Status</th><th>Date</th><th>Actions</th></tr></thead>
+  <tbody>
+    <?php if (empty($orders)): ?>
+    <tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-3);">No orders found.</td></tr>
+    <?php endif; ?>
+    <?php foreach ($orders as $o): ?>
+    <tr>
+      <td><div style="font-weight:600;"><?= e($o['uname']) ?></div><div style="font-size:.75rem;color:var(--text-3);"><?= e($o['contact_number']) ?></div></td>
+      <td><?= $o['order_method']==='pickup'?' PICKUP':' SHIPPING' ?></td>
+      <td style="font-size:.82rem;">
+        <?= $payLabels[$o['payment_method']]??e($o['payment_method']) ?>
+        <?php if ($o['payment_method']==='gcash' && !empty($o['gcash_reference'])): ?>
+          <div style="font-size:.72rem;color:var(--text-3);margin-top:2px;">Ref: <strong><?= e($o['gcash_reference']) ?></strong></div>
+        <?php endif; ?>
+      </td>
+      <td><strong>₱<?= number_format((float)$o['total_amount'],2) ?></strong></td>
+      <td><span class="badge <?= $statusBadge[$o['order_status']]??'badge-gray' ?>"><?= ucfirst(e($o['order_status'])) ?></span></td>
+      <td><span class="badge <?= $payBadge[$o['payment_status']]??'badge-gray' ?>"><?= e($payStatusLabels[$o['payment_status']] ?? ucfirst($o['payment_status'])) ?></span></td>
+      <td style="font-size:.78rem;"><?= date('M d, Y H:i', strtotime($o['order_date'])) ?></td>
+      <td><button class="btn btn-outline btn-sm" onclick="openEdit(<?= htmlspecialchars(json_encode($o), ENT_QUOTES) ?>)">✏️ Edit</button></td>
+    </tr>
+    <?php endforeach; ?>
+  </tbody>
+</table>
+<?php
+}
+
+// ── AJAX auto-filter endpoint ────────────────────────────────────────────
+// Same file, same query logic above — just returns a JSON fragment instead
+// of the full page when ?ajax=1 is present. This is what makes the search
+// box / dropdowns auto-update without a page reload or clicking Filter.
+if (isset($_GET['ajax'])) {
+    header('Content-Type: application/json');
+    ob_start();
+    renderOrdersTable($orders, $statusBadge, $payBadge, $payLabels, $payStatusLabels);
+    $tableHtml = ob_get_clean();
+    echo json_encode([
+        'count' => count($orders),
+        'html'  => $tableHtml,
+    ]);
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -92,22 +143,22 @@ $payStatusLabels = ['pending'=>'Pending','pending_verification'=>'For Verificati
     <div class="admin-topbar">
       <span class="admin-topbar-title">📋 Manage Orders</span>
       <div class="admin-topbar-actions">
-        <span class="badge badge-blue"><?= count($orders) ?> result<?= count($orders)!=1?'s':'' ?></span>
+        <span class="badge badge-blue" id="resultCount"><?= count($orders) ?> result<?= count($orders)!=1?'s':'' ?></span>
       </div>
     </div>
     <div class="admin-page">
       <?php if (isset($_GET['updated'])): ?>
         <div class="alert alert-success">✅ Order updated successfully.</div>
       <?php endif; ?>
-      <form method="GET" class="card mb-24">
+      <form method="GET" class="card mb-24" id="filterForm">
         <div class="card-body" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
           <div class="form-group" style="margin:0;flex:1;min-width:180px;">
             <label class="form-label">Search</label>
-            <input type="text" name="search" class="form-control" placeholder="Name, order #, phone..." value="<?= e($search) ?>" maxlength="100">
+            <input type="text" name="search" id="searchInput" class="form-control" placeholder="Name, order #, phone..." value="<?= e($search) ?>" maxlength="100">
           </div>
           <div class="form-group" style="margin:0;">
             <label class="form-label">Order Status</label>
-            <select name="status" class="form-control">
+            <select name="status" id="statusSelect" class="form-control">
               <option value="">All Statuses</option>
               <option value="pending"    <?= $filterStatus==='pending'   ?'selected':'' ?>>Pending</option>
               <option value="processing" <?= $filterStatus==='processing'?'selected':'' ?>>Processing</option>
@@ -116,46 +167,19 @@ $payStatusLabels = ['pending'=>'Pending','pending_verification'=>'For Verificati
           </div>
           <div class="form-group" style="margin:0;">
             <label class="form-label">Payment Status</label>
-            <select name="payment" class="form-control">
+            <select name="payment" id="paymentSelect" class="form-control">
               <option value="">All</option>
               <option value="pending" <?= $filterPayment==='pending'?'selected':'' ?>>Pending</option>
               <option value="pending_verification" <?= $filterPayment==='pending_verification'?'selected':'' ?>>For Verification</option>
               <option value="paid"    <?= $filterPayment==='paid'   ?'selected':'' ?>>Paid</option>
             </select>
           </div>
-          <div style="display:flex;gap:8px;">
-            <button type="submit" class="btn btn-primary">🔍 Filter</button>
-            <a href="manage_orders.php" class="btn btn-outline">✕ Clear</a>
-          </div>
+         
         </div>
       </form>
       <div class="card">
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Customer</th><th>Method</th><th>Payment</th><th>Total</th><th>Order Status</th><th>Pay Status</th><th>Date</th><th>Actions</th></tr></thead>
-            <tbody>
-              <?php if (empty($orders)): ?>
-              <tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-3);">No orders found.</td></tr>
-              <?php endif; ?>
-              <?php foreach ($orders as $o): ?>
-              <tr>
-                <td><div style="font-weight:600;"><?= e($o['uname']) ?></div><div style="font-size:.75rem;color:var(--text-3);"><?= e($o['contact_number']) ?></div></td>
-                <td><?= $o['order_method']==='pickup'?' PICKUP':' SHIPPING' ?></td>
-                <td style="font-size:.82rem;">
-                  <?= $payLabels[$o['payment_method']]??e($o['payment_method']) ?>
-                  <?php if ($o['payment_method']==='gcash' && !empty($o['gcash_reference'])): ?>
-                    <div style="font-size:.72rem;color:var(--text-3);margin-top:2px;">Ref: <strong><?= e($o['gcash_reference']) ?></strong></div>
-                  <?php endif; ?>
-                </td>
-                <td><strong>₱<?= number_format((float)$o['total_amount'],2) ?></strong></td>
-                <td><span class="badge <?= $statusBadge[$o['order_status']]??'badge-gray' ?>"><?= ucfirst(e($o['order_status'])) ?></span></td>
-                <td><span class="badge <?= $payBadge[$o['payment_status']]??'badge-gray' ?>"><?= e($payStatusLabels[$o['payment_status']] ?? ucfirst($o['payment_status'])) ?></span></td>
-                <td style="font-size:.78rem;"><?= date('M d, Y H:i', strtotime($o['order_date'])) ?></td>
-                <td><button class="btn btn-outline btn-sm" onclick="openEdit(<?= htmlspecialchars(json_encode($o), ENT_QUOTES) ?>)">✏️ Edit</button></td>
-              </tr>
-              <?php endforeach; ?>
-            </tbody>
-          </table>
+        <div class="table-wrap" id="ordersTableWrap">
+          <?php renderOrdersTable($orders, $statusBadge, $payBadge, $payLabels, $payStatusLabels); ?>
         </div>
       </div>
     </div>
@@ -237,6 +261,70 @@ function openEdit(order) {
 }
 function closeModal() { document.getElementById('editModal').classList.remove('open'); }
 document.getElementById('editModal').addEventListener('click',function(e){ if(e.target===this) closeModal(); });
+
+// ── Auto-filter (no more clicking the Filter button) ─────────────────────
+(function () {
+  const searchInput   = document.getElementById('searchInput');
+  const statusSelect  = document.getElementById('statusSelect');
+  const paymentSelect = document.getElementById('paymentSelect');
+  const tableWrap     = document.getElementById('ordersTableWrap');
+  const resultCount   = document.getElementById('resultCount');
+
+  let debounceTimer = null;
+  let currentRequest = null;
+
+  function buildParams() {
+    const params = new URLSearchParams();
+    if (searchInput.value.trim())  params.set('search', searchInput.value.trim());
+    if (statusSelect.value)        params.set('status', statusSelect.value);
+    if (paymentSelect.value)       params.set('payment', paymentSelect.value);
+    return params;
+  }
+
+  function runFilter() {
+    const params = buildParams();
+
+    // Keep the address bar / refresh / back-button in sync, without reloading.
+    const plainUrl = 'manage_orders.php' + (params.toString() ? '?' + params.toString() : '');
+    history.replaceState(null, '', plainUrl);
+
+    // Abort a stale in-flight request if the user kept typing/filtering.
+    if (currentRequest) currentRequest.abort();
+    const controller = new AbortController();
+    currentRequest = controller;
+
+    const ajaxParams = new URLSearchParams(params);
+    ajaxParams.set('ajax', '1');
+
+    fetch('manage_orders.php?' + ajaxParams.toString(), { signal: controller.signal })
+      .then(res => res.json())
+      .then(data => {
+        tableWrap.innerHTML = data.html;
+        resultCount.textContent = data.count + ' result' + (data.count != 1 ? 's' : '');
+      })
+      .catch(err => {
+        if (err.name !== 'AbortError') console.error('Filter request failed:', err);
+      });
+  }
+
+  // Dropdowns apply immediately.
+  statusSelect.addEventListener('change', runFilter);
+  paymentSelect.addEventListener('change', runFilter);
+
+  // Search box waits until the user pauses typing (500ms).
+  searchInput.addEventListener('input', function () {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(runFilter, 500);
+  });
+
+  // Prevent the visible Filter button from doing a full reload too
+  // (still works fine if JS is disabled, since it's a real <form>).
+  document.getElementById('filterForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    clearTimeout(debounceTimer);
+    runFilter();
+  });
+})();
 </script>
 </body>
 </html>
