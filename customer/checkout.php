@@ -27,16 +27,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $payment   = $_POST['payment_method'] ?? 'cash_on_pickup';
     $accId     = !empty($_POST['payment_account_id']) ? (int)$_POST['payment_account_id'] : null;
     $gcashRef  = trim($_POST['gcash_reference'] ?? '');
+    $latitude  = (isset($_POST['latitude'])  && $_POST['latitude']  !== '') ? (float)$_POST['latitude']  : null;
+    $longitude = (isset($_POST['longitude']) && $_POST['longitude'] !== '') ? (float)$_POST['longitude'] : null;
 
     if (empty($name))    $errors[] = 'Customer name is required.';
     if (empty($address)) $errors[] = 'Address is required.';
     if (empty($contact)) $errors[] = 'Contact number is required.';
-    if (!in_array($method, ['pickup','shipping','dropoff'])) $errors[] = 'Invalid order method.';
+    if (!in_array($method, ['pickup','shipping','dropoff','pickup_rider'])) $errors[] = 'Invalid order method.';
     if (!in_array($payment, ['cash_on_pickup','cash_on_delivery','gcash'])) $errors[] = 'Invalid payment method.';
     if ($method === 'pickup' && in_array($payment, ['cash_on_delivery','gcash'])) $errors[] = 'Only Cash on Pickup is available for Meet up orders.';
     if ($method === 'shipping' && $payment === 'cash_on_pickup') $errors[] = 'Cash on Pickup is not available for Shipping Delivery orders.';
     if ($method === 'dropoff' && $payment !== 'gcash') $errors[] = 'Only GCash is available for Drop off orders.';
+    if ($method === 'pickup_rider' && $payment === 'cash_on_delivery') $errors[] = 'Cash on Delivery is not available for Pick-up Via Rider orders.';
     if ($payment === 'gcash' && empty($gcashRef)) $errors[] = 'GCash reference number is required to confirm your payment.';
+    if (in_array($method, ['shipping','pickup_rider']) && ($latitude === null || $longitude === null)) {
+        $errors[] = 'Please pin your exact location on the map for ' . ($method === 'shipping' ? 'Shipping Delivery' : 'Pick-up Via Rider') . ' orders.';
+    }
 
     if ($payment === 'gcash' && $accId !== null) {
         $s = $db->prepare("SELECT account_id FROM user_payment_accounts WHERE account_id=? AND user_id=? AND account_type=?");
@@ -51,11 +57,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $res = $db->query("SELECT IFNULL(MAX(queue_number),100)+1 AS next_q FROM orders");
             $queueNum = (int)$res->fetch_assoc()['next_q'];
-            $s = $db->prepare("INSERT INTO orders (user_id,customer_name,address,contact_number,order_method,payment_method,payment_account_id,payment_status,gcash_reference,queue_number,total_amount,order_status) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
+            $s = $db->prepare("INSERT INTO orders (user_id,customer_name,address,contact_number,order_method,payment_method,payment_account_id,payment_status,gcash_reference,queue_number,total_amount,order_status,latitude,longitude) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             $payStatus   = ($payment === 'gcash') ? 'pending_verification' : 'pending';
             $orderStatus = 'pending';
             $gcashRefVal = ($payment === 'gcash') ? $gcashRef : null;
-            $s->bind_param('isssssissids', $userId, $name, $address, $contact, $method, $payment, $accId, $payStatus, $gcashRefVal, $queueNum, $total, $orderStatus);
+            $s->bind_param('isssssissidsdd', $userId, $name, $address, $contact, $method, $payment, $accId, $payStatus, $gcashRefVal, $queueNum, $total, $orderStatus, $latitude, $longitude);
             $s->execute();
             $orderId = $db->insert_id;
             $s->close();
@@ -82,11 +88,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Checkout — Marguax Collections</title>
+<title>Checkout — Margaux Collections</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 /* ── Base ── */
 html, body {
@@ -198,6 +206,77 @@ html, body {
   box-shadow: 0 0 0 3px rgba(196,80,100,.12);
 }
 .form-field textarea { resize: vertical; min-height: 80px; }
+.field-hint { font-size: .72rem; color: #7a6058; margin-top: 2px; }
+
+/* ── Map ── */
+.map-search-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.map-search-row input {
+  flex: 1; padding: 11px 14px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(196,80,100,.18);
+  border-radius: 10px;
+  font-size: .85rem; font-family: 'Jost', sans-serif;
+  color: #f0e6da; box-sizing: border-box;
+  transition: border-color .2s, background .2s, box-shadow .2s;
+}
+.map-search-row input::placeholder { color: #5a4a42; }
+.map-search-row input:focus {
+  outline: none; border-color: #c45064;
+  background: rgba(196,80,100,.06);
+  box-shadow: 0 0 0 3px rgba(196,80,100,.12);
+}
+.map-search-btn {
+  flex-shrink: 0; padding: 0 18px;
+  background: rgba(196,80,100,.15);
+  border: 1px solid rgba(196,80,100,.3);
+  border-radius: 10px; color: #e8a0a8;
+  cursor: pointer; font-size: .95rem;
+  transition: background .2s;
+}
+.map-search-btn:hover { background: rgba(196,80,100,.28); }
+.map-search-results {
+  display: none; max-height: 220px; overflow-y: auto;
+  border-radius: 10px; margin-bottom: 8px;
+  background: rgba(20,8,12,.96);
+  border: 1px solid rgba(196,80,100,.2);
+}
+.map-search-results.active { display: block; }
+.map-search-result-item {
+  padding: 10px 14px; font-size: .78rem; color: #f0e6da;
+  cursor: pointer; border-bottom: 1px solid rgba(196,80,100,.08);
+  line-height: 1.4;
+}
+.map-search-result-item:last-child { border-bottom: none; }
+.map-search-result-item:hover { background: rgba(196,80,100,.14); }
+
+.map-wrap { position: relative; }
+#addressMap {
+  height: 220px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(196,80,100,.18);
+}
+.map-wrap.in-modal #addressMap { height: min(65vh, 620px); }
+.map-expand-btn {
+  position: absolute; top: 10px; right: 10px; z-index: 700;
+  width: 34px; height: 34px; border-radius: 8px;
+  background: rgba(20,8,12,.85);
+  border: 1px solid rgba(196,80,100,.3);
+  color: #f0e6da; font-size: 1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .2s;
+}
+.map-expand-btn:hover { background: rgba(196,80,100,.3); }
+.map-wrap.in-modal .map-expand-btn { display: none; }
+.leaflet-control-attribution { font-size: 9px !important; }
+
+/* ── Map Modal (own popup, centered) ── */
+.map-modal {
+  max-width: 640px;
+  text-align: left;
+}
+.map-modal .qr-title, .map-modal .qr-sub { text-align: center; }
+.map-modal .map-search-row { margin-top: 4px; }
 
 /* ── Radio Options ── */
 .radio-opt { display: none; }
@@ -280,6 +359,44 @@ html, body {
 }
 .gcash-modal .btn-place { margin-bottom: 10px; }
 
+/* ── Review Modal ── */
+.review-modal {
+  position: relative;
+  width: 100%; max-width: 420px;
+  background: linear-gradient(160deg,#1a0a0e,#2a0d14);
+  border: 1px solid rgba(196,80,100,.25);
+  border-radius: 18px;
+  padding: 32px 26px 26px;
+  text-align: center;
+  box-shadow: 0 30px 70px rgba(0,0,0,.6);
+  animation: heroIn .3s cubic-bezier(.16,1,.3,1) both;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.review-details {
+  text-align: left;
+  margin: 18px 0 22px;
+  border-top: 1px solid rgba(196,80,100,.14);
+}
+.review-row {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 16px;
+  padding: 11px 2px;
+  border-bottom: 1px solid rgba(196,80,100,.1);
+  font-size: .82rem;
+}
+.review-label {
+  color: #7a6058; font-weight: 600; letter-spacing: .06em;
+  text-transform: uppercase; font-size: .68rem;
+  flex-shrink: 0; padding-top: 2px;
+}
+.review-value { color: #f0e6da; text-align: right; }
+.review-total-row { border-bottom: none; padding-top: 14px; }
+.review-total-row .review-label { font-size: .72rem; align-self: center; }
+.review-total-value {
+  font-family: 'Playfair Display', serif; font-size: 1.3rem; color: #c45064;
+}
+
 /* ── Order Summary Items ── */
 .order-item {
   display: flex; align-items: center; gap: 14px;
@@ -329,6 +446,7 @@ html, body {
   transition: all .25s; box-sizing: border-box;
 }
 .btn-back:hover { border-color: rgba(196,80,100,.4); color: #e8a0a8; background: rgba(196,80,100,.06); }
+.review-modal .btn-place { margin-bottom: 10px; }
 
 /* ── Alert ── */
 .alert-danger {
@@ -356,7 +474,7 @@ html, body {
 
 <!-- Hero -->
 <div class="page-hero">
-  <div class="hero-eyebrow">Marguax Collections</div>
+  <div class="hero-eyebrow">Margaux Collections</div>
   <h1>Complete <em>Checkout</em></h1>
   <p>Review and confirm your order details below</p>
   <div class="hero-divider"></div>
@@ -401,6 +519,21 @@ html, body {
               <textarea id="address" name="address" rows="3"
                         placeholder="House No., Street, Barangay, City, Province" required><?= htmlspecialchars($_POST['address'] ?? $user['address'] ?? '') ?></textarea>
             </div>
+            <div class="form-field">
+              <label>Pin Your Exact Location</label>
+              <div class="map-search-row">
+                <input type="text" id="mapSearchInput" placeholder="Search a place or address..." autocomplete="off">
+                <button type="button" id="mapSearchBtn" class="map-search-btn">🔍</button>
+              </div>
+              <div id="mapSearchResults" class="map-search-results"></div>
+              <div class="map-wrap" id="mapWrap">
+                <div id="addressMap"></div>
+                <button type="button" id="mapExpandBtn" class="map-expand-btn" title="Expand map">⛶</button>
+              </div>
+              <div class="field-hint">📍 Click on the map or drag the pin, or search above — this helps us find you accurately for delivery/rider pickup.</div>
+              <input type="hidden" name="latitude"  id="latitudeInput"  value="<?= htmlspecialchars($_POST['latitude']  ?? '') ?>">
+              <input type="hidden" name="longitude" id="longitudeInput" value="<?= htmlspecialchars($_POST['longitude'] ?? '') ?>">
+            </div>
           </div>
         </div>
       </div>
@@ -428,6 +561,12 @@ html, body {
                  <?= (($_POST['order_method'] ?? '') === 'shipping') ? 'checked' : '' ?>>
           <label for="methodShipping" class="radio-label">
             <span class="opt-icon">🚚</span> Shipping Delivery
+          </label>
+
+          <input type="radio" class="radio-opt" name="order_method" id="methodRider" value="pickup_rider"
+                 <?= (($_POST['order_method'] ?? '') === 'pickup_rider') ? 'checked' : '' ?>>
+          <label for="methodRider" class="radio-label">
+            <span class="opt-icon">🏍️</span> Pick-up Via Rider
           </label>
         </div>
       </div>
@@ -499,6 +638,43 @@ html, body {
   </div>
   </form>
 
+  <!-- Full Map Popup Modal -->
+  <div class="gcash-modal-overlay" id="mapModalOverlay">
+    <div class="review-modal map-modal">
+      <button type="button" class="gcash-modal-close" onclick="closeMapModal()">✕</button>
+      <div class="qr-title">Pin Your Exact Location</div>
+      <div class="qr-sub">Click on the map or drag the pin, or search below</div>
+      <div class="map-search-row">
+        <input type="text" id="mapModalSearchInput" placeholder="Search a place or address..." autocomplete="off">
+        <button type="button" id="mapModalSearchBtn" class="map-search-btn">🔍</button>
+      </div>
+      <div id="mapModalSearchResults" class="map-search-results"></div>
+      <div id="mapModalMapHolder"></div>
+    </div>
+  </div>
+
+  <!-- Order Review Confirmation Modal -->
+  <div class="gcash-modal-overlay" id="reviewModalOverlay">
+    <div class="review-modal">
+      <button type="button" class="gcash-modal-close" onclick="closeReviewModal()">✕</button>
+      <div class="qr-title">Confirm Your Order</div>
+      <div class="qr-sub">Please double-check your details before placing the order</div>
+
+      <div class="review-details">
+        <div class="review-row"><span class="review-label">Name</span><span class="review-value" id="reviewName"></span></div>
+        <div class="review-row"><span class="review-label">Contact</span><span class="review-value" id="reviewContact"></span></div>
+        <div class="review-row"><span class="review-label">Address</span><span class="review-value" id="reviewAddress"></span></div>
+        <div class="review-row"><span class="review-label">Pinned Location</span><span class="review-value" id="reviewPin"></span></div>
+        <div class="review-row"><span class="review-label">Order Method</span><span class="review-value" id="reviewMethod"></span></div>
+        <div class="review-row"><span class="review-label">Payment</span><span class="review-value" id="reviewPayment"></span></div>
+        <div class="review-row review-total-row"><span class="review-label">Total</span><span class="review-value review-total-value" id="reviewTotal"></span></div>
+      </div>
+
+      <button type="button" class="btn-place" onclick="confirmReview()">CONFIRM & PLACE ORDER →</button>
+      <button type="button" class="btn-back" onclick="closeReviewModal()">← Edit Details</button>
+    </div>
+  </div>
+
   <!-- GCash Payment Confirmation Modal -->
   <div class="gcash-modal-overlay" id="gcashModalOverlay">
     <div class="gcash-modal">
@@ -533,7 +709,7 @@ html, body {
 <div class="page-transition" id="pageTransition">
   <div class="pt-panel"></div>
   <div class="pt-logo">
-    <div class="pt-logo-text">Marguax Collections</div>
+    <div class="pt-logo-text">Margaux Collections</div>
     <div class="pt-logo-bar"></div>
   </div>
 </div>
@@ -550,10 +726,11 @@ html, body {
 </style>
 
 <script>
-// ── UI Logic ─────────────────────────────────────
+// ── Order Method / Payment Method UI Logic ────────
 const methodPickup   = document.getElementById('methodPickup');
 const methodDropoff  = document.getElementById('methodDropoff');
 const methodShipping = document.getElementById('methodShipping');
+const methodRider    = document.getElementById('methodRider');
 const payCOP         = document.getElementById('payCOP');
 const payCOD         = document.getElementById('payCOD');
 const payGcash       = document.getElementById('payGcash');
@@ -561,38 +738,298 @@ const labelCOP       = document.getElementById('labelCOP');
 const labelCOD       = document.getElementById('labelCOD');
 const labelGcash     = document.getElementById('labelGcash');
 let gcashConfirmed = false;
+let orderReviewed  = false;
 
 function updateUI() {
   const isPickup   = methodPickup.checked;   // Meet up
   const isShipping = methodShipping.checked; // Shipping Delivery
   const isDropoff  = methodDropoff.checked;  // Drop off
+  const isRider    = methodRider.checked;    // Pick-up Via Rider
 
-  // Meet up: only Cash on Pickup allowed — disable GCash & Cash on Delivery
-  labelCOD.classList.toggle('disabled-opt', isPickup);
+  labelCOD.classList.toggle('disabled-opt', isPickup || isRider || isDropoff);
   labelGcash.classList.toggle('disabled-opt', isPickup);
   if (isPickup && (payCOD.checked || payGcash.checked)) payCOP.checked = true;
 
-  // Shipping Delivery: Cash on Pickup not allowed
-  labelCOP.classList.toggle('disabled-opt', isShipping);
+  labelCOP.classList.toggle('disabled-opt', isShipping || isDropoff);
   if (isShipping && payCOP.checked) payCOD.checked = true;
 
-  // Drop off: only GCash allowed — disable Cash on Pickup & Cash on Delivery
-  labelCOP.classList.toggle('disabled-opt', isShipping || isDropoff);
-  labelCOD.classList.toggle('disabled-opt', isPickup || isDropoff);
   if (isDropoff && (payCOP.checked || payCOD.checked)) payGcash.checked = true;
 
-  // Any change to payment selection means the payment isn't confirmed yet
+  if (isRider && payCOD.checked) payCOP.checked = true;
+
+  // Any change to method/payment invalidates prior confirmations
   gcashConfirmed = false;
+  orderReviewed  = false;
 }
 
-[methodPickup, methodDropoff, methodShipping, payCOP, payCOD, payGcash].forEach(el => {
+[methodPickup, methodDropoff, methodShipping, methodRider, payCOP, payCOD, payGcash].forEach(el => {
   if (el) el.addEventListener('change', updateUI);
 });
 updateUI();
 
+['customer_name', 'contact_number', 'address'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', () => { orderReviewed = false; });
+});
+
+// ── Location Map (Leaflet + OpenStreetMap, free) ──
+const DEFAULT_LAT = 10.7202, DEFAULT_LNG = 122.5621; // Iloilo City center
+const latInput = document.getElementById('latitudeInput');
+const lngInput = document.getElementById('longitudeInput');
+let map, marker, geocodeTimeout;
+
+function updateLatLng(lat, lng) {
+  latInput.value = lat.toFixed(7);
+  lngInput.value = lng.toFixed(7);
+  orderReviewed = false;
+}
+
+function reverseGeocode(lat, lng) {
+  clearTimeout(geocodeTimeout);
+  geocodeTimeout = setTimeout(() => {
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.display_name) {
+          document.getElementById('address').value = data.display_name;
+        }
+      })
+      .catch(err => console.error('Reverse geocode failed:', err));
+  }, 500);
+}
+
+function initMap() {
+  const savedLat = latInput.value ? parseFloat(latInput.value) : null;
+  const savedLng = lngInput.value ? parseFloat(lngInput.value) : null;
+  const startLat = savedLat ?? DEFAULT_LAT;
+  const startLng = savedLng ?? DEFAULT_LNG;
+
+  map = L.map('addressMap').setView([startLat, startLng], savedLat ? 16 : 13);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors',
+    maxZoom: 19
+  }).addTo(map);
+
+  marker = L.marker([startLat, startLng], { draggable: true }).addTo(map);
+  updateLatLng(startLat, startLng);
+
+  marker.on('dragend', () => {
+    const pos = marker.getLatLng();
+    updateLatLng(pos.lat, pos.lng);
+    reverseGeocode(pos.lat, pos.lng);
+  });
+
+  map.on('click', (e) => {
+    marker.setLatLng(e.latlng);
+    updateLatLng(e.latlng.lat, e.latlng.lng);
+    reverseGeocode(e.latlng.lat, e.latlng.lng);
+  });
+
+  // If no pin saved yet, try to auto-center on the customer's actual location
+  if (!savedLat && navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude, lng = pos.coords.longitude;
+        map.setView([lat, lng], 16);
+        marker.setLatLng([lat, lng]);
+        updateLatLng(lat, lng);
+        reverseGeocode(lat, lng);
+      },
+      () => { /* permission denied or unavailable — keep default pin */ }
+    );
+  }
+}
+
+document.addEventListener('DOMContentLoaded', initMap);
+
+// ── Map Location Search (Nominatim) — shared helpers ──
+// Rough Iloilo province bounding box (left,top,right,bottom) — soft bias, not a hard filter
+const ILOILO_VIEWBOX = '121.9,11.4,123.3,10.2';
+
+function performSearch(query) {
+  const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=6&countrycodes=ph&addressdetails=1&viewbox=${ILOILO_VIEWBOX}&bounded=0`;
+  return fetch(url).then(res => res.json());
+}
+
+function runSearchFor(inputEl, resultsEl) {
+  const q = inputEl.value.trim();
+  if (!q) { resultsEl.classList.remove('active'); resultsEl.innerHTML = ''; return; }
+
+  performSearch(q)
+    .then(data => {
+      if (data && data.length) { renderSearchResults(data, resultsEl); return; }
+      // Barangay/street-only searches (e.g. "Bagaygay") often need extra
+      // location context before Nominatim can match them — retry once.
+      const hasContext = /iloilo|philippines/i.test(q);
+      if (hasContext) { renderSearchResults([], resultsEl); return; }
+      performSearch(`${q}, Iloilo, Philippines`)
+        .then(d => renderSearchResults(d, resultsEl))
+        .catch(() => renderSearchResults([], resultsEl));
+    })
+    .catch(err => { console.error('Map search failed:', err); renderSearchResults([], resultsEl); });
+}
+
+function renderSearchResults(data, resultsEl) {
+  resultsEl.innerHTML = '';
+  if (!data || !data.length) {
+    const empty = document.createElement('div');
+    empty.className = 'map-search-result-item';
+    empty.style.cssText = 'cursor:default;color:#7a6058;';
+    empty.textContent = 'No results found. Try adding the city/barangay (e.g. "Bagaygay, Sara, Iloilo").';
+    resultsEl.appendChild(empty);
+    resultsEl.classList.add('active');
+    return;
+  }
+  data.forEach(place => {
+    const item = document.createElement('div');
+    item.className = 'map-search-result-item';
+    item.textContent = place.display_name;
+    item.addEventListener('click', () => {
+      const lat = parseFloat(place.lat), lng = parseFloat(place.lon);
+      map.setView([lat, lng], 17);
+      marker.setLatLng([lat, lng]);
+      updateLatLng(lat, lng);
+      document.getElementById('address').value = place.display_name;
+      // Keep both search boxes (inline + modal) in sync
+      mapSearchInput.value = place.display_name;
+      mapModalSearchInput.value = place.display_name;
+      mapSearchResults.classList.remove('active');
+      mapSearchResults.innerHTML = '';
+      mapModalSearchResults.classList.remove('active');
+      mapModalSearchResults.innerHTML = '';
+    });
+    resultsEl.appendChild(item);
+  });
+  resultsEl.classList.add('active');
+}
+
+function bindSearchBox(inputEl, btnEl, resultsEl) {
+  let t;
+  inputEl.addEventListener('input', () => {
+    clearTimeout(t);
+    t = setTimeout(() => runSearchFor(inputEl, resultsEl), 500);
+  });
+  btnEl.addEventListener('click', () => runSearchFor(inputEl, resultsEl));
+  inputEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); runSearchFor(inputEl, resultsEl); }
+  });
+}
+
+const mapSearchInput        = document.getElementById('mapSearchInput');
+const mapSearchBtn          = document.getElementById('mapSearchBtn');
+const mapSearchResults      = document.getElementById('mapSearchResults');
+const mapModalSearchInput   = document.getElementById('mapModalSearchInput');
+const mapModalSearchBtn     = document.getElementById('mapModalSearchBtn');
+const mapModalSearchResults = document.getElementById('mapModalSearchResults');
+
+bindSearchBox(mapSearchInput, mapSearchBtn, mapSearchResults);
+bindSearchBox(mapModalSearchInput, mapModalSearchBtn, mapModalSearchResults);
+
+document.addEventListener('click', (e) => {
+  if (!mapSearchResults.contains(e.target) && e.target !== mapSearchInput) {
+    mapSearchResults.classList.remove('active');
+  }
+  if (!mapModalSearchResults.contains(e.target) && e.target !== mapModalSearchInput) {
+    mapModalSearchResults.classList.remove('active');
+  }
+});
+
+// ── Map Popup Modal (own centered popup, not inline resize) ──
+const mapWrap         = document.getElementById('mapWrap');
+const mapExpandBtn    = document.getElementById('mapExpandBtn');
+const mapModalOverlay = document.getElementById('mapModalOverlay');
+const mapModalHolder  = document.getElementById('mapModalMapHolder');
+
+// Anchor marks the map's original spot in the form so it can be moved back
+const mapWrapAnchor = document.createComment('map-wrap-anchor');
+mapWrap.parentNode.insertBefore(mapWrapAnchor, mapWrap);
+
+function openMapModal() {
+  mapModalHolder.appendChild(mapWrap);
+  mapWrap.classList.add('in-modal');
+  mapModalOverlay.classList.add('active');
+  setTimeout(() => {
+    if (map) {
+      map.invalidateSize();
+      map.setView(marker.getLatLng(), map.getZoom());
+    }
+  }, 50);
+}
+
+function closeMapModal() {
+  mapWrapAnchor.parentNode.insertBefore(mapWrap, mapWrapAnchor.nextSibling);
+  mapWrap.classList.remove('in-modal');
+  mapModalOverlay.classList.remove('active');
+  setTimeout(() => {
+    if (map) {
+      map.invalidateSize();
+      map.setView(marker.getLatLng(), map.getZoom());
+    }
+  }, 50);
+}
+
+mapExpandBtn.addEventListener('click', openMapModal);
+mapModalOverlay.addEventListener('click', (e) => {
+  if (e.target === mapModalOverlay) closeMapModal();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && mapModalOverlay.classList.contains('active')) closeMapModal();
+});
+
+// ── Order Review Modal ────────────────────────────
+const checkoutForm       = document.getElementById('checkoutForm');
+const reviewModalOverlay = document.getElementById('reviewModalOverlay');
+
+const methodLabels = {
+  pickup: 'Meet up',
+  dropoff: 'Drop off at MJM BUILDING',
+  shipping: 'Shipping Delivery',
+  pickup_rider: 'Pick-up Via Rider'
+};
+const paymentLabels = {
+  cash_on_pickup: 'Cash on Pickup',
+  cash_on_delivery: 'Cash on Delivery',
+  gcash: 'GCash'
+};
+
+function openReviewModal() {
+  document.getElementById('reviewName').textContent    = document.getElementById('customer_name').value;
+  document.getElementById('reviewContact').textContent = document.getElementById('contact_number').value;
+  document.getElementById('reviewAddress').textContent = document.getElementById('address').value;
+
+  const lat = latInput.value, lng = lngInput.value;
+  document.getElementById('reviewPin').textContent = (lat && lng) ? `${lat}, ${lng}` : 'Not pinned';
+
+  const methodVal = document.querySelector('input[name="order_method"]:checked')?.value;
+  document.getElementById('reviewMethod').textContent = methodLabels[methodVal] || methodVal;
+
+  const payVal = document.querySelector('input[name="payment_method"]:checked')?.value;
+  document.getElementById('reviewPayment').textContent = paymentLabels[payVal] || payVal;
+
+  document.getElementById('reviewTotal').textContent = document.querySelector('.total-amount').textContent;
+
+  reviewModalOverlay.classList.add('active');
+}
+
+function closeReviewModal() {
+  reviewModalOverlay.classList.remove('active');
+}
+
+function confirmReview() {
+  orderReviewed = true;
+  closeReviewModal();
+
+  const payMethod = document.querySelector('input[name="payment_method"]:checked')?.value;
+  if (payMethod === 'gcash' && !gcashConfirmed) {
+    openGcashModal();
+  } else {
+    checkoutForm.submit();
+  }
+}
+
 // ── GCash Payment Popup ──────────────────────────
 const GCASH_NUMBER      = '09482841494';
-const checkoutForm      = document.getElementById('checkoutForm');
 const gcashModalOverlay = document.getElementById('gcashModalOverlay');
 let qrGenerated    = false;
 
@@ -668,7 +1105,13 @@ function confirmGcashPaid() {
   checkoutForm.submit();
 }
 
+// ── Master submit handler: review first, then GCash if needed ──
 checkoutForm.addEventListener('submit', function (e) {
+  if (!orderReviewed) {
+    e.preventDefault();
+    openReviewModal();
+    return;
+  }
   const payMethod = document.querySelector('input[name="payment_method"]:checked')?.value;
   if (payMethod === 'gcash' && !gcashConfirmed) {
     e.preventDefault();

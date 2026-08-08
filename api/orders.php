@@ -1,7 +1,7 @@
 <?php
 /**
  * API — Orders
- * Marguax Collection Ordering System
+ * Margaux Collections Ordering System
  *
  * GET  /api/orders.php                     → my orders (customer) or all orders (admin)
  * GET  /api/orders.php?id=5                → single order with items

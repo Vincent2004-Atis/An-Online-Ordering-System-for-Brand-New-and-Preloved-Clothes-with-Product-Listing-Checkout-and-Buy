@@ -1,6 +1,6 @@
 <?php
 require_once '../includes/security.php';
-if (!isset($_SESSION['user_id'])) { header('Location: /Marguax_Collection/auth/login.php'); exit; }
+if (!isset($_SESSION['user_id'])) { header('Location: /Margaux_Collections/auth/login.php'); exit; }
 require_once '../config/database.php';
 $db     = getDB();
 $userId = (int)$_SESSION['user_id'];
@@ -36,7 +36,7 @@ if (!empty($allOrders)) {
     }
 }
 
-$orderMethodIcons = ['pickup'=>'Pickup','shipping'=>'Shipping'];
+$orderMethodIcons = ['pickup'=>'Pickup','dropoff'=>'Drop off','shipping'=>'Shipping','pickup_rider'=>'Pick-up Via Rider'];
 $payIcons = ['cash_on_pickup'=>'Cash on Pickup','cash_on_delivery'=>'Cash on Delivery','gcash'=>'GCash'];
 
 /**
@@ -81,7 +81,7 @@ $tabs = [
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Order History — Marguax Collections</title>
+<title>Order History — Margaux Collections</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -402,7 +402,7 @@ tbody tr:hover td { background: rgba(196,80,100,.05) !important; }
 <?php include '../includes/navbar.php'; ?>
 
 <div class="page-hero">
-  <div class="hero-eyebrow">Marguax Collections</div>
+  <div class="hero-eyebrow">Margaux Collections</div>
   <h1>Order <em>History</em></h1>
   <p>Track all your past and current orders</p>
   <div class="hero-divider"></div>

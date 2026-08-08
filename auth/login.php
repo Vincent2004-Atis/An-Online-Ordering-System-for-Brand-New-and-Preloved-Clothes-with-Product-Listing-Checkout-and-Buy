@@ -4,8 +4,8 @@ require_once '../includes/mailer.php';
 
 if (isset($_SESSION['user_id'])) {
     header('Location: ' . ($_SESSION['role'] === 'admin'
-        ? '/Marguax_Collection/admin/dashboard.php'
-        : '/Marguax_Collection/customer/products.php'));
+        ? '/Margaux_Collections/admin/dashboard.php'
+        : '/Margaux_Collections/customer/products.php'));
     exit;
 }
 
@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['step']) && $_POST['st
                 $sent = send_mail(
                     $email,
                     $user['name'],
-                    'Your Marguax Collections sign-in code',
+                    'Your Margaux Collections sign-in code',
                     otp_email_html($otp, 'login', 5)
                 );
 
@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['step']) && $_POST['st
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Login — Marguax Collections</title>
+<title>Login — Margaux Collections</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -357,12 +357,12 @@ input:focus {
   <div class="left">
     <div class="brand-logo">
       <div class="logo-img-circle">
-        <img src="/Marguax_Collection/images/logo.jpg" alt="Logo"
+        <img src="/Margaux_Collections/images/logo.jpg" alt="Logo"
              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
         <span class="logo-fallback" style="display:none">M</span>
       </div>
       <div class="brand-name">
-        Marguax Collections
+        Margaux Collections
         <span>+ Fashion Boutique</span>
       </div>
     </div>

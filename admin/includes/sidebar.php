@@ -19,7 +19,7 @@ if (isset($db)) {
   <div class="sidebar-brand">
     <div class="sidebar-brand-icon">M</div>
     <div>
-      <div class="brand-name">Marguax <em>Collections</em></div>
+      <div class="brand-name">Margaux <em>Collections</em></div>
       <span class="brand-sub">✦ Admin Panel</span>
     </div>
   </div>

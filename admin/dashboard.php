@@ -10,7 +10,7 @@ $db = getDB();
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Dashboard — Marguax Collections Admin</title>
+<title>Dashboard — Margaux Collections Admin</title>
 <link rel="stylesheet" href="../css/admin.css">
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -314,7 +314,7 @@ async function loadAll() {
   const days = document.getElementById('daysSelect').value;
   document.getElementById('chartDaysLabel').textContent = days;
   try {
-    const res  = await fetch(`/Marguax_Collection/api/dashboard.php?days=${days}`);
+    const res  = await fetch(`/Margaux_Collections/api/dashboard.php?days=${days}`);
     const data = await res.json();
     if (!data.success) return;
     renderStats(data.stats);

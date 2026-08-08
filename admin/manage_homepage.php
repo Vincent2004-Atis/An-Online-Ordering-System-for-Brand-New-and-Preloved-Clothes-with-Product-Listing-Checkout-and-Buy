@@ -75,7 +75,7 @@ foreach ($slots as $s) $slotsById[$s['slot_id']] = $s;
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Homepage Photos — Marguax Admin</title>
+<title>Homepage Photos — Margaux Collections Admin</title>
 <link rel="stylesheet" href="../css/admin.css">
 <style>
 .slots-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px;margin-top:16px}

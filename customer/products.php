@@ -1,6 +1,6 @@
 <?php
 require_once '../includes/security.php';
-if (!isset($_SESSION['user_id'])) { header('Location: /Marguax_Collection/auth/login.php'); exit; }
+if (!isset($_SESSION['user_id'])) { header('Location: /Margaux_Collections/auth/login.php'); exit; }
 require_once '../config/database.php';
 $db     = getDB();
 $userId = (int)$_SESSION['user_id'];
@@ -10,7 +10,7 @@ $stmt->bind_param('i', $userId);
 $stmt->execute();
 $user = $stmt->get_result()->fetch_assoc();
 $stmt->close();
-if (!$user) { session_destroy(); header('Location: /Marguax_Collection/auth/login.php'); exit; }
+if (!$user) { session_destroy(); header('Location: /Margaux_Collections/auth/login.php'); exit; }
 
 $categories = $db->query("
     SELECT * FROM categories
@@ -66,7 +66,7 @@ $stmt->close();
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Product Catalog — Marguax Collections</title>
+<title>Product Catalog — Margaux Collections</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -523,9 +523,9 @@ footer a:hover { color: #e8a0a8 !important; padding-left: 4px !important; }
 <?php include '../includes/navbar.php'; ?>
 
 <div class="page-hero">
-  <div class="hero-eyebrow">Marguax Collections</div>
+  <div class="hero-eyebrow">Margaux Collections</div>
   <h1>Our <em>Collection</em></h1>
-  <p>Discover every product in the Macarguax Collections range</p>
+  <p>Discover every product in the Margaux Collections range</p>
   <div class="hero-divider"></div>
 </div>
 
@@ -622,13 +622,13 @@ footer a:hover { color: #e8a0a8 !important; padding-left: 4px !important; }
           </svg>
           <div>
             <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:#f0e6da;line-height:1.1;">
-              Marguax <em style="font-style:italic;color:#c45064;">Collections</em>
+              Margaux <em style="font-style:italic;color:#c45064;">Collections</em>
             </div>
             <div style="font-size:.58rem;color:#c8a96a;letter-spacing:.18em;text-transform:uppercase;margin-top:2px;">✦ Fashion Boutique</div>
           </div>
         </div>
         <p style="font-size:.82rem;line-height:1.85;max-width:270px;color:rgba(240,230,218,.4);font-family:'Jost',sans-serif;font-weight:300;">
-          Marguax Collections — bringing premium Ardeur de France products and wellness solutions to Filipino families.
+          Margaux Collections — bringing premium Ardeur de France products and wellness solutions to Filipino families.
         </p>
         <!-- Social Icons -->
         <div style="display:flex;gap:10px;margin-top:20px;">
@@ -671,21 +671,21 @@ footer a:hover { color: #e8a0a8 !important; padding-left: 4px !important; }
       <!-- Info Column -->
       <div>
         <h4>Info</h4>
-        <a href="https://www.MarguaxCollection.com" target="_blank">www.MarguaxCollection.com</a>
+        <a href="https://www.MargauxCollections.com" target="_blank">www.MargauxCollections.com</a>
       </div>
 
     </div>
 
     <!-- Bottom Bar -->
     <div style="border-top:1px solid rgba(196,80,100,.1);padding-top:26px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:.75rem;color:rgba(240,230,218,.25);font-family:'Jost',sans-serif;">
-      <span>© 2026 Marguax Collections. All rights reserved.</span>
+      <span>© 2026 Margaux Collections. All rights reserved.</span>
       <div style="display:flex;align-items:center;gap:6px;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M18 2H15C13.6739 2 12.4021 2.52678 11.4645 3.46447C10.5268 4.40215 10 5.67392 10 7V10H7V14H10V22H14V14H17L18 10H14V7C14 6.73478 14.1054 6.48043 14.2929 6.29289C14.4804 6.10536 14.7348 6 15 6H18V2Z" stroke="rgba(196,80,100,.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        <span>MarguaxCollection</span>
+        <span>MargauxCollection</span>
         <span style="color:rgba(196,80,100,.3);">·</span>
-        <span>🌐 www.MarguaxCollection.com</span>
+        <span>🌐 www.MargauxCollections.com</span>
       </div>
     </div>
   </div>
@@ -700,7 +700,7 @@ function changeQty(id, delta) {
 }
 function addToCart(productId, name, price) {
   const qty = parseInt(document.getElementById('qty-' + productId).value) || 1;
-  fetch('/Marguax_Collection/customer/cart_action.php', {
+  fetch('/Margaux_Collections/customer/cart_action.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: `action=add&product_id=${productId}&qty=${qty}`

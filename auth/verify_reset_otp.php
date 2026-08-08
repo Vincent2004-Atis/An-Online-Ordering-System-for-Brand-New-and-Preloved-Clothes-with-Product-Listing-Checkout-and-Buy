@@ -1,7 +1,7 @@
 <?php
 /**
  * verify_reset_otp.php — Step 2: verify OTP for password reset
- * Place in: /Marguax_Collection/auth/verify_reset_otp.php
+ * Place in: /Margaux_Collections/auth/verify_reset_otp.php
  */
 require_once '../includes/security.php';
 require_once '../includes/mailer.php';
@@ -16,8 +16,8 @@ if (empty($_SESSION['reset_pending'])) {
 // Already logged in — redirect away
 if (isset($_SESSION['user_id'])) {
     header('Location: ' . ($_SESSION['role'] === 'admin'
-        ? '/Marguax_Collection/admin/dashboard.php'
-        : '/Marguax_Collection/customer/products.php'));
+        ? '/Margaux_Collections/admin/dashboard.php'
+        : '/Margaux_Collections/customer/products.php'));
     exit;
 }
 
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'resen
         $sent = send_mail(
             $email,
             $pending['name'],
-            'Reset your Marguax Collections password',
+            'Reset your Margaux Collections password',
             otp_email_html($otp, 'reset', 10)
         );
 
@@ -103,7 +103,7 @@ $masked     = substr($emailParts[0], 0, 1)
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Verify Reset Code — Marguax Collections</title>
+<title>Verify Reset Code — Margaux Collections</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -336,12 +336,12 @@ h1 {
 
   <div class="brand-logo">
     <div class="logo-circle">
-      <img src="/Marguax_Collection/images/logo.jpg" alt="Logo"
+      <img src="/Margaux_Collections/images/logo.jpg" alt="Logo"
            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
       <span class="logo-fallback" style="display:none">M</span>
     </div>
     <div class="brand-name">
-      Marguax Collections
+      Margaux Collections
       <span>+ Fashion Boutique</span>
     </div>
   </div>

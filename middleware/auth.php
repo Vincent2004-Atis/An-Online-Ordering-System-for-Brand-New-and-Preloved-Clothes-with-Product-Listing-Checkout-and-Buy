@@ -1,14 +1,14 @@
 <?php
 /**
  * Middleware — Authentication & Authorization Guard
- * Marguax Collection Ordering System
+ * Margaux Collections Ordering System
  */
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-function requireLogin(string $redirect = '/Marguax_Collection/auth/login.php'): void {
+function requireLogin(string $redirect = '/Margaux_Collections/auth/login.php'): void {
     if (empty($_SESSION['user_id'])) {
         header('Location: ' . $redirect);
         exit;
@@ -18,7 +18,7 @@ function requireLogin(string $redirect = '/Marguax_Collection/auth/login.php'): 
 function requireAdmin(): void {
     requireLogin();
     if ($_SESSION['role'] !== 'admin') {
-        header('Location: /Marguax_Collection/auth/login.php');
+        header('Location: /Margaux_Collections/auth/login.php');
         exit;
     }
 }
@@ -26,7 +26,7 @@ function requireAdmin(): void {
 function requireCustomer(): void {
     requireLogin();
     if ($_SESSION['role'] !== 'customer') {
-        header('Location: /Marguax_Collection/admin/dashboard.php');
+        header('Location: /Margaux_Collections/admin/dashboard.php');
         exit;
     }
 }

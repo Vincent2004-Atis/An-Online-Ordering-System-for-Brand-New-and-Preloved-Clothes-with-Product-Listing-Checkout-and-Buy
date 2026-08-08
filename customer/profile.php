@@ -121,7 +121,7 @@ $hasPhoto  = !empty($user['profile_photo']) && file_exists('../' . $user['profil
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>My Profile — Marguax Collections</title>
+<title>My Profile — Margaux Collections</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -416,7 +416,7 @@ select.form-control option { background: #1a0609 !important; color: #f0e6da !imp
 
 <!-- HERO -->
 <div class="page-hero">
-  <div class="hero-eyebrow">Marguax Collections</div>
+  <div class="hero-eyebrow">Margaux Collections</div>
 
   <!-- AVATAR — centered -->
   <div style="display:flex;justify-content:center;margin-bottom:14px;position:relative;z-index:1;">
@@ -429,7 +429,7 @@ select.form-control option { background: #1a0609 !important; color: #f0e6da !imp
                onchange="document.getElementById('photoForm').submit()" style="display:none;">
         <div class="avatar-ring" onclick="document.getElementById('photoFileInput').click()" title="Click to change photo">
           <?php if ($hasPhoto): ?>
-            <img src="/Marguax_Collection/<?= htmlspecialchars($user['profile_photo']) ?>"
+            <img src="/Margaux_Collections/<?= htmlspecialchars($user['profile_photo']) ?>"
                  alt="Profile" style="width:100%;height:100%;object-fit:cover;display:block;">
           <?php else: ?>
             <div style="width:100%;height:100%;

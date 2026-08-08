@@ -15,7 +15,7 @@ foreach ($cart as $item) $total += $item['price'] * $item['qty'];
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Cart — Marguax Collections</title>
+<title>Cart — Margaux Collections</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -332,7 +332,7 @@ section, .section, main, .main,
 <?php include '../includes/navbar.php'; ?>
 
 <div class="page-hero">
-  <div class="hero-eyebrow">Marguax Collections</div>
+  <div class="hero-eyebrow">Margaux Collections</div>
   <h1>My <em>Cart</em></h1>
   <p>Review your items before checkout</p>
   <div class="hero-divider"></div>
@@ -421,20 +421,20 @@ function updateQty(pid, delta) {
   setQty(pid, val);
 }
 function setQty(pid, qty) {
-  fetch('/Marguax_Collection/customer/cart_action.php', {
+  fetch('/Margaux_Collections/customer/cart_action.php', {
     method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
     body:`action=update&product_id=${pid}&qty=${qty}`
   }).then(r=>r.json()).then(()=>location.reload());
 }
 function removeItem(pid) {
-  fetch('/Marguax_Collection/customer/cart_action.php', {
+  fetch('/Margaux_Collections/customer/cart_action.php', {
     method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
     body:`action=remove&product_id=${pid}`
   }).then(r=>r.json()).then(()=>location.reload());
 }
 function clearCart() {
   if (!confirm('Clear all items?')) return;
-  fetch('/Marguax_Collection/customer/cart_action.php', {
+  fetch('/Margaux_Collections/customer/cart_action.php', {
     method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
     body:'action=clear'
   }).then(r=>r.json()).then(()=>location.reload());

@@ -1,6 +1,6 @@
 <?php
 /**
- * Security Helper — Marguax_Collectionoration Ordering System
+ * Security Helper — Margaux Collections Ordering System
  * Include this file on EVERY page: require_once '../includes/security.php';
  *
  * Provides:
@@ -35,7 +35,7 @@ if (isset($_SESSION['user_id'])) {
         // Session expired — destroy and redirect
         session_unset();
         session_destroy();
-        header('Location: /Marguax_Collection/auth/login.php?reason=timeout');
+        header('Location: /Margaux_Collections/auth/login.php?reason=timeout');
         exit;
     }
     $_SESSION['last_activity'] = time();

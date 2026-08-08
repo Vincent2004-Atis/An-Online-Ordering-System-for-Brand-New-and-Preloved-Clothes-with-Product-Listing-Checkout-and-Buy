@@ -1,7 +1,7 @@
 <?php
 /**
  * verify_email.php — Step 2 of registration: verify email OTP then create account
- * Place in: /Marguax_Collection/auth/verify_email.php
+ * Place in: /Margaux_Collections/auth/verify_email.php
  */
 require_once '../includes/security.php';
 require_once '../includes/mailer.php';
@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'resen
         $sent = send_mail(
             $email,
             $pending['name'],
-            'Verify your email — Marguax Collection',
+            'Verify your email — Margaux Collections',
             otp_email_html($otp, 'register', 10)
         );
 
@@ -117,7 +117,7 @@ $masked     = substr($emailParts[0], 0, 1) . str_repeat('*', max(1, strlen($emai
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Verify Email — Marguax Collection</title>
+<title>Verify Email — Margaux Collections</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -164,8 +164,8 @@ h1{font-size:1.8rem;font-weight:800;margin-bottom:8px}
 <body>
 <div class="card">
   <div class="logo">
-    <img class="logo-img" src="/Marguax_Collection/images/logo.jpg" alt="Logo">
-    <div><div class="logo-name">Marguax Collection</div><div class="logo-sub"></div></div>
+    <img class="logo-img" src="/Margaux_Collections/images/logo.jpg" alt="Logo">
+    <div><div class="logo-name">Margaux Collections</div><div class="logo-sub"></div></div>
   </div>
 
   <div class="step-badge"><span class="step-dot"></span> Step 2 of 2 — Verify your email</div>

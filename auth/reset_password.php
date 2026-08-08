@@ -1,7 +1,7 @@
 <?php
 /**
  * reset_password.php — Step 3: set a new password
- * Place in: /Marguax_Collection/auth/reset_password.php
+ * Place in: /Margaux_Collections/auth/reset_password.php
  */
 require_once '../includes/security.php';
 require_once '../config/database.php';
@@ -22,8 +22,8 @@ if (time() - $_SESSION['reset_verified']['granted_at'] > 900) {
 // Already logged in
 if (isset($_SESSION['user_id'])) {
     header('Location: ' . ($_SESSION['role'] === 'admin'
-        ? '/Marguax_Collection/admin/dashboard.php'
-        : '/Marguax_Collection/customer/products.php'));
+        ? '/Margaux_Collections/admin/dashboard.php'
+        : '/Margaux_Collections/customer/products.php'));
     exit;
 }
 
@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Reset Password — Marguax Collection</title>
+<title>Reset Password — Margaux Collections</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Plus Jakarta Sans','Sora',sans-serif;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px;background:linear-gradient(135deg,#2a0d14 0%,#112d52 50%,#1a4070 100%);color:#fff}
@@ -115,8 +115,8 @@ label{display:block;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-tr
 <body>
 <div class="card">
   <div class="logo">
-    <img class="logo-img" src="/Marguax_Collection/images/logo.jpg" alt="Logo">
-    <div><div class="logo-name">Marguax Collection</div><div class="logo-sub"></div></div>
+    <img class="logo-img" src="/Margaux_Collections/images/logo.jpg" alt="Logo">
+    <div><div class="logo-name">Margaux Collections</div><div class="logo-sub"></div></div>
   </div>
 
   <?php if ($success): ?>

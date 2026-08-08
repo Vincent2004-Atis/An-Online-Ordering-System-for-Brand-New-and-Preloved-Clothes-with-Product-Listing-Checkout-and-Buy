@@ -3,7 +3,7 @@
  * register.php — Two-step registration with email OTP verification
  * Step 1: Fill form -> validate -> send OTP
  * Step 2: Enter OTP -> create account
- * Place in: /Marguax_Collection/auth/register.php
+ * Place in: /Margaux_Collections/auth/register.php
  */
 require_once '../includes/security.php';
 require_once '../includes/mailer.php';
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['step'] ?? '') === '1') {
             store_otp($db, $email, 'register', $otp, 600);
             $sent = send_mail(
                 $email, $name,
-                'Verify your email — Marguax Collections',
+                'Verify your email — Margaux Collections',
                 otp_email_html($otp, 'register', 10)
             );
             if ($sent) {
@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['step'] ?? '') === '1') {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Register — Marguax Collections</title>
+<title>Register — Margaux Collections</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -276,12 +276,12 @@ input:focus{border-color:#c45064;background:rgba(196,80,100,0.06);box-shadow:0 0
   <div class="left">
     <div class="brand-logo">
       <div class="logo-img-circle">
-        <img src="/Marguax_Collection/images/logo.jpg" alt="Logo"
+        <img src="/Margaux_Collections/images/logo.jpg" alt="Logo"
              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
         <span class="logo-fallback" style="display:none">M</span>
       </div>
       <div class="brand-name">
-        Marguax Collections
+        Margaux Collections
         <span>+ Fashion Boutique</span>
       </div>
     </div>

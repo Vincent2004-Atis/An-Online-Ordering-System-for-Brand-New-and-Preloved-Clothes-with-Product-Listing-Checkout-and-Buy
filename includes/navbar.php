@@ -1,6 +1,6 @@
 <?php
 if (!isset($_SESSION['user_id'])) {
-    header('Location: /Marguax_Collection/auth/login.php');
+    header('Location: /Margaux_Collections/auth/login.php');
     exit;
 }
 require_once __DIR__ . '/../config/database.php';
@@ -28,7 +28,7 @@ $stmt->close();
 
 if (!$user) {
     session_destroy();
-    header('Location: /Marguax_Collection/auth/login.php');
+    header('Location: /Margaux_Collections/auth/login.php');
     exit;
 }
 
@@ -286,12 +286,12 @@ $isOrderActive    = $currentPage === 'my_orders.php';
   <div class="navbar-inner">
 
     <!-- ── LEFT: Logo + Brand ── -->
-    <a href="/Marguax_Collection/customer/products.php" class="navbar-brand">
-      <img src="/Marguax_Collection/images/logo.jpg"
-           alt="Marguax Collection Logo"
+    <a href="/Margaux_Collections/customer/products.php" class="navbar-brand">
+      <img src="/Margaux_Collections/images/logo.jpg"
+           alt="Margaux Collections Logo"
            style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.4);flex-shrink:0;">
       <div class="brand-text">
-        <div class="brand-name">Marguax Collection</div>
+        <div class="brand-name">Margaux Collections</div>
         <div class="brand-sub"></div>
       </div>
     </a>
@@ -299,13 +299,13 @@ $isOrderActive    = $currentPage === 'my_orders.php';
     <!-- ── CENTER: Nav Links ── -->
     <ul class="navbar-nav">
       <li>
-        <a href="/Marguax_Collection/customer/products.php"
+        <a href="/Margaux_Collections/customer/products.php"
            class="nav-link <?= $isProductsActive ? 'active' : '' ?>">
           PRODUCTS
         </a>
       </li>
       <li>
-        <a href="/Marguax_Collection/customer/my_orders.php"
+        <a href="/Margaux_Collections/customer/my_orders.php"
            class="nav-link <?= $isOrderActive ? 'active' : '' ?>">
           ORDER HISTORY
         </a>
@@ -316,7 +316,7 @@ $isOrderActive    = $currentPage === 'my_orders.php';
     <div class="navbar-right">
 
       <!-- Search -->
-      <form method="GET" action="/Marguax_Collection/customer/products.php" class="navbar-search">
+      <form method="GET" action="/Margaux_Collections/customer/products.php" class="navbar-search">
         <input type="text" name="search" placeholder="Search products..."
                value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
         <button type="submit" class="search-btn">🔍</button>
@@ -340,7 +340,7 @@ $isOrderActive    = $currentPage === 'my_orders.php';
       </div>
 
       <!-- Cart -->
-      <a href="/Marguax_Collection/customer/cart.php" class="cart-btn">
+      <a href="/Margaux_Collections/customer/cart.php" class="cart-btn">
         🛒
         <?php if ($cartCount > 0): ?>
           <span class="cart-badge"><?= $cartCount ?></span>
@@ -354,7 +354,7 @@ $isOrderActive    = $currentPage === 'my_orders.php';
         <button class="profile-btn" id="profileBtn" type="button" aria-expanded="false">
           <div class="profile-avatar">
             <?php if (!empty($user['profile_photo']) && file_exists(__DIR__ . '/../' . $user['profile_photo'])): ?>
-              <img src="/Marguax_Collection/<?= htmlspecialchars($user['profile_photo']) ?>" alt="Profile">
+              <img src="/Margaux_Collections/<?= htmlspecialchars($user['profile_photo']) ?>" alt="Profile">
             <?php else: ?>
               <?= $initials ?>
             <?php endif; ?>
@@ -370,9 +370,9 @@ $isOrderActive    = $currentPage === 'my_orders.php';
             <div class="dh-name"><?= htmlspecialchars($user['name']) ?></div>
             <div class="dh-email"><?= htmlspecialchars($user['email']) ?></div>
           </div>
-          <a href="/Marguax_Collection/customer/profile.php" class="dropdown-item">👤 My Profile</a>
+          <a href="/Margaux_Collections/customer/profile.php" class="dropdown-item">👤 My Profile</a>
           <div class="dropdown-divider"></div>
-          <a href="/Marguax_Collection/auth/logout.php" class="dropdown-item danger">🚪 Logout</a>
+          <a href="/Margaux_Collections/auth/logout.php" class="dropdown-item danger">🚪 Logout</a>
         </div>
       </div>
 
@@ -416,7 +416,7 @@ $isOrderActive    = $currentPage === 'my_orders.php';
           💬 Customer Support
         </div>
         <div style="font-size:.72rem;color:rgba(255,255,255,.75);margin-top:2px;">
-          Marguax Collection
+          Margaux Collections
         </div>
       </div>
       <button onclick="chatToggle()"
@@ -514,7 +514,7 @@ async function loadNotifications() {
   const list = document.getElementById('notifList');
   list.innerHTML = '<div class="notif-empty">Loading...</div>';
   try {
-    const res  = await fetch('/Marguax_Collection/api/notifications.php?action=get');
+    const res  = await fetch('/Margaux_Collections/api/notifications.php?action=get');
     const data = await res.json();
     if (!data.success || !data.notifications || !data.notifications.length) {
       list.innerHTML = '<div class="notif-empty">No notifications yet.</div>';
@@ -537,14 +537,14 @@ async function loadNotifications() {
 }
 
 window.markAllNotifRead = function () {
-  fetch('/Marguax_Collection/api/notifications.php', {
+  fetch('/Margaux_Collections/api/notifications.php', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'mark_all_read' })
   }).then(() => loadNotifications());
 };
 
 window.markNotifRead = function (id) {
-  fetch('/Marguax_Collection/api/notifications.php', {
+  fetch('/Margaux_Collections/api/notifications.php', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'mark_read', id })
   }).then(() => loadNotifications());
@@ -591,7 +591,7 @@ function escHtml(str) {
 
   async function chatLoadConvos() {
     try {
-      const res  = await fetch('/Marguax_Collection/api/chat.php?action=get_conversations');
+      const res  = await fetch('/Margaux_Collections/api/chat.php?action=get_conversations');
       const data = await res.json();
       const list = document.getElementById('chatConvoList');
       const dot  = document.getElementById('chatBubbleDot');
@@ -625,7 +625,7 @@ function escHtml(str) {
 
   async function chatLoadThread() {
     try {
-      const res  = await fetch(`/Marguax_Collection/api/chat.php?action=get_messages&conversation_id=${chatActiveCid}`);
+      const res  = await fetch(`/Margaux_Collections/api/chat.php?action=get_messages&conversation_id=${chatActiveCid}`);
       const data = await res.json();
       if (!data.success) return;
       const container = document.getElementById('threadMsgs');
@@ -652,7 +652,7 @@ function escHtml(str) {
 
   async function chatPost(params) {
     const body = new URLSearchParams(params);
-    const res  = await fetch('/Marguax_Collection/api/chat.php', {
+    const res  = await fetch('/Margaux_Collections/api/chat.php', {
       method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body.toString()
     });
     return res.json();
@@ -689,7 +689,7 @@ function escHtml(str) {
   setInterval(async () => {
     if (chatIsOpen) return;
     try {
-      const res  = await fetch('/Marguax_Collection/api/chat.php?action=unread_count');
+      const res  = await fetch('/Margaux_Collections/api/chat.php?action=unread_count');
       const data = await res.json();
       if (!data.success) return;
       const dot = document.getElementById('chatBubbleDot');

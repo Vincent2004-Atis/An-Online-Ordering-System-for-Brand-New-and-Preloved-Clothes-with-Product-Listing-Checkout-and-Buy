@@ -1,7 +1,7 @@
 <?php
 /**
  * API — Profile
- * Marguax Collection Ordering System
+ * Margaux Collections Ordering System
  *
  * GET  /api/profile.php                    → get current user profile
  * POST /api/profile.php { action: 'update', name, email, contact_number, address }

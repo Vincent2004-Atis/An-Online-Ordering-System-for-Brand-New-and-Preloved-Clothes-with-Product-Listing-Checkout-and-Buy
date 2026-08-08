@@ -32,7 +32,7 @@ $hpPrice += [
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Marguax Collections — Fashion Boutique</title>
+<title>Margaux Collections — Fashion Boutique</title>
 <link href="https://fonts.googleapis.com/css2?family=Didact+Gothic&family=Bodoni+Moda:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -302,7 +302,7 @@ footer{background:#05030a;color:rgba(255,255,255,.5);padding:68px 56px 36px;bord
         </svg>
       </div>
       <div class="logo-text-block">
-        <div class="logo-name">Marguax <em>Collections</em></div>
+        <div class="logo-name">Margaux <em>Collections</em></div>
         <div class="logo-tagline">✦ Fashion Boutique</div>
       </div>
     </a>
@@ -382,12 +382,12 @@ footer{background:#05030a;color:rgba(255,255,255,.5);padding:68px 56px 36px;bord
     <span class="ribbon-item">Pre-Loved Designer Pieces <span class="ribbon-sep">✦</span></span>
     <span class="ribbon-item">Affordable Fashion <span class="ribbon-sep">✦</span></span>
     <span class="ribbon-item">Free Styling Tips <span class="ribbon-sep">✦</span></span>
-    <span class="ribbon-item">Marguax Collections Boutique <span class="ribbon-sep">✦</span></span>
+    <span class="ribbon-item">Margaux Collections Boutique <span class="ribbon-sep">✦</span></span>
     <span class="ribbon-item">Brand New Outfits <span class="ribbon-sep">✦</span></span>
     <span class="ribbon-item">Pre-Loved Designer Pieces <span class="ribbon-sep">✦</span></span>
     <span class="ribbon-item">Affordable Fashion <span class="ribbon-sep">✦</span></span>
     <span class="ribbon-item">Free Styling Tips <span class="ribbon-sep">✦</span></span>
-    <span class="ribbon-item">Marguax Collections Boutique <span class="ribbon-sep">✦</span></span>
+    <span class="ribbon-item">Margaux Collections Boutique <span class="ribbon-sep">✦</span></span>
   </div>
 </div>
 
@@ -511,7 +511,7 @@ footer{background:#05030a;color:rgba(255,255,255,.5);padding:68px 56px 36px;bord
             </defs>
           </svg>
           <div>
-            <div class="footer-brand-name">Marguax <em>Collections</em></div>
+            <div class="footer-brand-name">Margaux <em>Collections</em></div>
             <div class="footer-tagline">✦ Fashion Boutique</div>
           </div>
         </div>
@@ -555,8 +555,8 @@ footer{background:#05030a;color:rgba(255,255,255,.5);padding:68px 56px 36px;bord
       </div>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 Marguax Collections Fashion Boutique. All rights reserved.</span>
-      <span>📘 gilian.legaspi.1 · 📸 mennggayyy · 🌐 www.MarguaxCollection.com</span>
+      <span>© 2026 Margaux Collections Fashion Boutique. All rights reserved.</span>
+      <span>📘 gilian.legaspi.1 · 📸 mennggayyy · 🌐 www.MargauxCollections.com</span>
     </div>
   </div>
 </footer>
@@ -566,7 +566,7 @@ footer{background:#05030a;color:rgba(255,255,255,.5);padding:68px 56px 36px;bord
   <div class="pt-panel"></div>
   <div class="pt-logo">
     <span class="pt-icon">👗</span>
-    <div class="pt-text">Marguax Collections</div>
+    <div class="pt-text">Margaux Collections</div>
     <div class="pt-bar"></div>
   </div>
 </div>

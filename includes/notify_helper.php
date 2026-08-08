@@ -14,7 +14,7 @@ function createNotification(mysqli $db, int $userId, int $orderId, string $order
         ],
         'completed' => [
             'title'   => '✅ Order Completed!',
-            'message' => "Your Order #$orderId has been completed. Thank you for shopping with Marguax_Collectionoration!",
+            'message' => "Your Order #$orderId has been completed. Thank you for shopping with Margaux Collections!",
         ],
         'pending' => [
             'title'   => '🕐 Order is Pending',

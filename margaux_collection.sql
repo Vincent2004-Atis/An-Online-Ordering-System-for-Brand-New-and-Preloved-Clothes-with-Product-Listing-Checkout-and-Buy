@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 24, 2026 at 06:55 PM
+-- Generation Time: Aug 08, 2026 at 02:27 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `marguax_collection`
+-- Database: `margaux_collection`
 --
 
 -- --------------------------------------------------------
@@ -67,7 +67,7 @@ CREATE TABLE `conversations` (
 --
 
 INSERT INTO `conversations` (`conversation_id`, `user_id`, `subject`, `order_id`, `status`, `created_at`, `updated_at`) VALUES
-(1, 2, 'General Inquiry', NULL, 'open', '2026-07-21 22:37:58', '2026-07-24 11:27:37');
+(1, 2, 'General Inquiry', NULL, 'open', '2026-07-21 22:37:58', '2026-08-06 12:49:36');
 
 -- --------------------------------------------------------
 
@@ -117,7 +117,8 @@ INSERT INTO `messages` (`message_id`, `conversation_id`, `sender_type`, `sender_
 (1, 1, 'customer', 2, 'hiii', 1, '2026-07-21 22:37:58'),
 (2, 1, 'customer', 2, 'diin ka', 1, '2026-07-22 16:45:57'),
 (3, 1, 'admin', 1, 'hiii', 1, '2026-07-23 15:40:39'),
-(4, 1, 'admin', 1, 'good eve sir what can help you', 1, '2026-07-24 11:27:37');
+(4, 1, 'admin', 1, 'good eve sir what can help you', 1, '2026-07-24 11:27:37'),
+(5, 1, 'customer', 2, 'good eve', 0, '2026-08-06 12:49:36');
 
 -- --------------------------------------------------------
 
@@ -140,21 +141,21 @@ CREATE TABLE `notifications` (
 --
 
 INSERT INTO `notifications` (`notification_id`, `user_id`, `order_id`, `title`, `message`, `is_read`, `created_at`) VALUES
-(1, 2, 1, '✅ Order Completed!', 'Your Order #1 has been completed. Thank you for shopping with Marguax_Collectionoration!', 0, '2026-07-21 16:45:00'),
+(1, 2, 1, '✅ Order Completed!', 'Your Order #1 has been completed. Thank you for shopping with Margaux Collections!', 0, '2026-07-21 16:45:00'),
 (2, 2, 7, '📦 Your order is on its way!', 'Your Order #7 is now being processed and will be delivered to your address soon. Please prepare your payment upon delivery.', 0, '2026-07-22 18:11:06'),
 (3, 2, 7, '💳 Payment Verified!', 'We\'ve confirmed your GCash payment for Order #7. Your order is now being processed.', 0, '2026-07-22 18:11:06'),
-(4, 2, 6, '✅ Order Completed!', 'Your Order #6 has been completed. Thank you for shopping with Marguax_Collectionoration!', 0, '2026-07-22 18:32:55'),
+(4, 2, 6, '✅ Order Completed!', 'Your Order #6 has been completed. Thank you for shopping with Margaux Collections!', 0, '2026-07-22 18:32:55'),
 (5, 2, 6, '💳 Payment Verified!', 'We\'ve confirmed your GCash payment for Order #6. Your order is now being processed.', 0, '2026-07-22 18:32:55'),
-(6, 2, 7, '✅ Order Completed!', 'Your Order #7 has been completed. Thank you for shopping with Marguax_Collectionoration!', 0, '2026-07-22 18:33:01'),
-(7, 2, 5, '✅ Order Completed!', 'Your Order #5 has been completed. Thank you for shopping with Marguax_Collectionoration!', 0, '2026-07-22 18:33:09'),
+(6, 2, 7, '✅ Order Completed!', 'Your Order #7 has been completed. Thank you for shopping with Margaux Collections!', 0, '2026-07-22 18:33:01'),
+(7, 2, 5, '✅ Order Completed!', 'Your Order #5 has been completed. Thank you for shopping with Margaux Collections!', 0, '2026-07-22 18:33:09'),
 (8, 2, 5, '💳 Payment Verified!', 'We\'ve confirmed your GCash payment for Order #5. Your order is now being processed.', 0, '2026-07-22 18:33:09'),
-(9, 2, 4, '✅ Order Completed!', 'Your Order #4 has been completed. Thank you for shopping with Marguax_Collectionoration!', 0, '2026-07-22 18:33:20'),
+(9, 2, 4, '✅ Order Completed!', 'Your Order #4 has been completed. Thank you for shopping with Margaux Collections!', 0, '2026-07-22 18:33:20'),
 (10, 2, 4, '💳 Payment Verified!', 'We\'ve confirmed your GCash payment for Order #4. Your order is now being processed.', 0, '2026-07-22 18:33:20'),
-(11, 2, 3, '✅ Order Completed!', 'Your Order #3 has been completed. Thank you for shopping with Marguax_Collectionoration!', 0, '2026-07-22 18:33:29'),
+(11, 2, 3, '✅ Order Completed!', 'Your Order #3 has been completed. Thank you for shopping with Margaux Collections!', 0, '2026-07-22 18:33:29'),
 (12, 2, 3, '💳 Payment Verified!', 'We\'ve confirmed your GCash payment for Order #3. Your order is now being processed.', 0, '2026-07-22 18:33:29'),
-(13, 2, 2, '✅ Order Completed!', 'Your Order #2 has been completed. Thank you for shopping with Marguax_Collectionoration!', 0, '2026-07-22 18:33:36'),
+(13, 2, 2, '✅ Order Completed!', 'Your Order #2 has been completed. Thank you for shopping with Margaux Collections!', 0, '2026-07-22 18:33:36'),
 (14, 2, 2, '💳 Payment Verified!', 'We\'ve confirmed your GCash payment for Order #2. Your order is now being processed.', 0, '2026-07-22 18:33:36'),
-(15, 2, 12, '✅ Order Completed!', 'Your Order #12 has been completed. Thank you for shopping with Marguax_Collectionoration!', 0, '2026-07-24 16:47:44'),
+(15, 2, 12, '✅ Order Completed!', 'Your Order #12 has been completed. Thank you for shopping with Margaux Collections!', 0, '2026-07-24 16:47:44'),
 (16, 2, 12, '💳 Payment Verified!', 'We\'ve confirmed your GCash payment for Order #12. Your order is now being processed.', 0, '2026-07-24 16:47:44'),
 (17, 2, 10, '📦 Your order is on its way!', 'Your Order #10 is now being processed and will be delivered to your address soon. Please prepare your payment upon delivery.', 0, '2026-07-24 16:48:49'),
 (18, 2, 11, '📦 Your order is on its way!', 'Your Order #11 is now being processed and will be delivered to your address soon. Please prepare your payment upon delivery.', 0, '2026-07-24 16:48:57'),
@@ -171,9 +172,11 @@ CREATE TABLE `orders` (
   `user_id` int(11) NOT NULL,
   `customer_name` varchar(150) NOT NULL,
   `address` text NOT NULL,
+  `latitude` decimal(10,7) DEFAULT NULL,
+  `longitude` decimal(10,7) DEFAULT NULL,
   `contact_number` varchar(20) DEFAULT NULL,
-  `order_method` enum('pickup','shipping') DEFAULT 'pickup',
-  `payment_method` enum('cash_on_pickup','cash_on_delivery','gcash','paymaya') DEFAULT 'cash_on_pickup',
+  `order_method` enum('pickup','dropoff','shipping','pickup_rider') DEFAULT 'pickup',
+  `payment_method` enum('cash_on_pickup','cash_on_delivery','gcash') DEFAULT 'cash_on_pickup',
   `payment_account_id` int(11) DEFAULT NULL,
   `payment_status` enum('pending','pending_verification','paid') NOT NULL DEFAULT 'pending',
   `gcash_reference` varchar(50) DEFAULT NULL,
@@ -187,19 +190,24 @@ CREATE TABLE `orders` (
 -- Dumping data for table `orders`
 --
 
-INSERT INTO `orders` (`order_id`, `user_id`, `customer_name`, `address`, `contact_number`, `order_method`, `payment_method`, `payment_account_id`, `payment_status`, `gcash_reference`, `order_status`, `queue_number`, `total_amount`, `order_date`) VALUES
-(1, 2, 'Vincent Carl Atis', 'sara', '09482841494', 'shipping', 'gcash', NULL, 'paid', NULL, 'completed', 101, 750.00, '2026-07-21 08:15:16'),
-(2, 2, 'Vincent Carl Atis', 'Brgy. Bagaygay Sara, Iloilo', '09482841494', 'shipping', 'gcash', NULL, 'paid', NULL, 'completed', 102, 150.00, '2026-07-22 09:03:16'),
-(3, 2, 'Vincent Carl Atis', 'Brgy. Bagaygay Sara, Iloilo', '09482841494', 'shipping', 'gcash', NULL, 'paid', NULL, 'completed', 103, 750.00, '2026-07-22 09:17:19'),
-(4, 2, 'Vincent Carl Atis', 'Brgy. Bagaygay Sara, Iloilo', '09482841494', 'shipping', 'gcash', NULL, 'paid', NULL, 'completed', 104, 750.00, '2026-07-22 09:17:51'),
-(5, 2, 'Vincent Carl Atis', 'Brgy. Bagaygay Sara, Iloilo', '09482841494', 'pickup', 'cash_on_pickup', NULL, 'paid', NULL, 'completed', 105, 750.00, '2026-07-22 09:47:50'),
-(6, 2, 'Vincent Carl Atis', 'Brgy. Bagaygay Sara, Iloilo', '09482841494', 'pickup', 'cash_on_pickup', NULL, 'paid', NULL, 'completed', 106, 300.00, '2026-07-22 09:50:12'),
-(7, 2, 'Vincent Carl Atis', 'Brgy. Bagaygay Sara, Iloilo', '09482841494', '', 'gcash', NULL, 'paid', NULL, 'completed', 107, 750.00, '2026-07-22 10:09:49'),
-(8, 2, 'Vincent Carl Atis', 'Brgy. Bagaygay Sara, Iloilo', '09482841494', 'pickup', 'cash_on_pickup', NULL, '', NULL, 'pending', 108, 300.00, '2026-07-23 10:01:27'),
-(9, 2, 'Vincent Carl Atis', 'Brgy. Bagaygay Sara, Iloilo', '09482841494', '', 'gcash', NULL, '', NULL, 'pending', 109, 450.00, '2026-07-23 10:30:32'),
-(10, 2, 'Vincent Carl Atis', 'Brgy. Bagaygay Sara, Iloilo', '09482841494', 'pickup', 'cash_on_pickup', NULL, 'pending_verification', NULL, 'processing', 110, 750.00, '2026-07-23 14:32:19'),
-(11, 2, 'Vincent Carl Atis', 'Brgy. Bagaygay Sara, Iloilo', '09482841494', '', 'gcash', NULL, 'paid', NULL, 'processing', 111, 500.00, '2026-07-23 14:37:48'),
-(12, 2, 'Vincent Carl Atis', 'Brgy. Bagaygay Sara, Iloilo', '09482841494', '', 'gcash', NULL, 'paid', '1234567890123', 'completed', 112, 500.00, '2026-07-23 14:55:37');
+INSERT INTO `orders` (`order_id`, `user_id`, `customer_name`, `address`, `latitude`, `longitude`, `contact_number`, `order_method`, `payment_method`, `payment_account_id`, `payment_status`, `gcash_reference`, `order_status`, `queue_number`, `total_amount`, `order_date`) VALUES
+(1, 2, 'Vincent Carl Atis', 'sara', NULL, NULL, '09482841494', 'shipping', 'gcash', NULL, 'paid', NULL, 'completed', 101, 750.00, '2026-07-21 08:15:16'),
+(2, 2, 'Vincent Carl Atis', 'Brgy. Bagaygay Sara, Iloilo', NULL, NULL, '09482841494', 'shipping', 'gcash', NULL, 'paid', NULL, 'completed', 102, 150.00, '2026-07-22 09:03:16'),
+(3, 2, 'Vincent Carl Atis', 'Brgy. Bagaygay Sara, Iloilo', NULL, NULL, '09482841494', 'shipping', 'gcash', NULL, 'paid', NULL, 'completed', 103, 750.00, '2026-07-22 09:17:19'),
+(4, 2, 'Vincent Carl Atis', 'Brgy. Bagaygay Sara, Iloilo', NULL, NULL, '09482841494', 'shipping', 'gcash', NULL, 'paid', NULL, 'completed', 104, 750.00, '2026-07-22 09:17:51'),
+(5, 2, 'Vincent Carl Atis', 'Brgy. Bagaygay Sara, Iloilo', NULL, NULL, '09482841494', 'pickup', 'cash_on_pickup', NULL, 'paid', NULL, 'completed', 105, 750.00, '2026-07-22 09:47:50'),
+(6, 2, 'Vincent Carl Atis', 'Brgy. Bagaygay Sara, Iloilo', NULL, NULL, '09482841494', 'pickup', 'cash_on_pickup', NULL, 'paid', NULL, 'completed', 106, 300.00, '2026-07-22 09:50:12'),
+(7, 2, 'Vincent Carl Atis', 'Brgy. Bagaygay Sara, Iloilo', NULL, NULL, '09482841494', 'dropoff', 'gcash', NULL, 'paid', NULL, 'completed', 107, 750.00, '2026-07-22 10:09:49'),
+(8, 2, 'Vincent Carl Atis', 'Brgy. Bagaygay Sara, Iloilo', NULL, NULL, '09482841494', 'pickup', 'cash_on_pickup', NULL, 'pending', NULL, 'pending', 108, 300.00, '2026-07-23 10:01:27'),
+(9, 2, 'Vincent Carl Atis', 'Brgy. Bagaygay Sara, Iloilo', NULL, NULL, '09482841494', 'dropoff', 'gcash', NULL, 'pending', NULL, 'pending', 109, 450.00, '2026-07-23 10:30:32'),
+(10, 2, 'Vincent Carl Atis', 'Brgy. Bagaygay Sara, Iloilo', NULL, NULL, '09482841494', 'pickup', 'cash_on_pickup', NULL, 'pending_verification', NULL, 'processing', 110, 750.00, '2026-07-23 14:32:19'),
+(11, 2, 'Vincent Carl Atis', 'Brgy. Bagaygay Sara, Iloilo', NULL, NULL, '09482841494', 'dropoff', 'gcash', NULL, 'paid', NULL, 'processing', 111, 500.00, '2026-07-23 14:37:48'),
+(12, 2, 'Vincent Carl Atis', 'Brgy. Bagaygay Sara, Iloilo', NULL, NULL, '09482841494', 'dropoff', 'gcash', NULL, 'paid', '1234567890123', 'completed', 112, 500.00, '2026-07-23 14:55:37'),
+(13, 2, 'Vincent Carl Atis', 'Brgy. Bagaygay Sara, Iloilo', NULL, NULL, '09482841494', '', 'cash_on_pickup', NULL, 'pending', NULL, 'pending', 113, 550.00, '2026-08-06 05:33:06'),
+(14, 2, 'Vincent Carl Atis', 'Brgy. Bagaygay Sara, Iloilo', NULL, NULL, '09482841494', 'shipping', 'cash_on_delivery', NULL, 'pending', NULL, 'pending', 114, 300.00, '2026-08-06 05:33:37'),
+(15, 2, 'Vincent Carl Atis', 'Improgo, Sara, Iloilo, Western Visayas, 5014, Philippines', 11.2188583, 122.9768774, '09482841494', '', 'gcash', NULL, 'pending_verification', '12345678910', 'pending', 115, 150.00, '2026-08-07 13:12:29'),
+(16, 2, 'Vincent Carl Atis', 'St. Clement\'s Church, Luna Street, Luna, Railway, La Paz, Tabuc Suba, Iloilo City, Western Visayas, 5000, Philippines', 10.7100223, 122.5646021, '09482841494', 'pickup_rider', 'gcash', NULL, 'pending_verification', '1234567890123', 'pending', 116, 300.00, '2026-08-07 13:14:04'),
+(17, 2, 'Vincent Carl Atis', 'San Luis, Sara, Iloilo, Western Visayas, 5014, Philippines', 11.2250987, 122.9846450, '09482841494', 'pickup_rider', 'gcash', NULL, 'pending_verification', '987654321254', 'pending', 117, 150.00, '2026-08-08 00:26:24');
 
 -- --------------------------------------------------------
 
@@ -232,7 +240,12 @@ INSERT INTO `order_items` (`item_id`, `order_id`, `product_id`, `quantity`, `pri
 (10, 9, 2, 1, 300.00),
 (11, 10, 3, 1, 750.00),
 (12, 11, 6, 1, 500.00),
-(13, 12, 6, 1, 500.00);
+(13, 12, 6, 1, 500.00),
+(14, 13, 10, 1, 550.00),
+(15, 14, 1, 1, 300.00),
+(16, 15, 7, 1, 150.00),
+(17, 16, 2, 1, 300.00),
+(18, 17, 8, 1, 150.00);
 
 -- --------------------------------------------------------
 
@@ -301,7 +314,16 @@ INSERT INTO `otp_tokens` (`id`, `identifier`, `type`, `token_hash`, `expires_at`
 (51, 'vinc.atis.ui@phinmaed.com', 'login', '879d8f427639a8c0d507aed5bc8a5eb5a9fce7fbb19467e547345b5c11491146', '2026-07-24 10:24:12', 1, '2026-07-24 16:19:12'),
 (52, 'atisvincentcarl1@gmail.com', 'login', '6e1c267e063661aa45129bde95dae6d498c45243ef49d0b0778e23a3c066bedd', '2026-07-24 10:51:57', 1, '2026-07-24 16:46:57'),
 (53, 'atisvincentcarl1@gmail.com', 'login', '6cf09df378df23b82c9a5e41317007befd8bddae82391d4e5991adf8389147c2', '2026-07-24 10:53:18', 1, '2026-07-24 16:48:18'),
-(54, 'vinc.atis.ui@phinmaed.com', 'login', '0a41f5784c56223d42fd5e1b60616ed30cc67ed926d8a517fc91225167b381b4', '2026-07-24 10:54:08', 1, '2026-07-24 16:49:08');
+(54, 'vinc.atis.ui@phinmaed.com', 'login', '0a41f5784c56223d42fd5e1b60616ed30cc67ed926d8a517fc91225167b381b4', '2026-07-24 10:54:08', 1, '2026-07-24 16:49:08'),
+(55, 'vinc.atis.ui@phinmaed.com', 'login', 'bd6c5c84007a2d436f9a1b6c0415e5bf82faecac7e0410a71f976fe216a09edd', '2026-08-05 18:01:09', 1, '2026-08-05 23:56:09'),
+(56, 'atisvincentcarl1@gmail.com', 'reset', '75114b7a18ad0a736ba4d277f3dee7484ba3b84873cad98c993ab752eb40d631', '2026-08-05 18:08:39', 1, '2026-08-05 23:58:39'),
+(57, 'atisvincentcarl1@gmail.com', 'login', '3f89d809dc6691e9e454ef65a1b2d8a66f16cde121f9fc3553368e285a4236e4', '2026-08-05 18:04:40', 1, '2026-08-05 23:59:40'),
+(58, 'vinc.atis.ui@phinmaed.com', 'login', 'c9173a1f8b82b82bc6d357bb1e5700827443d969fd6f46d06f29ac297243a742', '2026-08-06 02:24:59', 1, '2026-08-06 08:19:59'),
+(59, 'vinc.atis.ui@phinmaed.com', 'login', '224154e92f3322b3cc0eb5d9e5e55f2809c52355a79c78c70fbcde65443af7e4', '2026-08-06 06:53:52', 1, '2026-08-06 12:48:52'),
+(60, 'atisvincentcarl1@gmail.com', 'login', '6235eeeccb0513752ff619e29fbb193333d99a7764f6aba2a8201c62186dbada', '2026-08-06 06:55:08', 1, '2026-08-06 12:50:08'),
+(61, 'vinc.atis.ui@phinmaed.com', 'login', 'd515dde485d7c81af340d6d7b09475e39b4bb4b51c39476fa199b14a04b0e64b', '2026-08-06 07:35:29', 1, '2026-08-06 13:30:29'),
+(62, 'vinc.atis.ui@phinmaed.com', 'login', 'a0e08f1a700b329309ba04dd29d98e846ff594ffac28cf5ccd6fc0c18918fd3f', '2026-08-07 15:18:01', 1, '2026-08-07 21:13:01'),
+(63, 'vinc.atis.ui@phinmaed.com', 'login', 'eb71574dc566fc5a9cad907e45b6c1d7bf2cf9f197b01f271c04d9dc8b273975', '2026-08-08 02:30:06', 1, '2026-08-08 08:25:06');
 
 -- --------------------------------------------------------
 
@@ -341,16 +363,16 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`product_id`, `category_id`, `product_name`, `description`, `price`, `product_type`, `image`, `stock`, `sold_out_at`, `created_at`) VALUES
-(1, 6, 'Bikini 1', '', 300.00, 'loose', 'images/products/375095d884c45a0188572c1ff8722c5a.jpg', 1, NULL, '2026-03-24 03:15:28'),
-(2, 1, 'Dress', '', 300.00, 'loose', 'images/products/96b2fa79be7883f02efe4fa9d9a68a63.jpg', 1, NULL, '2026-03-24 03:15:28'),
+(1, 6, 'Bikini 1', '', 300.00, 'loose', 'images/products/375095d884c45a0188572c1ff8722c5a.jpg', 0, '2026-08-06 05:33:37', '2026-03-24 03:15:28'),
+(2, 1, 'Dress', '', 300.00, 'loose', 'images/products/96b2fa79be7883f02efe4fa9d9a68a63.jpg', 0, '2026-08-07 13:14:04', '2026-03-24 03:15:28'),
 (3, 3, 'Terno 2', '', 750.00, 'loose', 'images/products/e88a3e273714a0b5d81ab8d1362388f8.jpg', 1, NULL, '2026-03-24 03:15:28'),
 (4, 3, 'Top 1', '', 750.00, 'loose', 'images/products/adb307ffcf2b63ea012ebd7a2a841851.jpg', 1, NULL, '2026-03-24 03:15:28'),
 (5, 1, 'Dress 1', '', 500.00, 'loose', 'images/products/fc9a9e5528f528e7a681f631c745c814.jpg', 1, NULL, '2026-07-22 07:15:11'),
 (6, 8, 'Terno 1', '', 500.00, 'loose', 'images/products/e9d6102f917a7328c470cefa05fe6529.jpg', 1, NULL, '2026-07-22 07:21:27'),
-(7, 5, 'Bracelet', '', 150.00, 'loose', 'images/products/7db8b38c6125be9264116286c3fb9369.jpg', 1, NULL, '2026-07-22 07:23:14'),
-(8, 5, 'Accesories', '', 150.00, 'loose', 'images/products/547c0a756c99535295d25b219c5ebec3.jpg', 1, NULL, '2026-07-22 07:23:50'),
+(7, 5, 'Bracelet', '', 150.00, 'loose', 'images/products/7db8b38c6125be9264116286c3fb9369.jpg', 0, '2026-08-07 13:12:29', '2026-07-22 07:23:14'),
+(8, 5, 'Accesories', '', 150.00, 'loose', 'images/products/547c0a756c99535295d25b219c5ebec3.jpg', 0, '2026-08-08 00:26:24', '2026-07-22 07:23:50'),
 (9, 8, 'TERNO 2', '', 400.00, 'loose', 'images/products/113109a4e7c2f09a789a71eb6015d2d5.jpg', 1, NULL, '2026-07-24 08:17:52'),
-(10, 7, 'Bottom 1', '', 550.00, 'loose', 'images/products/96e9224d6370a584debaa9ea1f8f4947.jpg', 1, NULL, '2026-07-24 08:19:00');
+(10, 7, 'Bottom 1', '', 550.00, 'loose', 'images/products/96e9224d6370a584debaa9ea1f8f4947.jpg', 0, '2026-08-06 05:33:06', '2026-07-24 08:19:00');
 
 --
 -- Triggers `products`
@@ -389,7 +411,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `name`, `email`, `password`, `contact_number`, `address`, `profile_photo`, `role`, `created_at`) VALUES
-(1, 'Marguax Admin', 'atisvincentcarl1@gmail.com', '$2b$10$fxOnAfIXsYBgkgFraECg1O99O4AV45InmCOCOFpoJhY.1eLHk.kle', NULL, NULL, NULL, 'admin', '2026-07-20 14:34:07'),
+(1, 'Margaux Admin', 'atisvincentcarl1@gmail.com', '$2y$10$WJwIUzYD5N4ejZM//40.hOZJaKQhJjyu8bFK9aygMPLpYUoTwLs9.', NULL, NULL, NULL, 'admin', '2026-07-20 14:34:07'),
 (2, 'Vincent Carl Atis', 'vinc.atis.ui@phinmaed.com', '$2y$10$w66KpzvfeC1rzEvfXq3up.h9zak3eR75oB9jAx3hrQaEcoj/fCPg.', '09482841494', 'Brgy. Bagaygay Sara, Iloilo', 'uploads/profiles/user_2_1784621637.webp', 'customer', '2026-07-21 08:12:40');
 
 -- --------------------------------------------------------
@@ -401,7 +423,7 @@ INSERT INTO `users` (`user_id`, `name`, `email`, `password`, `contact_number`, `
 CREATE TABLE `user_payment_accounts` (
   `account_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `account_type` enum('gcash','paymaya') NOT NULL,
+  `account_type` enum('gcash') NOT NULL,
   `account_name` varchar(150) NOT NULL,
   `account_number` varchar(50) NOT NULL,
   `bank_name` varchar(100) DEFAULT NULL,
@@ -526,7 +548,7 @@ ALTER TABLE `conversations`
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `message_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `message_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `notifications`
@@ -538,19 +560,19 @@ ALTER TABLE `notifications`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `otp_tokens`
 --
 ALTER TABLE `otp_tokens`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
 
 --
 -- AUTO_INCREMENT for table `password_resets`

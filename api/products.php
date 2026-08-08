@@ -1,7 +1,7 @@
 <?php
 /**
  * API — Products
- * Marguax Collection Ordering System
+ * Margaux Collections Ordering System
  *
  * GET /api/products.php                    → all products
  * GET /api/products.php?type=member        → member products

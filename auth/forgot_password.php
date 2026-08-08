@@ -1,7 +1,7 @@
 <?php
 /**
  * forgot_password.php — Step 1: enter email to receive reset OTP
- * Place in: /Marguax_Collection/auth/forgot_password.php
+ * Place in: /Margaux_Collections/auth/forgot_password.php
  */
 require_once '../includes/security.php';
 require_once '../includes/mailer.php';
@@ -10,8 +10,8 @@ require_once '../config/database.php';
 // Already logged in — redirect away
 if (isset($_SESSION['user_id'])) {
     header('Location: ' . ($_SESSION['role'] === 'admin'
-        ? '/Marguax_Collection/admin/dashboard.php'
-        : '/Marguax_Collection/customer/products.php'));
+        ? '/Margaux_Collections/admin/dashboard.php'
+        : '/Margaux_Collections/customer/products.php'));
     exit;
 }
 
@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $sent = send_mail(
                 $email,
                 $user['name'],
-                'Reset your Marguax Collections password',
+                'Reset your Margaux Collections password',
                 otp_email_html($otp, 'reset', 10)
             );
 
@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Forgot Password — Marguax Collections</title>
+<title>Forgot Password — Margaux Collections</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -122,7 +122,7 @@ input[type="email"]::placeholder{color:rgba(240,230,218,.3)}
 <div class="page">
 
   <div class="left">
-    <h1>Marguax Collections</h1>
+    <h1>Margaux Collections</h1>
     <p class="tagline">Curated fashion, delivered with care.</p>
     <div class="feature"><strong>Multiple Payment Options</strong><span>GCash, Bank Transfer, Cash on Delivery</span></div>
     <div class="feature"><strong>Smart Queue System</strong><span>Real-time queue number tracking</span></div>
@@ -130,8 +130,8 @@ input[type="email"]::placeholder{color:rgba(240,230,218,.3)}
 
   <div class="card">
     <div class="logo">
-      <img src="/Marguax_Collection/images/logo.jpg" alt="Logo">
-      <div><div class="logo-name">Marguax Collections</div><div class="logo-sub">Fashion Boutique</div></div>
+      <img src="/Margaux_Collections/images/logo.jpg" alt="Logo">
+      <div><div class="logo-name">Margaux Collections</div><div class="logo-sub">Fashion Boutique</div></div>
     </div>
 
     <div class="icon">🔑</div>

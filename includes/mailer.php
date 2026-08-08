@@ -1,12 +1,12 @@
 <?php
 /**
- * Mailer Helper — Marguax_Collection
+ * Mailer Helper — Margaux Collections
  *
  * Requires PHPMailer. Install via Composer:
  *   composer require phpmailer/phpmailer
  *
  * Or manually download PHPMailer and place in:
- *   /Marguax_Collection/vendor/phpmailer/phpmailer/src/
+ *   /Margaux_Collections/vendor/phpmailer/phpmailer/src/
  *
  * Then update SMTP settings below with your Gmail (or any SMTP) credentials.
  *
@@ -38,7 +38,7 @@ define('SMTP_PORT',     587);
 define('SMTP_USER',     'atisvincentcarl1@gmail.com');   // ← Change this
 define('SMTP_PASS', 'dixqwzrarygftrbo');// ← Change this (App Password)
 define('SMTP_FROM',     'atisvincentcarl1@gmail.com');   // ← Change this
-define('SMTP_FROM_NAME','Marguax_Collection');
+define('SMTP_FROM_NAME','Margaux Collections');
 
 /**
  * Send an email using PHPMailer.
@@ -171,7 +171,7 @@ function otp_email_html(string $otp, string $purpose, int $minutes = 5): string 
         <!-- Header -->
         <tr>
           <td style="background:linear-gradient(135deg,#2a0d14,#1a4070);padding:32px 40px;text-align:center;">
-            <div style="font-size:22px;font-weight:800;color:#fff;letter-spacing:.5px;">Marguax_Collection</div>
+            <div style="font-size:22px;font-weight:800;color:#fff;letter-spacing:.5px;">Margaux Collections</div>
           </td>
         </tr>
         <!-- Body -->
@@ -196,7 +196,7 @@ function otp_email_html(string $otp, string $purpose, int $minutes = 5): string 
         <!-- Footer -->
         <tr>
           <td style="background:#f8fafc;padding:20px 40px;border-top:1px solid #e2e8f0;text-align:center;">
-            <p style="margin:0;font-size:12px;color:#94a3b8;">&copy; Marguax_Collection. All rights reserved.</p>
+            <p style="margin:0;font-size:12px;color:#94a3b8;">&copy; Margaux Collections. All rights reserved.</p>
           </td>
         </tr>
       </table>

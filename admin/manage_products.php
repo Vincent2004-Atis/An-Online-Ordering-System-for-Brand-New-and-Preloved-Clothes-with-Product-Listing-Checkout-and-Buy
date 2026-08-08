@@ -97,7 +97,7 @@ $products = $db->query("SELECT p.*, c.name AS category_name FROM products p LEFT
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Manage Products — OrderSync Admin</title>
+<title>Manage Products — Margaux Collections Admin</title>
 <link rel="stylesheet" href="../css/admin.css">
 </head>
 <body>

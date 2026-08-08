@@ -180,7 +180,7 @@ $statusBadge = [
         <?php $hasPhoto = !empty($u['profile_photo']) && file_exists('../' . $u['profile_photo']); ?>
         <div class="profile-avatar" style="<?= $hasPhoto ? 'padding:0;overflow:hidden;' : '' ?>">
           <?php if ($hasPhoto): ?>
-            <img src="/Marguax_Collection/<?= htmlspecialchars($u['profile_photo']) ?>"
+            <img src="/Margaux_Collections/<?= htmlspecialchars($u['profile_photo']) ?>"
                  alt="<?= htmlspecialchars($u['name']) ?>"
                  style="width:100%;height:100%;object-fit:cover;display:block;border-radius:50%;">
           <?php else: ?>
