@@ -32,12 +32,26 @@ if (!file_exists($autoloadPath)) {
     require_once $autoloadPath;
 }
 
+// ── Local-only credentials (XAMPP) ──────────────────────────────────────────
+// If config/local_env.php exists, load it — this is how your own computer
+// gets the real SMTP password without it ever being committed to GitHub.
+// On Railway this file won't exist, so this block simply does nothing there,
+// and Railway's "Variables" tab is used instead.
+$localEnv = __DIR__ . '/../config/local_env.php';
+if (file_exists($localEnv)) {
+    require_once $localEnv;
+}
+
 // ── SMTP Configuration ───────────────────────────────────────────────────────
-define('SMTP_HOST',     'smtp.gmail.com');
-define('SMTP_PORT',     587);
-define('SMTP_USER',     'atisvincentcarl1@gmail.com');   // ← Change this
-define('SMTP_PASS', 'dixqwzrarygftrbo');// ← Change this (App Password)
-define('SMTP_FROM',     'atisvincentcarl1@gmail.com');   // ← Change this
+// Credentials now come from environment variables, NOT hardcoded here, so
+// they're never visible in the code or on GitHub. On Railway, set these
+// under your service's "Variables" tab. On XAMPP, they come from
+// config/local_env.php above.
+define('SMTP_HOST',     getenv('SMTP_HOST') ?: 'smtp.gmail.com');
+define('SMTP_PORT',     getenv('SMTP_PORT') ?: 587);
+define('SMTP_USER',     getenv('SMTP_USER') ?: 'atisvincentcarl1@gmail.com');
+define('SMTP_PASS',     getenv('SMTP_PASS') ?: '');   // ← set SMTP_PASS as an env var; do NOT put the real password here
+define('SMTP_FROM',     getenv('SMTP_FROM') ?: 'atisvincentcarl1@gmail.com');
 define('SMTP_FROM_NAME','Margaux Collections');
 
 /**
@@ -60,16 +74,21 @@ function send_mail(string $toEmail, string $toName, string $subject, string $htm
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = SMTP_PORT;
 
-        // TEMP FIX for local XAMPP SSL — REMOVE BEFORE DEPLOYING TO REAL HOSTING
-        $mail->SMTPOptions = [
-            'ssl' => [
-                'verify_peer' => false,
-                'verify_peer_name' => false,
-                'allow_self_signed' => true
-            ]
-        ];
-
-        $mail->setFrom(SMTP_FROM, SMTP_FROM_NAME);
+        // XAMPP's local SSL setup is often incomplete, which makes PHPMailer's
+        // certificate check fail on localhost even though the connection is
+        // fine. This bypass ONLY activates when running locally — on Railway
+        // (or any real host), $_SERVER['SERVER_NAME'] won't be localhost/127.0.0.1,
+        // so the real, secure SSL verification is used automatically.
+        $isLocal = in_array($_SERVER['SERVER_NAME'] ?? '', ['localhost', '127.0.0.1']);
+        if ($isLocal) {
+            $mail->SMTPOptions = [
+                'ssl' => [
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                    'allow_self_signed' => true
+                ]
+            ];
+        }
 
         $mail->setFrom(SMTP_FROM, SMTP_FROM_NAME);
         $mail->addAddress($toEmail, $toName);
@@ -84,9 +103,7 @@ function send_mail(string $toEmail, string $toName, string $subject, string $htm
         return true;
     } catch (Exception $e) {
         error_log('PHPMailer error: ' . $mail->ErrorInfo);
-// TEMP DEBUG — remove after fixing
-file_put_contents(__DIR__ . '/mail_error.txt', date('Y-m-d H:i:s') . ' | ' . $mail->ErrorInfo . "\n", FILE_APPEND);
-return false;
+        return false;
     }
 }
 

@@ -159,6 +159,10 @@ h1{font-size:1.8rem;font-weight:800;margin-bottom:8px}
 .back{font-size:.85rem;color:rgba(255,255,255,.55)}
 .timer{font-size:.8rem;color:rgba(255,255,255,.5);margin-top:10px}
 .timer span{color:var(--gold);font-weight:700}
+
+@media (max-width: 520px) {
+  .card { padding: 40px 24px; }
+}
 </style>
 </head>
 <body>

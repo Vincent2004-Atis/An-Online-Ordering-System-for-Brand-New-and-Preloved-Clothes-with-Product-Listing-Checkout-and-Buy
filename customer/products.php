@@ -25,8 +25,9 @@ $categories = $db->query("
     END, name
 ")->fetch_all(MYSQLI_ASSOC);
 
-$categoryFilter = isset($_GET['category']) ? (int)$_GET['category'] : 0;
-$search         = trim($_GET['search'] ?? '');
+$categoryFilter  = isset($_GET['category']) ? (int)$_GET['category'] : 0;
+$conditionFilter = in_array($_GET['condition'] ?? '', ['new','preloved']) ? $_GET['condition'] : '';
+$search          = trim($_GET['search'] ?? '');
 
 $where  = ['1=1'];
 $params = [];
@@ -43,6 +44,11 @@ if ($categoryFilter > 0) {
     $where[]  = "p.category_id = ?";
     $types   .= 'i';
     $params[] = $categoryFilter;
+}
+if ($conditionFilter !== '') {
+    $where[]  = "p.condition_type = ?";
+    $types   .= 's';
+    $params[] = $conditionFilter;
 }
 if (!empty($search)) {
     $where[]  = "(p.product_name LIKE ? OR p.description LIKE ?)";
@@ -534,15 +540,30 @@ footer a:hover { color: #e8a0a8 !important; padding-left: 4px !important; }
   <div class="filter-section">
 
     <div class="filter-bar">
-      <a href="products.php" class="filter-tab <?= $categoryFilter===0 ? 'active' : '' ?>">
+      <a href="products.php?condition=<?= urlencode($conditionFilter) ?>" class="filter-tab <?= $categoryFilter===0 ? 'active' : '' ?>">
         All
       </a>
       <?php foreach ($categories as $cat): ?>
-      <a href="products.php?category=<?= $cat['category_id'] ?>"
+      <a href="products.php?category=<?= $cat['category_id'] ?>&condition=<?= urlencode($conditionFilter) ?>"
          class="filter-tab <?= $categoryFilter===(int)$cat['category_id'] ? 'active' : '' ?>">
         <?= htmlspecialchars($cat['name']) ?>
       </a>
       <?php endforeach; ?>
+    </div>
+
+    <div class="filter-bar" style="margin-top:10px;">
+      <?php
+        $condLinkBase = 'products.php?' . ($categoryFilter > 0 ? 'category=' . $categoryFilter . '&' : '');
+      ?>
+      <a href="<?= $condLinkBase ?>condition=" class="filter-tab <?= $conditionFilter==='' ? 'active' : '' ?>">
+        All Conditions
+      </a>
+      <a href="<?= $condLinkBase ?>condition=new" class="filter-tab <?= $conditionFilter==='new' ? 'active' : '' ?>">
+        ✨ New
+      </a>
+      <a href="<?= $condLinkBase ?>condition=preloved" class="filter-tab <?= $conditionFilter==='preloved' ? 'active' : '' ?>">
+        ♻️ Preloved
+      </a>
     </div>
   </div>
 
@@ -561,10 +582,15 @@ footer a:hover { color: #e8a0a8 !important; padding-left: 4px !important; }
         <img src="../<?= htmlspecialchars($p['image']) ?>"
              alt="<?= htmlspecialchars($p['product_name']) ?>"
              onerror="this.src='../images/product-placeholder.jpg'">
+        <?php if ($p['condition_type'] === 'preloved'): ?>
+          <span class="product-type-badge" style="background:rgba(180,83,9,.85)!important;color:#fff!important;border:none!important;">♻️ Preloved</span>
+        <?php else: ?>
+          <span class="product-type-badge" style="background:rgba(21,128,61,.85)!important;color:#fff!important;border:none!important;">✨ New</span>
+        <?php endif; ?>
         <?php if ($p['stock'] <= 10 && $p['stock'] > 0): ?>
 
         <?php elseif ($p['stock'] == 0): ?>
-          <span class="product-type-badge" style="background:rgba(42,13,20,.7)!important;color:#5a4a42!important;border:1px solid rgba(196,80,100,.1)!important;">Sold Out</span>
+          <span class="product-type-badge" style="left:auto!important;right:12px!important;background:rgba(42,13,20,.7)!important;color:#5a4a42!important;border:1px solid rgba(196,80,100,.1)!important;">Sold Out</span>
         <?php endif; ?>
       </div>
 

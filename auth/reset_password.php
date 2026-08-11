@@ -110,6 +110,10 @@ label{display:block;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-tr
 .divider{height:1px;background:rgba(255,255,255,.15);margin:24px 0}
 .back{text-align:center;font-size:.85rem;color:rgba(255,255,255,.55)}
 .back a{color:rgba(255,255,255,.7);font-weight:600}
+
+@media (max-width: 520px) {
+  .card { padding: 40px 24px; }
+}
 </style>
 </head>
 <body>

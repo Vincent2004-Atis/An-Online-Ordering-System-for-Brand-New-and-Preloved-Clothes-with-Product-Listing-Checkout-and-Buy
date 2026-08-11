@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 08, 2026 at 02:27 AM
+-- Generation Time: Aug 11, 2026 at 07:29 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -67,7 +67,7 @@ CREATE TABLE `conversations` (
 --
 
 INSERT INTO `conversations` (`conversation_id`, `user_id`, `subject`, `order_id`, `status`, `created_at`, `updated_at`) VALUES
-(1, 2, 'General Inquiry', NULL, 'open', '2026-07-21 22:37:58', '2026-08-06 12:49:36');
+(1, 2, 'General Inquiry', NULL, 'open', '2026-07-21 22:37:58', '2026-08-10 11:40:33');
 
 -- --------------------------------------------------------
 
@@ -79,6 +79,7 @@ CREATE TABLE `homepage_slots` (
   `slot_id` varchar(30) NOT NULL,
   `label` varchar(100) NOT NULL,
   `image_path` varchar(255) NOT NULL,
+  `price_label` varchar(50) DEFAULT NULL,
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -86,12 +87,12 @@ CREATE TABLE `homepage_slots` (
 -- Dumping data for table `homepage_slots`
 --
 
-INSERT INTO `homepage_slots` (`slot_id`, `label`, `image_path`, `updated_at`) VALUES
-('accessories', 'Accessories', 'images/homepage/06d27a210814f4e05c17609981cd668a.jpg', '2026-07-22 14:07:24'),
-('dresses', 'Dresses', 'images/homepage/6ab2a9a8fdd1f0f11d9d5f5fa28d07e5.jpg', '2026-07-22 14:06:48'),
-('featured', 'Featured Outfit', 'images/homepage/2f2c8cc93672b97f551383ad3c3d0734.jpg', '2026-07-22 14:06:30'),
-('preowned', 'Pre-Owned', 'images/homepage/187484c2a809c772f511ab668f84ecb3.jpg', '2026-07-22 14:07:16'),
-('tops', 'Tops & Blouses', 'images/homepage/fd67b9217ff463856dae4f7f994a6ff2.jpg', '2026-07-22 14:07:02');
+INSERT INTO `homepage_slots` (`slot_id`, `label`, `image_path`, `price_label`, `updated_at`) VALUES
+('accessories', 'Accessories', 'images/homepage/06d27a210814f4e05c17609981cd668a.jpg', '299', '2026-08-10 03:38:06'),
+('dresses', 'Dresses', 'images/homepage/6ab2a9a8fdd1f0f11d9d5f5fa28d07e5.jpg', '499', '2026-08-10 03:40:01'),
+('featured', 'Featured Outfit', 'images/homepage/2f2c8cc93672b97f551383ad3c3d0734.jpg', NULL, '2026-07-22 14:06:30'),
+('preowned', 'Pre-Owned', 'images/homepage/187484c2a809c772f511ab668f84ecb3.jpg', '299', '2026-08-10 03:38:01'),
+('tops', 'Tops & Blouses', 'images/homepage/fd67b9217ff463856dae4f7f994a6ff2.jpg', '299', '2026-08-10 03:37:56');
 
 -- --------------------------------------------------------
 
@@ -118,7 +119,8 @@ INSERT INTO `messages` (`message_id`, `conversation_id`, `sender_type`, `sender_
 (2, 1, 'customer', 2, 'diin ka', 1, '2026-07-22 16:45:57'),
 (3, 1, 'admin', 1, 'hiii', 1, '2026-07-23 15:40:39'),
 (4, 1, 'admin', 1, 'good eve sir what can help you', 1, '2026-07-24 11:27:37'),
-(5, 1, 'customer', 2, 'good eve', 0, '2026-08-06 12:49:36');
+(5, 1, 'customer', 2, 'good eve', 1, '2026-08-06 12:49:36'),
+(6, 1, 'admin', 1, 'hi', 0, '2026-08-10 11:40:33');
 
 -- --------------------------------------------------------
 
@@ -207,7 +209,8 @@ INSERT INTO `orders` (`order_id`, `user_id`, `customer_name`, `address`, `latitu
 (14, 2, 'Vincent Carl Atis', 'Brgy. Bagaygay Sara, Iloilo', NULL, NULL, '09482841494', 'shipping', 'cash_on_delivery', NULL, 'pending', NULL, 'pending', 114, 300.00, '2026-08-06 05:33:37'),
 (15, 2, 'Vincent Carl Atis', 'Improgo, Sara, Iloilo, Western Visayas, 5014, Philippines', 11.2188583, 122.9768774, '09482841494', '', 'gcash', NULL, 'pending_verification', '12345678910', 'pending', 115, 150.00, '2026-08-07 13:12:29'),
 (16, 2, 'Vincent Carl Atis', 'St. Clement\'s Church, Luna Street, Luna, Railway, La Paz, Tabuc Suba, Iloilo City, Western Visayas, 5000, Philippines', 10.7100223, 122.5646021, '09482841494', 'pickup_rider', 'gcash', NULL, 'pending_verification', '1234567890123', 'pending', 116, 300.00, '2026-08-07 13:14:04'),
-(17, 2, 'Vincent Carl Atis', 'San Luis, Sara, Iloilo, Western Visayas, 5014, Philippines', 11.2250987, 122.9846450, '09482841494', 'pickup_rider', 'gcash', NULL, 'pending_verification', '987654321254', 'pending', 117, 150.00, '2026-08-08 00:26:24');
+(17, 2, 'Vincent Carl Atis', 'San Luis, Sara, Iloilo, Western Visayas, 5014, Philippines', 11.2250987, 122.9846450, '09482841494', 'pickup_rider', 'gcash', NULL, 'pending_verification', '987654321254', 'pending', 117, 150.00, '2026-08-08 00:26:24'),
+(18, 2, 'Vincent Carl Atis', 'Brgy. Bagaygay Sara, Iloilo', 10.7202000, 122.5621000, '09482841494', 'pickup_rider', 'cash_on_pickup', NULL, 'pending', NULL, 'pending', 118, 500.00, '2026-08-08 00:35:45');
 
 -- --------------------------------------------------------
 
@@ -245,7 +248,8 @@ INSERT INTO `order_items` (`item_id`, `order_id`, `product_id`, `quantity`, `pri
 (15, 14, 1, 1, 300.00),
 (16, 15, 7, 1, 150.00),
 (17, 16, 2, 1, 300.00),
-(18, 17, 8, 1, 150.00);
+(18, 17, 8, 1, 150.00),
+(19, 18, 5, 1, 500.00);
 
 -- --------------------------------------------------------
 
@@ -323,7 +327,13 @@ INSERT INTO `otp_tokens` (`id`, `identifier`, `type`, `token_hash`, `expires_at`
 (60, 'atisvincentcarl1@gmail.com', 'login', '6235eeeccb0513752ff619e29fbb193333d99a7764f6aba2a8201c62186dbada', '2026-08-06 06:55:08', 1, '2026-08-06 12:50:08'),
 (61, 'vinc.atis.ui@phinmaed.com', 'login', 'd515dde485d7c81af340d6d7b09475e39b4bb4b51c39476fa199b14a04b0e64b', '2026-08-06 07:35:29', 1, '2026-08-06 13:30:29'),
 (62, 'vinc.atis.ui@phinmaed.com', 'login', 'a0e08f1a700b329309ba04dd29d98e846ff594ffac28cf5ccd6fc0c18918fd3f', '2026-08-07 15:18:01', 1, '2026-08-07 21:13:01'),
-(63, 'vinc.atis.ui@phinmaed.com', 'login', 'eb71574dc566fc5a9cad907e45b6c1d7bf2cf9f197b01f271c04d9dc8b273975', '2026-08-08 02:30:06', 1, '2026-08-08 08:25:06');
+(63, 'vinc.atis.ui@phinmaed.com', 'login', 'eb71574dc566fc5a9cad907e45b6c1d7bf2cf9f197b01f271c04d9dc8b273975', '2026-08-08 02:30:06', 1, '2026-08-08 08:25:06'),
+(72, 'atisvincentcarl1@gmail.com', 'login', '73fdb68c8ed81626ef545d1abe57c6708911fa24952d1b97664bd12ae50443e8', '2026-08-10 05:36:45', 1, '2026-08-10 11:31:45'),
+(73, 'vinc.atis.ui@phinmaed.com', 'login', 'c9b1cfd8e206501969fd3643d9338e8e82d33af654d1abf0ee96874ea86287df', '2026-08-10 05:45:59', 1, '2026-08-10 11:40:59'),
+(74, 'atisvincentcarl1@gmail.com', 'login', '05a256c5f9c7f7996a1c42cd063c564fdb68664da484f22a8f76c1b92fa8f14c', '2026-08-11 07:07:57', 1, '2026-08-11 13:02:57'),
+(75, 'vinc.atis.ui@phinmaed.com', 'login', '328ab0ae4e5f3a93cb54aed07991ccb7c09d372ee5dbd55ee6f6db55506aa93e', '2026-08-11 07:10:47', 1, '2026-08-11 13:05:47'),
+(76, 'atisvincentcarl1@gmail.com', 'login', 'd180fc6cbfa122f9fd9c3c04fc2f68a8ca94de62874ddefffaaf5e1ebdb023ec', '2026-08-11 07:15:02', 1, '2026-08-11 13:10:02'),
+(77, 'vinc.atis.ui@phinmaed.com', 'login', 'eae8b23b3ec7eaf54b0d43058e4937fbc7ffa72aaf5c6cce931e59d526103de7', '2026-08-11 07:17:31', 1, '2026-08-11 13:12:31');
 
 -- --------------------------------------------------------
 
@@ -352,6 +362,7 @@ CREATE TABLE `products` (
   `description` text DEFAULT NULL,
   `price` decimal(10,2) NOT NULL,
   `product_type` enum('loose','package') DEFAULT 'loose',
+  `condition_type` enum('new','preloved') NOT NULL DEFAULT 'new',
   `image` varchar(255) DEFAULT 'images/product-placeholder.jpg',
   `stock` int(11) DEFAULT 100,
   `sold_out_at` timestamp NULL DEFAULT NULL,
@@ -362,17 +373,17 @@ CREATE TABLE `products` (
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`product_id`, `category_id`, `product_name`, `description`, `price`, `product_type`, `image`, `stock`, `sold_out_at`, `created_at`) VALUES
-(1, 6, 'Bikini 1', '', 300.00, 'loose', 'images/products/375095d884c45a0188572c1ff8722c5a.jpg', 0, '2026-08-06 05:33:37', '2026-03-24 03:15:28'),
-(2, 1, 'Dress', '', 300.00, 'loose', 'images/products/96b2fa79be7883f02efe4fa9d9a68a63.jpg', 0, '2026-08-07 13:14:04', '2026-03-24 03:15:28'),
-(3, 3, 'Terno 2', '', 750.00, 'loose', 'images/products/e88a3e273714a0b5d81ab8d1362388f8.jpg', 1, NULL, '2026-03-24 03:15:28'),
-(4, 3, 'Top 1', '', 750.00, 'loose', 'images/products/adb307ffcf2b63ea012ebd7a2a841851.jpg', 1, NULL, '2026-03-24 03:15:28'),
-(5, 1, 'Dress 1', '', 500.00, 'loose', 'images/products/fc9a9e5528f528e7a681f631c745c814.jpg', 1, NULL, '2026-07-22 07:15:11'),
-(6, 8, 'Terno 1', '', 500.00, 'loose', 'images/products/e9d6102f917a7328c470cefa05fe6529.jpg', 1, NULL, '2026-07-22 07:21:27'),
-(7, 5, 'Bracelet', '', 150.00, 'loose', 'images/products/7db8b38c6125be9264116286c3fb9369.jpg', 0, '2026-08-07 13:12:29', '2026-07-22 07:23:14'),
-(8, 5, 'Accesories', '', 150.00, 'loose', 'images/products/547c0a756c99535295d25b219c5ebec3.jpg', 0, '2026-08-08 00:26:24', '2026-07-22 07:23:50'),
-(9, 8, 'TERNO 2', '', 400.00, 'loose', 'images/products/113109a4e7c2f09a789a71eb6015d2d5.jpg', 1, NULL, '2026-07-24 08:17:52'),
-(10, 7, 'Bottom 1', '', 550.00, 'loose', 'images/products/96e9224d6370a584debaa9ea1f8f4947.jpg', 0, '2026-08-06 05:33:06', '2026-07-24 08:19:00');
+INSERT INTO `products` (`product_id`, `category_id`, `product_name`, `description`, `price`, `product_type`, `condition_type`, `image`, `stock`, `sold_out_at`, `created_at`) VALUES
+(1, 6, 'Bikini 1', '', 300.00, 'loose', 'new', 'images/products/375095d884c45a0188572c1ff8722c5a.jpg', 1, NULL, '2026-03-24 03:15:28'),
+(2, 1, 'Dress', '', 300.00, 'loose', 'preloved', 'images/products/96b2fa79be7883f02efe4fa9d9a68a63.jpg', 1, NULL, '2026-03-24 03:15:28'),
+(3, 3, 'Terno 2', '', 750.00, 'loose', 'preloved', 'images/products/e88a3e273714a0b5d81ab8d1362388f8.jpg', 1, NULL, '2026-03-24 03:15:28'),
+(4, 3, 'Top 1', '', 750.00, 'loose', 'new', 'images/products/adb307ffcf2b63ea012ebd7a2a841851.jpg', 1, NULL, '2026-03-24 03:15:28'),
+(5, 1, 'Dress 1', '', 500.00, 'loose', 'new', 'images/products/fc9a9e5528f528e7a681f631c745c814.jpg', 1, NULL, '2026-07-22 07:15:11'),
+(6, 8, 'Terno 1', '', 500.00, 'loose', 'preloved', 'images/products/e9d6102f917a7328c470cefa05fe6529.jpg', 1, NULL, '2026-07-22 07:21:27'),
+(7, 5, 'Bracelet', '', 150.00, 'loose', 'new', 'images/products/7db8b38c6125be9264116286c3fb9369.jpg', 2, NULL, '2026-07-22 07:23:14'),
+(8, 5, 'Accesories', '', 150.00, 'loose', 'new', 'images/products/547c0a756c99535295d25b219c5ebec3.jpg', 2, NULL, '2026-07-22 07:23:50'),
+(9, 8, 'TERNO 2', '', 400.00, 'loose', 'new', 'images/products/113109a4e7c2f09a789a71eb6015d2d5.jpg', 1, NULL, '2026-07-24 08:17:52'),
+(10, 7, 'Bottom 1', '', 550.00, 'loose', 'preloved', 'images/products/96e9224d6370a584debaa9ea1f8f4947.jpg', 1, NULL, '2026-07-24 08:19:00');
 
 --
 -- Triggers `products`
@@ -548,7 +559,7 @@ ALTER TABLE `conversations`
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `message_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `message_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `notifications`
@@ -560,19 +571,19 @@ ALTER TABLE `notifications`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `otp_tokens`
 --
 ALTER TABLE `otp_tokens`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=78;
 
 --
 -- AUTO_INCREMENT for table `password_resets`

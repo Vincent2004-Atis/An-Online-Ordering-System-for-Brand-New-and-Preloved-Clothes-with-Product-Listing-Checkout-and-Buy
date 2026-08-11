@@ -14,7 +14,12 @@ if (isset($db)) {
     if ($r2) $pendingCount = (int)$r2->fetch_row()[0];
 }
 ?>
+<input type="checkbox" id="sidebarToggle" class="sidebar-toggle-cb">
+<label for="sidebarToggle" class="sidebar-toggle-btn" aria-label="Open menu">☰</label>
+<label for="sidebarToggle" class="sidebar-backdrop" aria-hidden="true"></label>
 <div class="sidebar">
+
+  <label for="sidebarToggle" class="sidebar-close-btn" aria-label="Close menu">✕</label>
 
   <div class="sidebar-brand">
     <div class="sidebar-brand-icon">M</div>
