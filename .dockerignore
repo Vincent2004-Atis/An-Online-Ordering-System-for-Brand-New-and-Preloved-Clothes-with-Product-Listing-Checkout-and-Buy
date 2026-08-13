@@ -1,5 +1,6 @@
 .git
 .gitignore
+config/local_env.php
 *.pdf
 *.sql
 README.md

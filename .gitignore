@@ -5,7 +5,8 @@
 /uploads/*
 !/uploads/.gitkeep
 
-# Environment / local config (uncomment if you create one)
+# Environment / local config — holds real SMTP credentials, never commit
+config/local_env.php
 # .env
 
 # Log files
