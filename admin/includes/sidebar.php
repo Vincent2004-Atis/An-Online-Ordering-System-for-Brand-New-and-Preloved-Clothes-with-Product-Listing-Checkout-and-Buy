@@ -33,46 +33,46 @@ if (isset($db)) {
 
     <div class="sidebar-section-label">Main</div>
     <a href="dashboard.php" class="sidebar-link <?= $currentPage==='dashboard.php'?'active':'' ?>">
-      <span>📊</span> Dashboard
+      <span></span> Dashboard
     </a>
     <a href="analytics.php" class="sidebar-link <?= $currentPage==='analytics.php'?'active':'' ?>">
-      <span>📈</span> Analytics
+      <span></span> Analytics
     </a>
 
     <div class="sidebar-section-label">Management</div>
     <a href="manage_orders.php" class="sidebar-link <?= $currentPage==='manage_orders.php'?'active':'' ?>">
-      <span>📋</span> Orders
+      <span></span> Orders
       <?php if($pendingCount>0): ?><span class="count"><?= $pendingCount ?></span><?php endif; ?>
     </a>
 
     <a href="manage_products.php" class="sidebar-link <?= $currentPage==='manage_products.php'?'active':'' ?>">
-      <span>🛍️</span> Products
+      <span></span> Products
     </a>
 
     <a href="manage_homepage.php" class="sidebar-link <?= $currentPage==='manage_homepage.php'?'active':'' ?>">
-      <span>🖼️</span> Homepage Photos
+      <span></span> Homepage Photos
     </a>
 
     <a href="manage_users.php" class="sidebar-link <?= $currentPage==='manage_users.php'?'active':'' ?>">
-      <span>👥</span> Users
+      <span></span> Users
     </a>
 
     <div class="sidebar-section-label">Support</div>
     <a href="messages.php" class="sidebar-link <?= $currentPage==='messages.php'?'active':'' ?>">
-      <span>💬</span> Messages
+      <span></span> Messages
       <?php if($unreadCount>0): ?><span class="count"><?= $unreadCount ?></span><?php endif; ?>
     </a>
 
     <div class="sidebar-section-label">Account</div>
     <a href="../auth/logout.php" class="sidebar-link">
-      <span>🚪</span> Logout
+      <span></span> Logout
     </a>
 
   </div>
 
   <div class="sidebar-footer">
     <strong><?= htmlspecialchars($_SESSION['name'] ?? 'Admin') ?></strong>
-    <span>✦ Admin</span>
+    <span> Admin</span>
   </div>
 
 </div>

@@ -536,7 +536,7 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
       <!-- ── PAGE HEADER ── -->
       <div class="analytics-topbar">
         <div class="analytics-topbar-left">
-          <h1>📊 Business Intelligence Dashboard</h1>
+          <h1> Business Intelligence Dashboard</h1>
           <p>Four-tier analytics: Descriptive · Diagnostic · Predictive · Prescriptive</p>
         </div>
         <div class="topbar-right">
@@ -556,25 +556,21 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
       <!-- ── TIER TABS ── -->
       <div class="tier-tabs">
         <button class="tier-tab <?= $activeTab==='descriptive'?'active':'' ?>" data-tab="descriptive" onclick="switchTab('descriptive',this)">
-          <div class="tier-icon">📊</div>
           <div class="tier-title">DESCRIPTIVE</div>
           <div class="tier-sub">Last <?= $days ?> days snapshot</div>
           <span class="tier-badge">What Happened</span>
         </button>
         <button class="tier-tab <?= $activeTab==='diagnostic'?'active':'' ?>" data-tab="diagnostic" onclick="switchTab('diagnostic',this)">
-          <div class="tier-icon">🔍</div>
           <div class="tier-title">DIAGNOSTIC</div>
           <div class="tier-sub">Root cause analysis</div>
           <span class="tier-badge">Why It Happened</span>
         </button>
         <button class="tier-tab <?= $activeTab==='predictive'?'active':'' ?>" data-tab="predictive" onclick="switchTab('predictive',this)">
-          <div class="tier-icon">🔮</div>
           <div class="tier-title">PREDICTIVE</div>
           <div class="tier-sub">Forecast & risk signals</div>
           <span class="tier-badge">What Will Happen</span>
         </button>
         <button class="tier-tab <?= $activeTab==='prescriptive'?'active':'' ?>" data-tab="prescriptive" onclick="switchTab('prescriptive',this)">
-          <div class="tier-icon">⚡</div>
           <div class="tier-title">PRESCRIPTIVE</div>
           <div class="tier-sub">Prioritized actions</div>
           <span class="tier-badge">What To Do</span>
@@ -599,7 +595,6 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
           <div class="kpi-card" style="--accent:#c45064;">
             <div class="kpi-card-head">
               <div class="kpi-label">Total Revenue (Paid)</div>
-              <div class="kpi-icon-wrap" style="background:#dbeafe;">💰</div>
             </div>
             <div class="kpi-val">₱<?= number_format($totalRevenue,0) ?></div>
             <div class="kpi-sub">From completed payments</div>
@@ -610,7 +605,6 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
           <div class="kpi-card" style="--accent:#c8a96a;">
             <div class="kpi-card-head">
               <div class="kpi-label">Total Orders</div>
-              <div class="kpi-icon-wrap" style="background:#fef3c7;">📋</div>
             </div>
             <div class="kpi-val"><?= $totalOrders ?></div>
             <div class="kpi-sub"><?= $pendingOrders ?> pending · <?= $completedOrders ?> completed</div>
@@ -621,7 +615,6 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
           <div class="kpi-card" style="--accent:#10b981;">
             <div class="kpi-card-head">
               <div class="kpi-label">Avg. Order Value (AOV)</div>
-              <div class="kpi-icon-wrap" style="background:#dcfce7;">💵</div>
             </div>
             <div class="kpi-val">₱<?= number_format($avgOrder,0) ?></div>
             <div class="kpi-sub">Per transaction average</div>
@@ -633,7 +626,6 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
           <div class="kpi-card" style="--accent:#c8a96a;">
             <div class="kpi-card-head">
               <div class="kpi-label">ROAS (Estimated)</div>
-              <div class="kpi-icon-wrap" style="background:#fef3c7;">📢</div>
             </div>
             <div class="kpi-val sm"><?= number_format($roasVal,1) ?>×</div>
             <div class="kpi-sub">Return on ad spend</div>
@@ -642,7 +634,6 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
           <div class="kpi-card" style="--accent:#d97a8c;">
             <div class="kpi-card-head">
               <div class="kpi-label">Click-Through Rate</div>
-              <div class="kpi-icon-wrap" style="background:#dbeafe;">🎯</div>
             </div>
             <div class="kpi-val sm"><?= $ctrVal ?>%</div>
             <div class="kpi-sub">Ad campaign CTR</div>
@@ -651,7 +642,6 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
           <div class="kpi-card" style="--accent:#10b981;">
             <div class="kpi-card-head">
               <div class="kpi-label">Repeat Buyers</div>
-              <div class="kpi-icon-wrap" style="background:#dcfce7;">🔄</div>
             </div>
             <div class="kpi-val sm"><?= $repeatBuyers ?></div>
             <div class="kpi-sub"><?= $retentionRate ?>% of all customers</div>
@@ -659,7 +649,6 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
           <div class="kpi-card" style="--accent:#6366f1;">
             <div class="kpi-card-head">
               <div class="kpi-label">Processing Orders</div>
-              <div class="kpi-icon-wrap" style="background:#e0e7ff;">⚙️</div>
             </div>
             <div class="kpi-val sm"><?= $processingOrders ?></div>
             <div class="kpi-sub">Currently in fulfillment</div>
@@ -854,7 +843,6 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
           <div class="kpi-card" style="--accent:#ef4444;">
             <div class="kpi-card-head">
               <div class="kpi-label">Cart Abandonment Rate</div>
-              <div class="kpi-icon-wrap" style="background:#fee2e2;">🛒</div>
             </div>
             <div class="kpi-val"><?= $abandonRate ?>%</div>
             <div class="kpi-sub"><?= $abandonedOrders ?> orders unpaid &gt;2h</div>
@@ -865,7 +853,6 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
           <div class="kpi-card" style="--accent:#10b981;">
             <div class="kpi-card-head">
               <div class="kpi-label">Repeat Purchase Rate</div>
-              <div class="kpi-icon-wrap" style="background:#dcfce7;">🔄</div>
             </div>
             <div class="kpi-val"><?= $retentionRate ?>%</div>
             <div class="kpi-sub"><?= $repeatBuyers ?> customers ordered 2×+</div>
@@ -873,7 +860,6 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
           <div class="kpi-card" style="--accent:#d97a8c;">
             <div class="kpi-card-head">
               <div class="kpi-label">Total Customers</div>
-              <div class="kpi-icon-wrap" style="background:#dbeafe;">👥</div>
             </div>
             <div class="kpi-val"><?= $totalCustomers ?></div>
             <div class="kpi-sub"><?= $totalCustomers ?> registered accounts</div>
@@ -881,7 +867,6 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
           <div class="kpi-card" style="--accent:#c8a96a;">
             <div class="kpi-card-head">
               <div class="kpi-label">Churn Risk Users</div>
-              <div class="kpi-icon-wrap" style="background:#fef3c7;">⚠️</div>
             </div>
             <div class="kpi-val"><?= count($churnRisk) ?></div>
             <div class="kpi-sub">No order in 20+ days</div>
@@ -1034,7 +1019,6 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
           <div class="kpi-card" style="--accent:#8b5cf6;">
             <div class="kpi-card-head">
               <div class="kpi-label">Projected Revenue (Next 30d)</div>
-              <div class="kpi-icon-wrap" style="background:#ede9fe;">📈</div>
             </div>
             <div class="kpi-val sm">₱<?= number_format($totalRevenue*1.15,0) ?></div>
             <span class="kpi-delta up">↑ +15% trend estimate</span>
@@ -1042,7 +1026,6 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
           <div class="kpi-card" style="--accent:#ef4444;">
             <div class="kpi-card-head">
               <div class="kpi-label">High Churn Risk</div>
-              <div class="kpi-icon-wrap" style="background:#fee2e2;">💔</div>
             </div>
             <div class="kpi-val sm"><?= count($churnHighRisk) ?> users</div>
             <div class="kpi-sub">No order in 30+ days</div>
@@ -1050,7 +1033,6 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
           <div class="kpi-card" style="--accent:#c8a96a;">
             <div class="kpi-card-head">
               <div class="kpi-label">Fraud Signals</div>
-              <div class="kpi-icon-wrap" style="background:#fef3c7;">🛡️</div>
             </div>
             <div class="kpi-val sm"><?= count($fraudSignals) ?></div>
             <div class="kpi-sub">Orders flagged for review</div>
@@ -1061,9 +1043,8 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
           <div class="kpi-card" style="--accent:#10b981;">
             <div class="kpi-card-head">
               <div class="kpi-label">Restock Candidates</div>
-              <div class="kpi-icon-wrap" style="background:#dcfce7;">📦</div>
             </div>
-            <div class="kpi-val sm"><?= count($slowMoving) ?> SKUs</div>
+            <div class="kpi-val sm"><?= count($slowMoving) ?> Stock Keeping Units</div>
             <div class="kpi-sub">Sold &lt;2 units in 30 days</div>
           </div>
         </div>
@@ -1177,7 +1158,6 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
           <div class="kpi-card" style="--accent:#10b981;">
             <div class="kpi-card-head">
               <div class="kpi-label">Revenue Opportunity</div>
-              <div class="kpi-icon-wrap" style="background:#dcfce7;">💡</div>
             </div>
             <div class="kpi-val sm">₱<?= number_format($revenueOpportunity,0) ?></div>
             <div class="kpi-sub">From churn recovery alone</div>
@@ -1185,7 +1165,6 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
           <div class="kpi-card" style="--accent:#c8a96a;">
             <div class="kpi-card-head">
               <div class="kpi-label">Slow-Moving SKUs</div>
-              <div class="kpi-icon-wrap" style="background:#fef3c7;">📦</div>
             </div>
             <div class="kpi-val sm"><?= count($slowMoving) ?></div>
             <div class="kpi-sub">Candidates for flash sale</div>
@@ -1193,7 +1172,6 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
           <div class="kpi-card" style="--accent:#ef4444;">
             <div class="kpi-card-head">
               <div class="kpi-label">High-Priority Actions</div>
-              <div class="kpi-icon-wrap" style="background:#fee2e2;">🚨</div>
             </div>
             <div class="kpi-val sm">4</div>
             <div class="kpi-sub">Immediate impact potential</div>
@@ -1201,7 +1179,6 @@ $ordDelta   = $prevOrders  > 0 ? round((($totalOrders  - $prevOrders)  / $prevOr
           <div class="kpi-card" style="--accent:#c45064;">
             <div class="kpi-card-head">
               <div class="kpi-label">AOV Uplift Target</div>
-              <div class="kpi-icon-wrap" style="background:#dbeafe;">🎯</div>
             </div>
             <div class="kpi-val sm">₱<?= number_format($avgOrder*1.14,0) ?></div>
             <div class="kpi-sub">+14% via free ship threshold</div>

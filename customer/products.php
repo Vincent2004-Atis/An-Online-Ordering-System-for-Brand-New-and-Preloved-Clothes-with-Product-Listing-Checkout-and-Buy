@@ -559,10 +559,10 @@ footer a:hover { color: #e8a0a8 !important; padding-left: 4px !important; }
         All Conditions
       </a>
       <a href="<?= $condLinkBase ?>condition=new" class="filter-tab <?= $conditionFilter==='new' ? 'active' : '' ?>">
-        ✨ New
+         New
       </a>
       <a href="<?= $condLinkBase ?>condition=preloved" class="filter-tab <?= $conditionFilter==='preloved' ? 'active' : '' ?>">
-        ♻️ Preloved
+         Preloved
       </a>
     </div>
   </div>
@@ -583,9 +583,9 @@ footer a:hover { color: #e8a0a8 !important; padding-left: 4px !important; }
              alt="<?= htmlspecialchars($p['product_name']) ?>"
              onerror="this.src='../images/product-placeholder.jpg'">
         <?php if ($p['condition_type'] === 'preloved'): ?>
-          <span class="product-type-badge" style="background:rgba(180,83,9,.85)!important;color:#fff!important;border:none!important;">♻️ Preloved</span>
+          <span class="product-type-badge" style="background:rgba(180,83,9,.85)!important;color:#fff!important;border:none!important;"> Preloved</span>
         <?php else: ?>
-          <span class="product-type-badge" style="background:rgba(21,128,61,.85)!important;color:#fff!important;border:none!important;">✨ New</span>
+          <span class="product-type-badge" style="background:rgba(21,128,61,.85)!important;color:#fff!important;border:none!important;"> New</span>
         <?php endif; ?>
         <?php if ($p['stock'] <= 10 && $p['stock'] > 0): ?>
 
