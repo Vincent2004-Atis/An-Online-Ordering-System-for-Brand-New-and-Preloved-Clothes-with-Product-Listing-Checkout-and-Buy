@@ -7,7 +7,7 @@ FROM php:8.2-apache
 
 # mysqli is required by config/database.php
 RUN docker-php-ext-install mysqli \ 
-&& a2dismod mpm_event \
+&& rm -f /etc/apache2/mods-enabled/mpm_event.load /etc/apache2/mods-enabled/mpm_event.conf \ 
 && a2enmod mpm_prefork rewrite
 
 # Copy the whole project into /var/www/html/Margaux_Collections
