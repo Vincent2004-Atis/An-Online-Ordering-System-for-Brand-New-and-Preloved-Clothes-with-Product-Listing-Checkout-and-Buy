@@ -27,9 +27,7 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/Margaux_Collections/images
 
 # Railway assigns a random $PORT at runtime — Apache needs to listen on it
-RUN printf '#!/bin/bash\nsed -i "s/80/${PORT:-80}/g" /etc/apache2/ports.conf /etc/apache2/sites-enabled/000-default.conf\nexec apache2-foreground\n' \
-    > /usr/local/bin/start-apache.sh \
-    && chmod +x /usr/local/bin/start-apache.sh
+RUN printf '#!/bin/bash\nsed -i "s/80/${PORT:-80}/g" /etc/apache2/ports.conf /etc/apache2/sites-enabled/000-default.conf\nls -la /etc/apache2/mods-enabled/ | grep mpm\nexec apache2-foreground\n
 
 EXPOSE 80
 CMD ["/usr/local/bin/start-apache.sh"]
