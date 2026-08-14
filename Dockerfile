@@ -6,9 +6,10 @@
 FROM php:8.2-apache
 
 # mysqli is required by config/database.php
-RUN docker-php-ext-install mysqli \ 
-&& rm -f /etc/apache2/mods-enabled/mpm_event.load /etc/apache2/mods-enabled/mpm_event.conf \ 
-&& a2enmod mpm_prefork rewrite
+UN docker-php-ext-install mysqli 
+RUN rm -f /etc/apache2/mods-enabled/mpm_event.load /etc/apache2/mods-enabled/mpm_event.conf /etc/apache2/mods-enabled/mpm_worker.load /etc/apache2/mods-enabled/mpm_worker.conf  
+RUN a2enmod mpm_prefork rewrite 
+RUN apache2ctl -M
 
 # Copy the whole project into /var/www/html/Margaux_Collections
 # (mirrors exactly where it lives inside XAMPP's htdocs)
