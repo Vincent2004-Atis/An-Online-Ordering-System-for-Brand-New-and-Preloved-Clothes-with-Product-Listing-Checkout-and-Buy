@@ -27,7 +27,8 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/Margaux_Collections/images
 
 # Railway assigns a random $PORT at runtime — Apache needs to listen on it
-COPY start-apache.sh /usr/local/bin/start-apache.sh RUN chmod +x /usr/local/bin/start-apache.sh
+COPY start-apache.sh /usr/local/bin/start-apache.sh 
+RUN chmod +x /usr/local/bin/start-apache.sh
 
 EXPOSE 80
 CMD ["/usr/local/bin/start-apache.sh"]
