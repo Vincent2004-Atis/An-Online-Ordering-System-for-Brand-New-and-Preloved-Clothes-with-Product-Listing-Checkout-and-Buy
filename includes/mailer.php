@@ -80,15 +80,18 @@ function send_mail(string $toEmail, string $toName, string $subject, string $htm
         // (or any real host), $_SERVER['SERVER_NAME'] won't be localhost/127.0.0.1,
         // so the real, secure SSL verification is used automatically.
         $isLocal = in_array($_SERVER['SERVER_NAME'] ?? '', ['localhost', '127.0.0.1']);
-        if ($isLocal) {
-            $mail->SMTPOptions = [
-                'ssl' => [
-                    'verify_peer' => false,
-                    'verify_peer_name' => false,
-                    'allow_self_signed' => true
-                ]
-            ];
-        }
+$mail->SMTPOptions = [
+    'ssl' => [
+        'verify_peer' => !$isLocal,
+        'verify_peer_name' => !$isLocal,
+        'allow_self_signed' => $isLocal
+    ],
+    // Force IPv4 — Railway containers have no IPv6 route, which causes
+    // "Network is unreachable" if PHPMailer tries an IPv6 address first.
+    'socket' => [
+        'bindto' => '0.0.0.0:0'
+    ]
+];
 
         $mail->setFrom(SMTP_FROM, SMTP_FROM_NAME);
         $mail->addAddress($toEmail, $toName);
