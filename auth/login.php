@@ -73,6 +73,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['step']) && $_POST['st
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Login — Margaux Collections</title>
+<link rel="icon" type="image/x-icon" href="/Margaux_Collections/favicon.ico"> 
+<link rel="icon" type="image/png" sizes="32x32" href="/Margaux_Collections/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/Margaux_Collections/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
