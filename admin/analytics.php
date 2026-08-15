@@ -128,13 +128,12 @@ $churnRisk = safeQuery($db, "
 ");
 
 // ─── PREDICTIVE ───────────────────────────────────────────────────────────────
-$forecastRows = safeQuery($db, "
-    SELECT DATE_FORMAT(order_date,'%b %d') AS lbl,
-           SUM(total_amount) AS rev
-    FROM orders
-    WHERE order_date >= CURDATE() - INTERVAL 30 DAY
-    GROUP BY DATE(order_date) ORDER BY order_date LIMIT 14
-");
+$forecastRows = safeQuery($db, " 
+SELECT DATE_FORMAT(order_date,'%b %d') AS lbl, DATE(order_date) AS d, 
+SUM(total_amount) AS rev 
+FROM orders 
+WHERE order_date >= CURDATE() - INTERVAL 30 DAY GROUP BY DATE(order_date), DATE_FORMAT(order_date,'%b %d') ORDER BY d LIMIT 14 ");
+
 
 $fraudSignals = safeQuery($db, "
     SELECT o.order_id,
