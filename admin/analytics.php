@@ -72,14 +72,12 @@ $completedOrders = (int)(safeQueryOne($db, "SELECT COUNT(*) FROM orders WHERE or
 $totalCustomers  = (int)(safeQueryOne($db, "SELECT COUNT(*) FROM users WHERE role='customer'")[0] ?? 0);
 $avgOrder        = $totalOrders > 0 ? $totalRevenue / $totalOrders : 0;
 
-$monthlyRev = safeQuery($db, "
-    SELECT DATE_FORMAT(order_date,'%b %Y') AS mo,
-           MONTH(order_date) AS m, YEAR(order_date) AS y,
-           SUM(total_amount) AS rev, COUNT(*) AS cnt
-    FROM orders
-    WHERE order_date >= CURDATE() - INTERVAL 6 MONTH
-    GROUP BY y,m ORDER BY y,m
-");
+$monthlyRev = safeQuery($db, " SELECT DATE_FORMAT(order_date,'%b %Y') AS mo,
+MONTH(order_date) AS m, YEAR(order_date) AS y,
+SUM(total_amount) AS rev, COUNT(*) AS cnt
+FROM orders 
+WHERE order_date >= CURDATE() - INTERVAL 6 MONTH 
+GROUP BY YEAR(order_date), MONTH(order_date), DATE_FORMAT(order_date,'%b %Y') ORDER BY y,m ");
 
 $repeatBuyers = (int)(safeQueryOne($db, "
     SELECT COUNT(*) FROM (SELECT user_id FROM orders GROUP BY user_id HAVING COUNT(*)>1) t
