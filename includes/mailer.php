@@ -71,7 +71,7 @@ function send_mail(string $toEmail, string $toName, string $subject, string $htm
         $mail->SMTPAuth   = true;
         $mail->Username   = SMTP_USER;
         $mail->Password   = SMTP_PASS;
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
         $mail->Port       = SMTP_PORT;
 
         // XAMPP's local SSL setup is often incomplete, which makes PHPMailer's
