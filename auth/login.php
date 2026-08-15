@@ -36,17 +36,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['step']) && $_POST['st
             if ($user && password_verify($password, $user['password'])) {
                 rate_limit_clear('login');
 
-                // OTP email verification disabled — Railway blocks outbound SMTP.
-                // Logging in directly after password check instead.
-                $_SESSION['user_id'] = $user['user_id'];
-                $_SESSION['name']    = $user['name'];
-                $_SESSION['role']    = $user['role'];
-                $_SESSION['email']   = $email;
+                $otp = generate_otp();
+                store_otp($db, $email, 'login', $otp, 300);
 
-                header('Location: ' . ($user['role'] === 'admin'
-                    ? '/Margaux_Collections/admin/dashboard.php'
-                    : '/Margaux_Collections/customer/products.php'));
-                exit;
+                $sent = send_mail(
+                    $email,
+                    $user['name'],
+                    'Your Margaux Collections sign-in code',
+                    otp_email_html($otp, 'login', 5)
+                );
+
+                if ($sent) {
+                    $_SESSION['otp_pending'] = [
+                        'user_id'       => $user['user_id'],
+                        'name'          => $user['name'],
+                        'role'          => $user['role'],
+                        'email'         => $email,
+                        'issued_at'     => time(),
+                    ];
+                    header('Location: verify_otp.php');
+                    exit;
+                } else {
+                    $error = 'Failed to send OTP email. Please try again or contact support.';
+                }
             } else {
                 rate_limit_increment('login');
                 $error = 'Invalid email or password.';
@@ -84,6 +96,7 @@ a { text-decoration: none; }
     position: relative;
 }
 
+/* Radial glow on right */
 .auth-wrapper::after {
     content: '';
     position: fixed;
@@ -94,6 +107,7 @@ a { text-decoration: none; }
     z-index: 0;
 }
 
+/* ── LEFT PANEL ── */
 .left {
     width: 48%;
     display: flex;
@@ -105,6 +119,7 @@ a { text-decoration: none; }
     flex-shrink: 0;
 }
 
+/* Decorative circles */
 .left::before {
     content: '';
     position: absolute;
@@ -124,6 +139,7 @@ a { text-decoration: none; }
     pointer-events: none;
 }
 
+/* Brand logo */
 .brand-logo {
     display: flex;
     align-items: center;
@@ -156,6 +172,7 @@ a { text-decoration: none; }
     margin-top: 5px; text-transform: uppercase;
 }
 
+/* Hero text */
 .hero-text { margin-bottom: 0; }
 
 .eyebrow {
@@ -193,6 +210,7 @@ a { text-decoration: none; }
     padding-left: 18px;
 }
 
+/* ── RIGHT PANEL ── */
 .right {
     flex: 1;
     display: flex;
@@ -205,6 +223,7 @@ a { text-decoration: none; }
 
 .form-card { width: 100%; max-width: 400px; }
 
+/* Form header */
 .form-header { margin-bottom: 36px; }
 .form-header h1 {
     font-family: 'Playfair Display', serif;
@@ -217,6 +236,7 @@ a { text-decoration: none; }
     font-weight: 300; line-height: 1.6;
 }
 
+/* Alerts */
 .alert {
     border-radius: 9px; padding: 12px 16px;
     font-size: .84rem; margin-bottom: 20px;
@@ -227,6 +247,7 @@ a { text-decoration: none; }
 .alert-info    { background: rgba(196,80,100,0.07); border: .5px solid rgba(196,80,100,0.25); color: #c89090; }
 .alert-success { background: rgba(80,160,100,0.08); border: .5px solid rgba(80,160,100,0.25); color: #86c49a; }
 
+/* Form fields */
 .form-group { margin-bottom: 20px; }
 
 label {
@@ -254,6 +275,7 @@ input:focus {
     box-shadow: 0 0 0 3px rgba(196,80,100,0.1);
 }
 
+/* Password toggle */
 .pw-wrap { position: relative; display: block; }
 .pw-wrap input { padding-right: 48px !important; }
 .show-hide {
@@ -267,6 +289,7 @@ input:focus {
 .show-hide:hover { color: #c45064; }
 .show-hide svg { display: block; flex-shrink: 0; }
 
+/* Submit button */
 .btn {
     display: flex; align-items: center;
     justify-content: center; gap: 10px;
@@ -308,6 +331,7 @@ input:focus {
 .bottom a { color: #c45064; font-weight: 500; }
 .bottom a:hover { color: #e07080; }
 
+/* ── RESPONSIVE ── */
 @media (max-width: 960px) {
     body { background: linear-gradient(to bottom, #0e0507 0%, #2a0d14 100%); }
     .auth-wrapper { flex-direction: column; }
