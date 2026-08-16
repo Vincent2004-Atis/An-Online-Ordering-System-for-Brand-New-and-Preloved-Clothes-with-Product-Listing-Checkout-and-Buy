@@ -6,8 +6,28 @@ if (!isset($_SESSION['user_id'])) {
 require_once __DIR__ . '/../config/database.php';
 $db = getDB();
 
-$db->query("ALTER TABLE users ADD COLUMN IF NOT EXISTS address TEXT AFTER contact_number");
-$db->query("ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_photo VARCHAR(255) DEFAULT NULL AFTER address");
+/**
+ * Safely add a column only if it doesn't already exist.
+ * Works on any MySQL/MariaDB version (doesn't rely on "ADD COLUMN IF NOT EXISTS" syntax).
+ */
+function ensureColumnExists($db, $table, $column, $definition) {
+    $check = $db->prepare(
+        "SELECT COUNT(*) AS cnt FROM information_schema.COLUMNS 
+         WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?"
+    );
+    $check->bind_param('ss', $table, $column);
+    $check->execute();
+    $exists = (int)($check->get_result()->fetch_assoc()['cnt'] ?? 0);
+    $check->close();
+
+    if ($exists === 0) {
+        $db->query("ALTER TABLE `$table` ADD COLUMN $definition");
+    }
+}
+
+ensureColumnExists($db, 'users', 'address', '`address` TEXT AFTER `contact_number`');
+ensureColumnExists($db, 'users', 'profile_photo', '`profile_photo` VARCHAR(255) DEFAULT NULL AFTER `address`');
+
 $db->query("CREATE TABLE IF NOT EXISTS user_payment_accounts (
     account_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
