@@ -19,6 +19,12 @@ COPY . /var/www/html/Margaux_Collections/
 RUN echo '<?php header("Location: /Margaux_Collections/index.php"); exit;' \
     > /var/www/html/index.php
 
+# Site-wide favicon: browsers automatically request /favicon.ico at the domain
+# root for ANY page that doesn't declare its own <link rel="icon">, regardless
+# of how deep the page's own path is. Placing the logo here makes the tab icon
+# show up on every page (login, register, products, etc.) without editing each file.
+RUN cp /var/www/html/Margaux_Collections/images/logo.jpg /var/www/html/favicon.ico
+
 # Give Apache write access to the folders the app writes to (profile photo
 # uploads, homepage slot images)
 RUN chown -R www-data:www-data /var/www/html \
