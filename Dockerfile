@@ -2,7 +2,6 @@
 # Serves the app at /Margaux_Collections/ (same as your XAMPP setup)
 # so none of your existing hardcoded "/Margaux_Collections/..." paths
 # need to change.
-
 FROM php:8.2-apache
 
 # mysqli is required by config/database.php
@@ -15,9 +14,9 @@ RUN apache2ctl -M
 # (mirrors exactly where it lives inside XAMPP's htdocs)
 COPY . /var/www/html/Margaux_Collections/
 
-# Redirect the bare domain ("/") to the app, since all your app code
+# Redirect the bare domain ("/") to the app's landing page, since all your app code
 # expects to live under /Margaux_Collections/
-RUN echo '<?php header("Location: /Margaux_Collections/auth/login.php"); exit;' \
+RUN echo '<?php header("Location: /Margaux_Collections/index.php"); exit;' \
     > /var/www/html/index.php
 
 # Give Apache write access to the folders the app writes to (profile photo
