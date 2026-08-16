@@ -33,6 +33,7 @@ $hpPrice += [
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Margaux Collections — Fashion Boutique</title>
+<link rel="icon" type="image/jpeg" href="/Margaux_Collections/images/logo.jpg">
 <link href="https://fonts.googleapis.com/css2?family=Didact+Gothic&family=Bodoni+Moda:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
