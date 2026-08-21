@@ -6,5 +6,5 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 session_destroy();
-header('Location: /Margaux_Collections/index.php');
+header('Location: ../index.php');
 exit;
